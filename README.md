@@ -1,4 +1,4 @@
-# Pipelex Templated Project 📚
+# Pipelex Templat Project ⚡️
 
 ### Use this template
 
