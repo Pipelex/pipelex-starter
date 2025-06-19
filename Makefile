@@ -70,6 +70,7 @@ make gha-tests		          - Run tests for github actions (exit on first failure)
 make test                     - Run unit tests (no inference)
 make test-with-prints         - Run tests with prints (no inference)
 make t                        - Shorthand -> test-with-prints
+make tp                       - Shorthand -> test-with-prints
 make test-inference           - Run unit tests only for inference (with prints)
 make ti                       - Shorthand -> test-inference
 make test-imgg                - Run unit tests only for imgg (with prints)
@@ -236,9 +237,6 @@ test: env
 		$(VENV_PYTEST) -s -m $(USUAL_PYTEST_MARKERS) -o log_cli=true -o log_level=WARNING $(if $(filter 1,$(VERBOSE)),-v,$(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,))); \
 	fi
 
-t: test
-	@echo "> done: t = test"
-
 test-quiet: env
 	$(call PRINT_TITLE,"Unit testing without prints but displaying logs via pytest for WARNING level and above")
 	@echo "• Running unit tests"
@@ -259,6 +257,9 @@ test-with-prints: env
 	else \
 		$(VENV_PYTEST) -s -m $(USUAL_PYTEST_MARKERS) $(if $(filter 1,$(VERBOSE)),-v,$(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,))); \
 	fi
+
+t: test-with-prints
+	@echo "> done: tp = test-with-prints"
 
 tp: test-with-prints
 	@echo "> done: tp = test-with-prints"
