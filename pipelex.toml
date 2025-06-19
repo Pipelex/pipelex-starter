@@ -18,8 +18,6 @@ api_key_method = "env"
 [plugins.azure_openai_config]
 api_key_method = "env"
 
-# TODO: handle multiple azure openai accounts with different resource groups and account names for various llm model
-
 [plugins.perplexity_config]
 api_key_method = "env"
 

@@ -1,4 +1,4 @@
-# Pipelex Templat Project ⚡️
+# Project based on pipelex-starter ⚡️
 
 ### Use this template
 
@@ -32,7 +32,7 @@ Enter your API keys into your `.env` file. The `OPENAI_API_KEY` is enough to get
 | **GitHub Discussions → "Show & Tell"** | Share ideas, brainstorm, get early feedback.                              |
 | **GitHub Issues**                      | Report bugs or request features.                                          |
 | **Email (privacy & security)**         | [security@pipelex.com](mailto:security@pipelex.com)                       |
-| **Discord**                            | Real-time chat — [https://discord.gg/SReshKQjWt](https://discord.gg/SReshKQjWt) |
+| **Discord**                            | Real-time chat — [https://go.pipelex.com/discord](https://go.pipelex.com/discord) |
 
 
 ## 📝 License
