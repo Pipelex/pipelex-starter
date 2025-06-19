@@ -5,7 +5,9 @@ endif
 VIRTUAL_ENV := $(CURDIR)/.venv
 PROJECT_NAME := $(shell grep '^name = ' pyproject.toml | sed -E 's/name = "(.*)"/\1/')
 
-VENV_PYTHON := $(VIRTUAL_ENV)/bin/python3.11
+# The "?" is used to make the variable optional, so that it can be overridden by the user.
+PYTHON_VERSION ?= 3.11
+VENV_PYTHON := $(VIRTUAL_ENV)/bin/python
 VENV_PYTEST := $(VIRTUAL_ENV)/bin/pytest
 VENV_RUFF := $(VIRTUAL_ENV)/bin/ruff
 VENV_PYRIGHT := $(VIRTUAL_ENV)/bin/pyright
@@ -13,6 +15,8 @@ VENV_MYPY := $(VIRTUAL_ENV)/bin/mypy
 VENV_PIPELEX := $(VIRTUAL_ENV)/bin/pipelex
 
 UV_MIN_VERSION = $(shell grep -m1 'required-version' pyproject.toml | sed -E 's/.*= *"([^<>=, ]+).*/\1/')
+
+USUAL_PYTEST_MARKERS := "(dry_runnable or not (inference or llm or imgg or ocr)) and not (needs_output or pipelex_api)"
 
 define PRINT_TITLE
     $(eval PROJECT_PART := [$(PROJECT_NAME)])
@@ -81,7 +85,16 @@ make fix-unused-imports       - Fix unused imports with ruff
 endef
 export HELP
 
-.PHONY: all help env lock install update format lint pyright mypy cleanderived cleanenv validate v codex-tests gha-tests test test-with-prints test-inference t ti test-imgg tg test-ocr tocheck cc li merge-check-ruff-lint merge-check-ruff-format merge-check-mypy check-unused-imports fix-unused-imports check-uv
+.PHONY: \
+	all help env lock install update build \
+	format lint pyright mypy \
+	cleanderived cleanenv cleanlibraries cleanall \
+	test t test-quiet tq test-with-prints tp test-inference ti \
+	codex-tests gha-tests \
+	run-all-tests run-manual-trigger-gha-tests run-gha_disabled-tests \
+	validate v check c cc \
+	merge-check-ruff-lint merge-check-ruff-format merge-check-mypy merge-check-pyright \
+	li check-unused-imports fix-unused-imports check-uv check-TODOs
 
 all help:
 	@echo "$$HELP"
@@ -110,13 +123,15 @@ env: check-uv
 
 init: env
 	$(call PRINT_TITLE,"Running pipelex init")
-	$(VENV_PIPELEX) init
+	$(VENV_PIPELEX) init-libraries
+	$(VENV_PIPELEX) init-config
 
 install: env
 	$(call PRINT_TITLE,"Installing dependencies")
 	@. $(VIRTUAL_ENV)/bin/activate && \
 	uv sync --all-extras && \
-	$(VENV_PIPELEX) init && \
+	$(VENV_PIPELEX) init-libraries && \
+	$(VENV_PIPELEX) init-config && \
 	echo "Installed dependencies in ${VIRTUAL_ENV} and initialized Pipelex libraries";
 
 lock: env
@@ -171,14 +186,14 @@ cleanbaselibrary:
 reinitbaselibrary: cleanbaselibrary init
 	@echo "Reinitialized pipelex base library";
 
+rl: reinitbaselibrary
+	@echo "> done: rl = reinitlibraries"
+
 reinstall: cleanenv cleanlock install
 	@echo "Reinstalled dependencies";
 
 ri: reinstall
 	@echo "> done: ri = reinstall"
-
-rl: reinitbaselibrary
-	@echo "> done: rl = reinitlibraries"
 
 cleanall: cleanderived cleanenv cleanlibraries
 	@echo "Cleaned up all derived files and directories";
@@ -216,55 +231,48 @@ test: env
 	$(call PRINT_TITLE,"Unit testing without prints but displaying logs via pytest for WARNING level and above")
 	@echo "• Running unit tests"
 	@if [ -n "$(TEST)" ]; then \
-		$(VENV_PYTEST) -o log_cli=true -o log_level=WARNING -k "$(TEST)" $(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,-v)); \
+		$(VENV_PYTEST) -s -m $(USUAL_PYTEST_MARKERS) -o log_cli=true -o log_level=WARNING -k "$(TEST)" $(if $(filter 1,$(VERBOSE)),-v,$(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,))); \
 	else \
-		$(VENV_PYTEST) -o log_cli=true -o log_level=WARNING $(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,-v)); \
+		$(VENV_PYTEST) -s -m $(USUAL_PYTEST_MARKERS) -o log_cli=true -o log_level=WARNING $(if $(filter 1,$(VERBOSE)),-v,$(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,))); \
 	fi
+
+t: test
+	@echo "> done: t = test"
+
+test-quiet: env
+	$(call PRINT_TITLE,"Unit testing without prints but displaying logs via pytest for WARNING level and above")
+	@echo "• Running unit tests"
+	@if [ -n "$(TEST)" ]; then \
+		$(VENV_PYTEST) -m $(USUAL_PYTEST_MARKERS) -o log_cli=true -o log_level=WARNING -k "$(TEST)" $(if $(filter 1,$(VERBOSE)),-v,$(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,))); \
+	else \
+		$(VENV_PYTEST) -m $(USUAL_PYTEST_MARKERS) -o log_cli=true -o log_level=WARNING $(if $(filter 1,$(VERBOSE)),-v,$(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,))); \
+	fi
+
+tq: test-quiet
+	@echo "> done: tq = test-quiet"
 
 test-with-prints: env
 	$(call PRINT_TITLE,"Unit testing with prints and our rich logs")
-	@echo "• Running unit tests using `$(VENV_PYTEST)`"
+	@echo "• Running unit tests"
 	@if [ -n "$(TEST)" ]; then \
-		$(VENV_PYTEST) -s -k "$(TEST)" $(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,-v)); \
+		$(VENV_PYTEST) -s -m $(USUAL_PYTEST_MARKERS) -k "$(TEST)" $(if $(filter 1,$(VERBOSE)),-v,$(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,))); \
 	else \
-		$(VENV_PYTEST) -s $(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,-v)); \
+		$(VENV_PYTEST) -s -m $(USUAL_PYTEST_MARKERS) $(if $(filter 1,$(VERBOSE)),-v,$(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,))); \
 	fi
 
-t: test-with-prints
-	@echo "> done: t = test-with-prints"
+tp: test-with-prints
+	@echo "> done: tp = test-with-prints"
 
 test-inference: env
 	$(call PRINT_TITLE,"Unit testing")
 	@if [ -n "$(TEST)" ]; then \
-		$(VENV_PYTEST) --exitfirst -m "inference and not imgg" -s -k "$(TEST)" $(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,-v)); \
+		$(VENV_PYTEST) --pipe-run-mode live --exitfirst -m "inference" -s -k "$(TEST)" $(if $(filter 1,$(VERBOSE)),-v,$(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,))); \
 	else \
-		$(VENV_PYTEST) --exitfirst -m "inference and not imgg" -s $(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,-v)); \
+		$(VENV_PYTEST) --pipe-run-mode live --exitfirst -m "inference" -s $(if $(filter 1,$(VERBOSE)),-v,$(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,))); \
 	fi
 
 ti: test-inference
 	@echo "> done: ti = test-inference"
-
-test-ocr: env
-	$(call PRINT_TITLE,"Unit testing ocr")
-	@if [ -n "$(TEST)" ]; then \
-		$(VENV_PYTEST) --exitfirst -m "ocr" -s -k "$(TEST)" $(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,-v)); \
-	else \
-		$(VENV_PYTEST) --exitfirst -m "ocr" -s $(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,-v)); \
-	fi
-
-to: test-ocr
-	@echo "> done: to = test-ocr"
-
-test-imgg: env
-	$(call PRINT_TITLE,"Unit testing")
-	@if [ -n "$(TEST)" ]; then \
-		$(VENV_PYTEST) --exitfirst -m "imgg" -s -k "$(TEST)" $(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,-v)); \
-	else \
-		$(VENV_PYTEST) --exitfirst -m "imgg" -s $(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,-v)); \
-	fi
-
-tg: test-imgg
-	@echo "> done: tg = test-imgg"
 
 ############################################################################################
 ############################               Linting              ############################
