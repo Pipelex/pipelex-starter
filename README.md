@@ -1,9 +1,17 @@
-# Project based on pipelex-starter ⚡️
+# My Project ⚡️
+
+*Replace "My Project" with your actual project name*
 
 ### Use this template
 
 This is a template repository: don't clone it, click the green `Use this template` button at the top-right of the Github repo page.
 Once you've created your repository from it, then you can clone it and follow the instructions below:
+
+**Next steps after creating from template** (or later when you feel like it)
+1. Replace "my-project" in `pyproject.toml` with your project name
+2. Replace "my_project" directory name with your package name (use underscores)
+3. Update this README.md with your project details
+4. Update the package imports in your code as needed
 
 ---
 

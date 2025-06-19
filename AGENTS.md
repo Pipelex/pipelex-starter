@@ -28,8 +28,6 @@ The purpose of pipelex-template is to kick-start porjects based on the `pipelex`
 ### Markers
 
 Apply the appropriate markers:
-- "llm: uses an LLM to generate text or objects"
-- "imgg: uses an image generation AI"
 - "inference: uses either an LLM or an image generation AI"
 - "gha_disabled: will not be able to run properly on GitHub Actions"
 - "codex_disabled: will not be able to run properly on Codex"  # typically relevant for tests that need internet access, which Codex doesn't allow
@@ -41,7 +39,6 @@ Several markers may be applied. For instance, if the test uses an LLM, then it u
 Always group the tests of a module into a test class:
 
 ```python
-@pytest.mark.llm
 @pytest.mark.inference
 @pytest.mark.asyncio(loop_scope="class")
 class TestFooBar:
