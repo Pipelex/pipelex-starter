@@ -43,10 +43,10 @@ Documentation = "https://docs.pipelex.com/"
 required-version = ">=0.7.2"
 
 [tool.mypy]
+packages = ["my_project"]
 check_untyped_defs = true
 exclude = "^.*\\.venv/.*$"
 mypy_path = "."
-packages = ["my_project"]
 plugins = ["pydantic.mypy"]
 python_version = "3.11"
 warn_return_any = true
@@ -57,6 +57,7 @@ ignore_missing_imports = true
 module = ["json2html"]
 
 [tool.pyright]
+include = ["my_project"]
 analyzeUnannotatedFunctions = true
 deprecateTypingAliases = false
 disableBytesTypePromotions = true
@@ -64,7 +65,6 @@ enableExperimentalFeatures = false
 enableTypeIgnoreComments = true
 exclude = ["**/node_modules", "**/__pycache__"]
 extraPaths = ["./tests"]
-include = ["my_project"]
 pythonVersion = "3.11"
 reportAbstractUsage = "error"
 reportArgumentType = "error"
