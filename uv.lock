@@ -423,7 +423,7 @@ name = "exceptiongroup"
 version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0b/9f/a65090624ecf468cdca03533906e7c69ed7588582240cfe7cc9e770b50eb/exceptiongroup-1.3.0.tar.gz", hash = "sha256:b241f5885f560bc56a59ee63ca4c6a8bfa46ae4ad651af316d4e81817bb9fd88", size = 29749, upload-time = "2025-05-10T17:42:51.123Z" }
 wheels = [
@@ -768,14 +768,14 @@ wheels = [
 
 [[package]]
 name = "kajson"
-version = "0.1.5"
+version = "0.2.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/51/38/300e06d9e5c98d2bcb922e3d2813836f74754a117bcf5c9ff019a20eea0b/kajson-0.1.5.tar.gz", hash = "sha256:cf166e417642127e4a4bca3d31788b64fcd1969f6bc103df2fa59e069c27b8a8", size = 15061, upload-time = "2025-06-02T15:28:52.403Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/70/8f/72a203f9aabb272091ce078e52a127d064ed89c7b5aba098f3210d4f6ffc/kajson-0.2.3.tar.gz", hash = "sha256:45a18d298d3b193dc904a53493a20069aefba68fe93432455a01cdd92c8dcaf4", size = 20134, upload-time = "2025-06-26T13:52:05.208Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b5/7c/12f2167e1b1056e73224b7c4f8062807af47f0bc6a26ef773e3f8219c773/kajson-0.1.5-py3-none-any.whl", hash = "sha256:5fbc4065fa85f56dccf93d644a9d3ee1bccb504d7f27f030a1beacc6ba21e1d6", size = 21090, upload-time = "2025-06-02T15:28:50.765Z" },
+    { url = "https://files.pythonhosted.org/packages/b3/8e/798196dd104b3d02779cdb1627f10c704780f6b279124cf2e4633cc69da5/kajson-0.2.3-py3-none-any.whl", hash = "sha256:4df631383e898f30c8f13f49b1c58cc2d69e2629bb828728817c3edb675da065", size = 26240, upload-time = "2025-06-26T13:52:03.962Z" },
 ]
 
 [[package]]
@@ -979,6 +979,56 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/8e/92/27989ecca97e542c0d01d05a98a5ae12198a243a9ee12563a0313291511f/multidict-6.4.4-cp313-cp313t-win_amd64.whl", hash = "sha256:ba852168d814b2c73333073e1c7116d9395bea69575a01b0b3c89d2d5a87c8fb", size = 46112, upload-time = "2025-05-19T14:16:04.909Z" },
     { url = "https://files.pythonhosted.org/packages/84/5d/e17845bb0fa76334477d5de38654d27946d5b5d3695443987a094a71b440/multidict-6.4.4-py3-none-any.whl", hash = "sha256:bd4557071b561a8b3b6075c3ce93cf9bfb6182cb241805c3d66ced3b75eff4ac", size = 10481, upload-time = "2025-05-19T14:16:36.024Z" },
 ]
+
+[[package]]
+name = "my-project"
+version = "0.0.1"
+source = { virtual = "." }
+dependencies = [
+    { name = "pipelex", extra = ["anthropic", "bedrock", "fal", "google", "mistralai"] },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "boto3-stubs" },
+    { name = "mypy" },
+    { name = "pyright" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "pytest-sugar" },
+    { name = "ruff" },
+    { name = "types-aioboto3", extra = ["bedrock", "bedrock-runtime"] },
+    { name = "types-aiofiles" },
+    { name = "types-beautifulsoup4" },
+    { name = "types-markdown" },
+    { name = "types-networkx" },
+    { name = "types-openpyxl" },
+    { name = "types-pyyaml" },
+    { name = "types-requests" },
+    { name = "types-toml" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "boto3-stubs", marker = "extra == 'dev'", specifier = ">=1.35.24" },
+    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11.2" },
+    { name = "pipelex", extras = ["mistralai", "anthropic", "google", "bedrock", "fal"], specifier = "==0.4.10" },
+    { name = "pyright", marker = "extra == 'dev'", specifier = "==1.1.398" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.3" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
+    { name = "pytest-sugar", marker = "extra == 'dev'", specifier = ">=1.0.0" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6.8" },
+    { name = "types-aioboto3", extras = ["bedrock", "bedrock-runtime"], marker = "extra == 'dev'", specifier = ">=13.4.0" },
+    { name = "types-aiofiles", marker = "extra == 'dev'", specifier = ">=24.1.0.20240626" },
+    { name = "types-beautifulsoup4", marker = "extra == 'dev'", specifier = ">=4.12.0.20240907" },
+    { name = "types-markdown", marker = "extra == 'dev'", specifier = ">=3.6.0.20240316" },
+    { name = "types-networkx", marker = "extra == 'dev'", specifier = ">=3.3.0.20241020" },
+    { name = "types-openpyxl", marker = "extra == 'dev'", specifier = ">=3.1.5.20250306" },
+    { name = "types-pyyaml", marker = "extra == 'dev'", specifier = ">=6.0.12.20250326" },
+    { name = "types-requests", marker = "extra == 'dev'", specifier = ">=2.32.0.2024091" },
+    { name = "types-toml", marker = "extra == 'dev'", specifier = ">=0.10.8.20240310" },
+]
+provides-extras = ["dev"]
 
 [[package]]
 name = "mypy"
@@ -1309,7 +1359,7 @@ wheels = [
 
 [[package]]
 name = "pipelex"
-version = "0.4.3"
+version = "0.4.10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiofiles" },
@@ -1338,9 +1388,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "yattag" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/66/ef/696403a1b6180e65c6299f6d90dd0650dd0e5be0957f0e64420c2eced7bf/pipelex-0.4.3.tar.gz", hash = "sha256:9db1042995abb420971518c7acd0da71dd022edc8d41085703189e5b490959ed", size = 169981, upload-time = "2025-06-19T09:53:08.572Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/af/e6/eb13f2ab389ed278222f3c0c1f8479776b229a3a10825e0d492e2b18f8eb/pipelex-0.4.10.tar.gz", hash = "sha256:85a8ece08bd41068d37d238b341502307d3d743aea1bbc149488262ae8aeb6f6", size = 175830, upload-time = "2025-06-30T11:28:08.063Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/60/fe/e3a3ba14caaaf8bc917c65673c6cd58f259015eb6063b22273fc5d73c484/pipelex-0.4.3-py3-none-any.whl", hash = "sha256:73953e1ebab508e9ea0c1784d2c1a653e654480e48a1631d34ef6257a49b1eee", size = 282374, upload-time = "2025-06-19T09:53:06.101Z" },
+    { url = "https://files.pythonhosted.org/packages/b3/c7/e3de75dceb931041e006694182ea2760479e8b7177ec0e95434815ca5f9e/pipelex-0.4.10-py3-none-any.whl", hash = "sha256:ffab9d531d1e04703357ebbb2efbbb9ebbfb2f012dc7652a80dd6116829f4108", size = 291667, upload-time = "2025-06-30T11:28:06.198Z" },
 ]
 
 [package.optional-dependencies]
@@ -1360,56 +1410,6 @@ google = [
 mistralai = [
     { name = "mistralai" },
 ]
-
-[[package]]
-name = "pipelex-starter"
-version = "0.0.1"
-source = { virtual = "." }
-dependencies = [
-    { name = "pipelex", extra = ["anthropic", "bedrock", "fal", "google", "mistralai"] },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "boto3-stubs" },
-    { name = "mypy" },
-    { name = "pyright" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-sugar" },
-    { name = "ruff" },
-    { name = "types-aioboto3", extra = ["bedrock", "bedrock-runtime"] },
-    { name = "types-aiofiles" },
-    { name = "types-beautifulsoup4" },
-    { name = "types-markdown" },
-    { name = "types-networkx" },
-    { name = "types-openpyxl" },
-    { name = "types-pyyaml" },
-    { name = "types-requests" },
-    { name = "types-toml" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "boto3-stubs", marker = "extra == 'dev'", specifier = ">=1.35.24" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11.2" },
-    { name = "pipelex", extras = ["mistralai", "anthropic", "google", "bedrock", "fal"], specifier = "==0.4.3" },
-    { name = "pyright", marker = "extra == 'dev'", specifier = "==1.1.398" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.3" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
-    { name = "pytest-sugar", marker = "extra == 'dev'", specifier = ">=1.0.0" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6.8" },
-    { name = "types-aioboto3", extras = ["bedrock", "bedrock-runtime"], marker = "extra == 'dev'", specifier = ">=13.4.0" },
-    { name = "types-aiofiles", marker = "extra == 'dev'", specifier = ">=24.1.0.20240626" },
-    { name = "types-beautifulsoup4", marker = "extra == 'dev'", specifier = ">=4.12.0.20240907" },
-    { name = "types-markdown", marker = "extra == 'dev'", specifier = ">=3.6.0.20240316" },
-    { name = "types-networkx", marker = "extra == 'dev'", specifier = ">=3.3.0.20241020" },
-    { name = "types-openpyxl", marker = "extra == 'dev'", specifier = ">=3.1.5.20250306" },
-    { name = "types-pyyaml", marker = "extra == 'dev'", specifier = ">=6.0.12.20250326" },
-    { name = "types-requests", marker = "extra == 'dev'", specifier = ">=2.32.0.2024091" },
-    { name = "types-toml", marker = "extra == 'dev'", specifier = ">=0.10.8.20240310" },
-]
-provides-extras = ["dev"]
 
 [[package]]
 name = "pluggy"
