@@ -12,7 +12,10 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-dependencies = ["pipelex[mistralai,anthropic,google,bedrock,fal]==0.4.11"]
+dependencies = ["pipelex[mistralai,anthropic,google,bedrock,fal]==0.5.0"]
+
+[tool.uv.sources]
+pipelex = { path = "../pipelex", editable = true }
 
 [project.optional-dependencies]
 dev = [
