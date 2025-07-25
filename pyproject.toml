@@ -12,7 +12,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-dependencies = ["pipelex[mistralai,anthropic,google,bedrock,fal] @ git+https://github.com/Pipelex/pipelex.git@dev"]
+dependencies = ["pipelex[mistralai,anthropic,google,bedrock,fal]==0.6.8"]
 
 [project.optional-dependencies]
 dev = [
