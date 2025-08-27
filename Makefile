@@ -124,15 +124,15 @@ env: check-uv
 
 init: env
 	$(call PRINT_TITLE,"Running pipelex init")
-	$(VENV_PIPELEX) init-libraries
-	$(VENV_PIPELEX) init-config
+	$(VENV_PIPELEX) init libraries
+	$(VENV_PIPELEX) init config
 
 install: env
 	$(call PRINT_TITLE,"Installing dependencies")
 	@. $(VIRTUAL_ENV)/bin/activate && \
 	uv sync --all-extras && \
-	$(VENV_PIPELEX) init-libraries && \
-	$(VENV_PIPELEX) init-config && \
+	$(VENV_PIPELEX) init libraries && \
+	$(VENV_PIPELEX) init config && \
 	echo "Installed dependencies in ${VIRTUAL_ENV} and initialized Pipelex libraries";
 
 lock: env
@@ -148,7 +148,7 @@ update: env
 
 validate: env
 	$(call PRINT_TITLE,"Running setup sequence")
-	$(VENV_PIPELEX) validate
+	$(VENV_PIPELEX) validate all
 
 ##############################################################################################
 ############################      Cleaning                        ############################
