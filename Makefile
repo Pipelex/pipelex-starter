@@ -124,15 +124,15 @@ env: check-uv
 
 init: env
 	$(call PRINT_TITLE,"Running pipelex init")
-	$(VENV_PIPELEX) init-libraries
-	$(VENV_PIPELEX) init-config
+	$(VENV_PIPELEX) init libraries
+	$(VENV_PIPELEX) init config
 
 install: env
 	$(call PRINT_TITLE,"Installing dependencies")
 	@. $(VIRTUAL_ENV)/bin/activate && \
 	uv sync --all-extras && \
-	$(VENV_PIPELEX) init-libraries && \
-	$(VENV_PIPELEX) init-config && \
+	$(VENV_PIPELEX) init libraries && \
+	$(VENV_PIPELEX) init config && \
 	echo "Installed dependencies in ${VIRTUAL_ENV} and initialized Pipelex libraries";
 
 lock: env
@@ -148,7 +148,7 @@ update: env
 
 validate: env
 	$(call PRINT_TITLE,"Running setup sequence")
-	$(VENV_PIPELEX) validate
+	$(VENV_PIPELEX) validate all
 
 ##############################################################################################
 ############################      Cleaning                        ############################
@@ -303,11 +303,11 @@ mypy: env
 
 merge-check-ruff-format: env
 	$(call PRINT_TITLE,"Formatting with ruff")
-	$(VENV_RUFF) format --check -v .
+	$(VENV_RUFF) format --check .
 
 merge-check-ruff-lint: env check-unused-imports
 	$(call PRINT_TITLE,"Linting with ruff without fixing files")
-	$(VENV_RUFF) check -v .
+	$(VENV_RUFF) check .
 
 merge-check-pyright: env
 	$(call PRINT_TITLE,"Typechecking with pyright")
@@ -343,4 +343,4 @@ li: lock install
 
 fix-unused-imports: env
 	$(call PRINT_TITLE,"Fixing unused imports")
-	$(VENV_RUFF) check --select=F401 --fix -v .
+	$(VENV_RUFF) check --select=F401 --fix .
