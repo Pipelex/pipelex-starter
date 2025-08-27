@@ -1,5 +1,4 @@
 import pytest
-
 from pipelex.pipe_works.pipe_dry import dry_run_all_pipes
 from pipelex.pipelex import Pipelex
 
