@@ -31,6 +31,11 @@ cp .env.example .env
 
 Enter your API keys into your `.env` file. The `OPENAI_API_KEY` is enough to get you started, but some pipelines require models from other providers.
 
+
+### IDE extension
+
+We **highly** recommend installing our own extension for PLX files into your IDE of choice. You can find it in the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=Pipelex.pipelex).
+
 ---
 
 ## Contact & Support
