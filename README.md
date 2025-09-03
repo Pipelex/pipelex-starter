@@ -34,7 +34,7 @@ Enter your API keys into your `.env` file. The `OPENAI_API_KEY` is enough to get
 
 ### IDE extension
 
-We **highly** recommend installing our own extension for PLX files into your IDE of choice. You can find it in the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=Pipelex.pipelex).
+We **highly** recommend installing our own extension for PLX files into your IDE of choice. You can find it in the [Open VSX Registry](https://open-vsx.org/extension/Pipelex/pipelex). It's coming soon to VS Code marketplace too and if you are using Cursor, Windsurf or another VS Code fork, you can search for it directly in your extensions tab.
 
 ---
 
