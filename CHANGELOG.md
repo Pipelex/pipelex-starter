@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.1.1] - 2025-09-04
+
+- Updated pipelex Cursor rules
+
 ## [v0.1.0] - 2025-09-03
 
 - Bump `pipelex` to `v0.9.0`: See `Pipelex` changelog [here](https://docs.pipelex.com/changelog/). Renamed `hello_world.toml` to `hello_world.plx` as a consequence.
