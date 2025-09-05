@@ -1,10 +1,10 @@
 ---
-alwaysApply: false
+alwaysApply: true
 ---
 # Pipeline Guide
 
 - Always first write your "plan" in natural langage, then transcribe it in pipelex.
-- You should ALWAYS RUN the terminal command `pipelex validate all` when you are writing a `.plx` file. It will ensure the pipe is runnable. If not, iterate.
+- You should ALWAYS RUN the terminal command `make validate` when you are writing a `.plx` file. It will ensure the pipe is runnable. If not, iterate.
 - Please use POSIX standard for files. (enmpty lines, no trailing whitespaces, etc.)
 
 # Pipeline Structure Guide
@@ -203,7 +203,7 @@ The PipeCondition controller allows you to implement conditional logic in your p
 ```plx
 [pipe.conditional_operation]
 type = "PipeCondition"
-definition = "A conditonal pipe to decide whether..."
+definition = "A conditonal pipe to decide wheter..."
 inputs = { input_data = "CategoryInput" }
 output = "native.Text"
 expression = "input_data.category"
@@ -217,7 +217,7 @@ or
 ```plx
 [pipe.conditional_operation]
 type = "PipeCondition"
-definition = "A conditonal pipe to decide whether..."
+definition = "A conditonal pipe to decide wheter..."
 inputs = { input_data = "CategoryInput" }
 output = "native.Text"
 expression_template = "{{ input_data.category }}" # Jinja2 code
@@ -481,7 +481,7 @@ So here are a few concrete examples of calls to execute_pipeline with various wa
 # Here we have a single input and it's an Image.
 # Because ImageContent is a native concept, we can use it directly as a value:
     pipe_output = await execute_pipeline(
-        pipe_code="fashion_variation",
+        pipe_code="fashion_variation_pipeline",
         input_memory={
             "fashion_photo": ImageContent(url=image_url),
         },
@@ -515,6 +515,6 @@ So here are a few concrete examples of calls to execute_pipeline with various wa
     )
 ```
 
-ALWAYS RUN `pipelex validate all` when you are finished writing pipelines: This checks for errors. If there are errors, iterate until it works.
+ALWAYS RUN `make validate` when you are finished writing pipelines: This checks for errors. If there are errors, iterate until it works.
 Then, create an example file to run the pipeline in the `examples` folder.
 But don't write documentation unless asked explicitly to.
