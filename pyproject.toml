@@ -1,6 +1,6 @@
 [project]
 name = "my-project"
-version = "0.1.1"
+version = "0.1.2"
 description = "Replace this with your project description"
 # authors = [{ name = "Your Name", email = "your.email@example.com" }]
 license = "MIT"
@@ -37,7 +37,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://pipelex.com"
-Repository = "https://github.com/yourusername/my-project"  # Replace with your repository URL
+Repository = "https://github.com/yourusername/my-project" # Replace with your repository URL
 Documentation = "https://docs.pipelex.com/"
 
 [tool.uv]

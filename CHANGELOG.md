@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.1.2] - 2025-09-06
+
+- Better support for Pipelex extension in BlackboxAI IDE
+
 ## [v0.1.1] - 2025-09-04
 
 - Updated pipelex Cursor rules
