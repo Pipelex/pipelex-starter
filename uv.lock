@@ -1120,7 +1120,7 @@ wheels = [
 
 [[package]]
 name = "my-project"
-version = "0.1.1"
+version = "0.1.2"
 source = { virtual = "." }
 dependencies = [
     { name = "pipelex", extra = ["anthropic", "bedrock", "fal", "google", "mistralai"] },
@@ -1152,7 +1152,7 @@ requires-dist = [
     { name = "boto3-stubs", marker = "extra == 'dev'", specifier = ">=1.35.24" },
     { name = "cocode", marker = "extra == 'dev'", specifier = "==0.1.2" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11.2" },
-    { name = "pipelex", extras = ["mistralai", "anthropic", "google", "bedrock", "fal"], specifier = "==0.9.0" },
+    { name = "pipelex", extras = ["mistralai", "anthropic", "google", "bedrock", "fal"], specifier = "==0.9.4" },
     { name = "pyright", marker = "extra == 'dev'", specifier = "==1.1.398" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.3" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
@@ -1499,7 +1499,7 @@ wheels = [
 
 [[package]]
 name = "pipelex"
-version = "0.9.0"
+version = "0.9.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiofiles" },
@@ -1530,9 +1530,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "yattag" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/25/bb/e19f174d416d906b24993fdaaae5688e0b8a87d71a87aeb295ae56f0c7b4/pipelex-0.9.0.tar.gz", hash = "sha256:e2628cee44b45ed7e4086b180c48dd974bfd28ba4889d3fda73726d0e6a999c8", size = 216573, upload-time = "2025-09-02T14:57:09.903Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/27/99/1e4b5fbfb516f0805a41b530f78da932241141831b4526ab7c1748ede615/pipelex-0.9.4.tar.gz", hash = "sha256:9f3165a3b7edc4fd0e9eea75fc0a3aec17231226b841da379d8ec55068ee9e5a", size = 217199, upload-time = "2025-09-06T13:40:17.296Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b2/bf/4c799a33d79fbaf718a3c8951c4bb18d09efda4b89021ef41d26d418f50f/pipelex-0.9.0-py3-none-any.whl", hash = "sha256:c1b2a8cd407516babd40638345cf854be7f49fd8de3f8a2a3eb2a2c127d2725e", size = 351041, upload-time = "2025-09-02T14:57:08.41Z" },
+    { url = "https://files.pythonhosted.org/packages/0a/bd/fd7ef4a63439528eee427f029f8b4b218ef46ec8c71cc97193165801520a/pipelex-0.9.4-py3-none-any.whl", hash = "sha256:cf287bd759e68dba77218ef3ca5ba71fa04895d04a42207f2b689afcbd5fef89", size = 351963, upload-time = "2025-09-06T13:40:15.149Z" },
 ]
 
 [package.optional-dependencies]
