@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.1.4] - 2025-09-07
+
+- Make it easier to get running with BlackboxAI LLMs
+
 ## [v0.1.3] - 2025-09-06
 
 - Bump `pipelex` to `v0.9.4`: See `Pipelex` changelog [here](https://docs.pipelex.com/changelog/)
