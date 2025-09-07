@@ -37,7 +37,7 @@ Create a pipeline to analyze a codebase submitted for a hackathon:
 First
 - Summarize the concept of the project
 
-Then, analyze these 3 criteria in parallel:
+Then, analyze these criteria:
 - Problem fit & novelty
 - Features: is it fake or are there powerful features behind each button, endpoint etc.
 - Architecture & modularity
