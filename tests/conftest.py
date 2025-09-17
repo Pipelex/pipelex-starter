@@ -1,7 +1,8 @@
+import atexit
+import os
+
 import pytest
 from rich import print
-import os
-import atexit
 
 pytest_plugins = [
     "pipelex.test_extras.shared_pytest_plugins",
@@ -15,6 +16,7 @@ def pretty():
     yield
     # Code to run after each test
     print("\n")
+
 
 def _setup_ci_env_vars():
     """Set placeholder environment variables when running in CI to prevent import failures.
