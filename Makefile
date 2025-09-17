@@ -196,7 +196,17 @@ reinstall: cleanenv cleanlock install
 ri: reinstall
 	@echo "> done: ri = reinstall"
 
-cleanall: cleanderived cleanenv cleanlibraries
+cleanlibraries:
+	$(call PRINT_TITLE,"Erasing pipelex_libraries")
+	@find . -type d -wholename './pipelex_libraries' -exec rm -rf {} + && \
+	echo "Cleaned up pipelex_libraries";
+
+cleanconfig:
+	$(call PRINT_TITLE,"Erasing .pipelex config files and directories")
+	@find . -type d -wholename './.pipelex' -exec rm -rf {} + && \
+	echo "Cleaned up .pipelex";
+
+cleanall: cleanderived cleanenv cleanlibraries cleanconfig
 	@echo "Cleaned up all derived files and directories";
 
 ##########################################################################################
