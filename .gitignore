@@ -37,3 +37,4 @@ base_llm_deck.toml
 pipelex_libraries/pipelines/base_library
 base_templates.toml
 pipelex_super.toml
+.pipelex
