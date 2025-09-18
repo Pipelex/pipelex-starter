@@ -1,6 +1,6 @@
 [project]
 name = "my-project"
-version = "0.2.1"
+version = "0.2.2"
 description = "Replace this with your project description"
 # authors = [{ name = "Your Name", email = "your.email@example.com" }]
 license = "MIT"
@@ -12,7 +12,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-dependencies = ["pipelex[mistralai,anthropic,google,bedrock,fal]==0.10.1"]
+dependencies = ["pipelex[mistralai,anthropic,google,bedrock,fal]==0.10.2"]
 
 [project.optional-dependencies]
 dev = [
