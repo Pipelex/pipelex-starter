@@ -82,6 +82,7 @@ make cc                       - Shorthand -> cleanderived check
 make li                       - Shorthand -> lock install
 make check-unused-imports     - Check for unused imports without fixing
 make fix-unused-imports       - Fix unused imports with ruff
+make fui                      - Shorthand -> fix-unused-imports
 
 endef
 export HELP
@@ -354,3 +355,6 @@ li: lock install
 fix-unused-imports: env
 	$(call PRINT_TITLE,"Fixing unused imports")
 	$(VENV_RUFF) check --select=F401 --fix .
+
+fui: fix-unused-imports
+	@echo "> done: fui = fix-unused-imports"
