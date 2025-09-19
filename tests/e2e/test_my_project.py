@@ -1,5 +1,4 @@
 import pytest
-from pipelex.tools.environment import get_optional_env
 
 
 @pytest.mark.dry_runnable
