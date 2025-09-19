@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.2.3] - 2025-09-19
+
+- Fixed Hello World's call to execute_pipeline
+- Added proper e2e test for Hello World
+
 ## [v0.2.2] - 2025-09-18
 
 - Bump `pipelex` to `v0.10.2`: See `Pipelex` changelog [here](https://docs.pipelex.com/changelog/)
