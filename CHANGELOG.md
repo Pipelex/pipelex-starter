@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.2.4] - 2025-09-19
+
+- Stop ignoring backend config
+- Add `gpt-4o` model to `pipelex_inference.toml`
+
 ## [v0.2.3] - 2025-09-19
 
 - Fixed Hello World's call to execute_pipeline
