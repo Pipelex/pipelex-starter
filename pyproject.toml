@@ -16,7 +16,11 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
 ]
 
-dependencies = ["pipelex[mistralai,anthropic,google,bedrock,fal]==0.10.2"]
+dependencies = ["pipelex[mistralai,anthropic,google,bedrock,fal]==0.11.0"]
+
+[tool.uv.sources]
+pipelex = { path = "../pipelex", editable = true }
+
 
 [project.optional-dependencies]
 dev = [

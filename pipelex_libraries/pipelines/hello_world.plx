@@ -1,7 +1,7 @@
 
 
 domain = "quick_start"
-definition = "Discovering Pipelex"
+description = "Discovering Pipelex"
 
 [pipe]
 [pipe.hello_world]
