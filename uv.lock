@@ -1186,7 +1186,7 @@ requires-dist = [
     { name = "boto3-stubs", marker = "extra == 'dev'", specifier = ">=1.35.24" },
     { name = "cocode", marker = "extra == 'dev'", specifier = "==0.1.2" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11.2" },
-    { name = "pipelex", extras = ["mistralai", "anthropic", "google", "google-genai", "bedrock", "fal"], git = "https://github.com/Pipelex/pipelex.git?rev=refactor%2FEPIC-cleanups-and-renames-4" },
+    { name = "pipelex", extras = ["mistralai", "anthropic", "google", "google-genai", "bedrock", "fal"], git = "https://github.com/Pipelex/pipelex.git?rev=dev" },
     { name = "pyright", marker = "extra == 'dev'", specifier = "==1.1.398" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.3" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
@@ -1534,7 +1534,7 @@ wheels = [
 [[package]]
 name = "pipelex"
 version = "0.11.0"
-source = { git = "https://github.com/Pipelex/pipelex.git?rev=refactor%2FEPIC-cleanups-and-renames-4#02d8388b2c7d46cb9c71ee41c46085c306f963c1" }
+source = { git = "https://github.com/Pipelex/pipelex.git?rev=dev#3de5df87dda986b12452bee9964e31c2fd0e2a5b" }
 dependencies = [
     { name = "aiofiles" },
     { name = "backports-strenum", marker = "python_full_version < '3.11'" },
