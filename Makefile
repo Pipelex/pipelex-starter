@@ -75,6 +75,7 @@ make test                     - Run unit tests (no inference)
 make test-with-prints         - Run tests with prints (no inference)
 make t                        - Shorthand -> test-with-prints
 make tp                       - Shorthand -> test-with-prints
+make tb                       - Shorthand -> `make test-with-prints TEST=test_boot`
 make test-inference           - Run unit tests only for inference (with prints)
 make ti                       - Shorthand -> test-inference
 make test-imgg                - Run unit tests only for imgg (with prints)
@@ -296,6 +297,12 @@ t: test-with-prints
 tp: test-with-prints
 	@echo "> done: tp = test-with-prints"
 
+tb: env
+	$(call PRINT_TITLE,"Unit testing a simple boot")
+	@echo "• Running unit test test_boot"
+	$(VENV_PYTEST) -s -m $(USUAL_PYTEST_MARKERS) -k "test_boot" $(if $(filter 1,$(VERBOSE)),-v,$(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,)));
+
+
 test-inference: env
 	$(call PRINT_TITLE,"Unit testing")
 	@if [ -n "$(TEST)" ]; then \
@@ -321,8 +328,7 @@ lint: env
 
 pyright: env
 	$(call PRINT_TITLE,"Typechecking with pyright")
-	$(VENV_PYRIGHT) --pythonpath $(VENV_PYTHON)  && \
-	echo "Done typechecking with pyright — disregard warning about latest version, it's giving us false positives"
+	$(VENV_PYRIGHT) --pythonpath $(VENV_PYTHON) --project pyproject.toml
 
 mypy: env
 	$(call PRINT_TITLE,"Typechecking with mypy")
