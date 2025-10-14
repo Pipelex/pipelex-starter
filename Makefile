@@ -42,6 +42,10 @@ make env                      - Create python virtual env
 make lock                     - Refresh uv.lock without updating anything
 make install                  - Create local virtualenv & install all dependencies
 make update                   - Upgrade dependencies via uv
+make export-requirements      - Export production requirements.txt (no dev dependencies)
+make export-requirements-dev  - Export requirements-dev.txt (all dependencies including dev)
+make er                       - Shorthand -> export-requirements
+make erd                      - Shorthand -> export-requirements-dev
 make validate                 - Run the setup sequence to validate the config and libraries
 
 make format                   - format with ruff format
@@ -51,9 +55,7 @@ make mypy                     - Check types with mypy
 
 make cleanenv                 - Remove virtual env and lock files
 make cleanderived             - Remove extraneous compiled files, caches, logs, etc.
-make cleanlibraries           - Remove pipelex_libraries
-make cleanall                 - Remove all -> cleanenv + cleanderived + cleanlibraries
-make reinitbaselibrary        - Remove pipelex_libraries and init libraries again
+make cleanall                 - Remove all -> cleanenv + cleanderived
 make reinstall                - Reinstall dependencies
 
 make merge-check-ruff-lint    - Run ruff merge check without updating files
@@ -61,20 +63,17 @@ make merge-check-ruff-format  - Run ruff merge check without updating files
 make merge-check-mypy         - Run mypy merge check without updating files
 make merge-check-pyright	  - Run pyright merge check without updating files
 
-make rl                       - Shorthand -> reinitlibraries
 make ri                       - Shorthand -> reinstall
 make v                        - Shorthand -> validate
-make init                     - Run pipelex init
 make codex-tests              - Run tests for Codex (exit on first failure) (no inference, no codex_disabled)
 make gha-tests		          - Run tests for github actions (exit on first failure) (no inference, no gha_disabled)
 make test                     - Run unit tests (no inference)
 make test-with-prints         - Run tests with prints (no inference)
 make t                        - Shorthand -> test-with-prints
 make tp                       - Shorthand -> test-with-prints
+make tb                       - Shorthand -> `make test-with-prints TEST=test_boot`
 make test-inference           - Run unit tests only for inference (with prints)
 make ti                       - Shorthand -> test-inference
-make test-imgg                - Run unit tests only for imgg (with prints)
-make test-g					  - Shorthand -> test-imgg
 
 make check                    - Shorthand -> format lint mypy
 make c                        - Shorthand -> check
@@ -89,8 +88,9 @@ export HELP
 
 .PHONY: \
 	all help env lock install update build \
+	export-requirements export-requirements-dev er erd \
 	format lint pyright mypy \
-	cleanderived cleanenv cleanlibraries cleanall \
+	cleanderived cleanenv cleanall \
 	test t test-quiet tq test-with-prints tp test-inference ti \
 	codex-tests gha-tests \
 	run-all-tests run-manual-trigger-gha-tests run-gha_disabled-tests \
@@ -123,18 +123,12 @@ env: check-uv
 		echo "Python virtual env already exists in \`${VIRTUAL_ENV}\`"; \
 	fi
 
-init: env
-	$(call PRINT_TITLE,"Running pipelex init")
-	$(VENV_PIPELEX) init libraries
-	$(VENV_PIPELEX) init config
-
 install: env
 	$(call PRINT_TITLE,"Installing dependencies")
 	@. $(VIRTUAL_ENV)/bin/activate && \
 	uv sync --all-extras && \
-	$(VENV_PIPELEX) init libraries && \
 	$(VENV_PIPELEX) init config && \
-	echo "Installed dependencies in ${VIRTUAL_ENV} and initialized Pipelex libraries";
+	echo "Installed dependencies in ${VIRTUAL_ENV} and initialized Pipelex config";
 
 lock: env
 	$(call PRINT_TITLE,"Resolving dependencies without update")
@@ -146,6 +140,22 @@ update: env
 	@uv pip compile --upgrade pyproject.toml -o requirements.lock && \
 	uv pip install -e ".[dev]" && \
 	echo "Updated dependencies in ${VIRTUAL_ENV}";
+
+export-requirements: env
+	$(call PRINT_TITLE,"Exporting production requirements")
+	@uv export --no-dev --output-file requirements.txt && \
+	echo "Exported production requirements to requirements.txt";
+
+export-requirements-dev: env
+	$(call PRINT_TITLE,"Exporting development requirements")
+	@uv export --all-extras --output-file requirements-dev.txt && \
+	echo "Exported all requirements (including dev) to requirements-dev.txt";
+
+er: export-requirements
+	@echo "> done: er = export-requirements"
+
+erd: export-requirements-dev
+	@echo "> done: erd = export-requirements-dev"
 
 validate: env
 	$(call PRINT_TITLE,"Running setup sequence")
@@ -180,34 +190,18 @@ cleanlock:
 	@find . -name 'requirements.lock' -delete && \
 	echo "Cleaned up uv lock file";
 
-cleanbaselibrary:
-	$(call PRINT_TITLE,"Erasing derived files and directories")
-	@find . -type d -wholename './pipelex_libraries/pipelines/base_library' -exec rm -rf {} + && \
-	echo "Cleaned up pipelex base library";
-
-reinitbaselibrary: cleanbaselibrary init
-	@echo "Reinitialized pipelex base library";
-
-rl: reinitbaselibrary
-	@echo "> done: rl = reinitlibraries"
-
 reinstall: cleanenv cleanlock install
 	@echo "Reinstalled dependencies";
 
 ri: reinstall
 	@echo "> done: ri = reinstall"
 
-cleanlibraries:
-	$(call PRINT_TITLE,"Erasing pipelex_libraries")
-	@find . -type d -wholename './pipelex_libraries' -exec rm -rf {} + && \
-	echo "Cleaned up pipelex_libraries";
-
 cleanconfig:
 	$(call PRINT_TITLE,"Erasing .pipelex config files and directories")
 	@find . -type d -wholename './.pipelex' -exec rm -rf {} + && \
 	echo "Cleaned up .pipelex";
 
-cleanall: cleanderived cleanenv cleanlibraries cleanconfig
+cleanall: cleanderived cleanenv cleanconfig
 	@echo "Cleaned up all derived files and directories";
 
 ##########################################################################################
@@ -275,6 +269,12 @@ t: test-with-prints
 tp: test-with-prints
 	@echo "> done: tp = test-with-prints"
 
+tb: env
+	$(call PRINT_TITLE,"Unit testing a simple boot")
+	@echo "• Running unit test test_boot"
+	$(VENV_PYTEST) -s -m $(USUAL_PYTEST_MARKERS) -k "test_boot" $(if $(filter 1,$(VERBOSE)),-v,$(if $(filter 2,$(VERBOSE)),-vv,$(if $(filter 3,$(VERBOSE)),-vvv,)));
+
+
 test-inference: env
 	$(call PRINT_TITLE,"Unit testing")
 	@if [ -n "$(TEST)" ]; then \
@@ -300,8 +300,7 @@ lint: env
 
 pyright: env
 	$(call PRINT_TITLE,"Typechecking with pyright")
-	$(VENV_PYRIGHT) --pythonpath $(VENV_PYTHON)  && \
-	echo "Done typechecking with pyright — disregard warning about latest version, it's giving us false positives"
+	$(VENV_PYRIGHT) --pythonpath $(VENV_PYTHON) --project pyproject.toml
 
 mypy: env
 	$(call PRINT_TITLE,"Typechecking with mypy")
@@ -337,16 +336,16 @@ check-unused-imports: env
 	$(call PRINT_TITLE,"Checking for unused imports without fixing")
 	$(VENV_RUFF) check --select=F401 --no-fix .
 
-c: init format lint pyright mypy
+c: format lint pyright mypy
 	@echo "> done: c = check"
 
-cc: init cleanderived c
+cc: cleanderived c
 	@echo "> done: cc = cleanderived check"
 
-check: init cleanderived check-unused-imports c
+check: cleanderived check-unused-imports c
 	@echo "> done: check"
 
-v: init validate
+v: validate
 	@echo "> done: v = validate"
 
 li: lock install

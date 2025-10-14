@@ -1,6 +1,6 @@
 [project]
 name = "my-project"
-version = "0.2.4"
+version = "0.3.0"
 description = "Replace this with your project description"
 # authors = [{ name = "Your Name", email = "your.email@example.com" }]
 license = "MIT"
@@ -16,27 +16,25 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
 ]
 
-dependencies = ["pipelex[mistralai,anthropic,google,bedrock,fal]==0.10.2"]
+dependencies = [
+    "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal] @ git+https://github.com/Pipelex/pipelex.git@dev",
+]
 
 [project.optional-dependencies]
 dev = [
-    "cocode==0.1.2",
     "boto3-stubs>=1.35.24",
     "mypy>=1.11.2",
-    "pyright==1.1.398",
+    "pyright>=1.1.405",
     "pytest>=8.3.3",
     "pytest-sugar>=1.0.0",
     "pytest_asyncio>=0.24.0",
     "ruff>=0.6.8",
     "types-aioboto3[bedrock,bedrock-runtime]>=13.4.0",
     "types-aiofiles>=24.1.0.20240626",
-    "types-beautifulsoup4>=4.12.0.20240907",
     "types-markdown>=3.6.0.20240316",
     "types-networkx>=3.3.0.20241020",
     "types-openpyxl>=3.1.5.20250306",
-    "types-requests>=2.32.0.2024091",
     "types-PyYAML>=6.0.12.20250326",
-    "types-toml>=0.10.8.20240310",
 ]
 
 [project.urls]
@@ -62,7 +60,7 @@ ignore_missing_imports = true
 module = ["json2html"]
 
 [tool.pyright]
-include = ["my_project"]
+include = ["my_project", "tests"]
 analyzeUnannotatedFunctions = true
 deprecateTypingAliases = false
 disableBytesTypePromotions = true

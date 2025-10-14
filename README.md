@@ -15,26 +15,18 @@ Once you've created your repository from it, then you can clone it and follow th
 
 ---
 
-### Create virtual environment, install Pipelex and other dependencies
+## Getting Started
+
+### Quick Start
+
+The fastest way to get started (on Unix/MacOS/Linux):
 
 ```bash
 make install
+cp .env.example .env  # Then add your API keys
 ```
 
-This will install the Pipelex python library and its dependencies using uv.
-
-### Set up environment variables
-
-```bash
-cp .env.example .env
-```
-
-Enter your API keys into your `.env` file. The `OPENAI_API_KEY` is enough to get you started, but some pipelines require models from other providers.
-
-
-### IDE extension
-
-We **highly** recommend installing our own extension for PLX files into your IDE of choice. You can find it in the [Open VSX Registry](https://open-vsx.org/extension/Pipelex/pipelex). It's coming soon to VS Code marketplace too and if you are using Cursor, Windsurf or another VS Code fork, you can search for it directly in your extensions tab.
+For detailed installation instructions, API key configuration options, and alternative setup methods, see **[PIPELEX_SETUP.md](PIPELEX_SETUP.md)**.
 
 ---
 
