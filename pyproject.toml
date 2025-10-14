@@ -17,11 +17,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal] @ git+https://github.com/Pipelex/pipelex.git@dev",
+    "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal] @ git+https://github.com/Pipelex/pipelex.git@docs/Update-docs-and-Migrations",
 ]
-
-[tool.uv.sources]
-pipelex = { path = "../pipelex", editable = true }
 
 [project.optional-dependencies]
 dev = [
@@ -63,7 +60,7 @@ ignore_missing_imports = true
 module = ["json2html"]
 
 [tool.pyright]
-include = ["my_project", "pipelex_libraries", "tests"]
+include = ["my_project", "tests"]
 analyzeUnannotatedFunctions = true
 deprecateTypingAliases = false
 disableBytesTypePromotions = true

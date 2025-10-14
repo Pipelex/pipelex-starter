@@ -16,7 +16,7 @@ Choose the setup method that works best for you:
 make install
 ```
 
-This automatically creates a virtual environment, installs dependencies with `uv`, and initializes Pipelex libraries. Works on MacOS, Linux, and WSL.
+This automatically creates a virtual environment, installs dependencies with `uv`, and initializes Pipelex config. Works on MacOS, Linux, and WSL.
 
 ### Option 2: Using `uv` — **Fast** ⚡
 
@@ -26,7 +26,6 @@ If you have [uv](https://docs.astral.sh/uv/) installed:
 uv venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 uv sync --all-extras
-pipelex init libraries
 pipelex init config
 ```
 
@@ -44,7 +43,6 @@ pip install -r requirements.txt        # Production only
 pip install -r requirements-dev.txt    # Or: with dev dependencies
 
 # Initialize Pipelex
-pipelex init libraries
 pipelex init config
 ```
 
