@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.3.0] - 2025-10-15
+
+- Bump `pipelex` to `v0.12.0`: See `Pipelex` changelog [here](https://docs.pipelex.com/changelog/)
+- **Dependency Management**: Added `requirements.txt` and `requirements-dev.txt` with corresponding `Makefile` commands for dependency export
+
 ## [v0.2.4] - 2025-09-19
 
 - Stop ignoring backend config
