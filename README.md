@@ -19,14 +19,21 @@ Once you've created your repository from it, then you can clone it and follow th
 
 ### Quick Start
 
-The fastest way to get started (on Unix/MacOS/Linux):
-
 ```bash
-make install
-cp .env.example .env  # Then add your API keys
+git clone https://github.com/yourusername/your-repo-name.git
+cd your-repo-name
+
+# Create and activate virtual environment
+python -m venv .venv
+# or python3 -m venv .venv
+source .venv/bin/activate
+
+# Install
+pip install .  # or uv sync
 ```
 
-For detailed installation instructions, API key configuration options, and alternative setup methods, see **[PIPELEX_SETUP.md](PIPELEX_SETUP.md)**.
+After installation, configure your API keys by creating a `.env` file with your credentials.
+See more about API key configuration in the [documentation](https://docs.pipelex.com/pages/configuration/config-technical/inference-backend-config/).
 
 ---
 
