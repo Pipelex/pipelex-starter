@@ -33,6 +33,7 @@ pip install .  # or uv sync
 ```
 
 After installation, configure your API keys by creating a `.env` file with your credentials.
+See more about API key configuration in the [documentation](https://docs.pipelex.com/pages/configuration/config-technical/inference-backend-config/).
 
 ---
 
