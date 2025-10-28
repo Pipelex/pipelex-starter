@@ -17,7 +17,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]==0.13.0",
+    "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]==0.14.0",
 ]
 
 [project.optional-dependencies]
@@ -119,7 +119,6 @@ reportPropertyTypeMismatch = true
 reportRedeclaration = "error"
 reportReturnType = "error"
 reportSelfClsParameterName = "error"
-reportShadowedImports = true
 reportTypeCommentUsage = "error"
 reportTypedDictNotRequiredAccess = "error"
 reportUnboundVariable = "error"

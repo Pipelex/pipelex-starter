@@ -123,6 +123,10 @@ attrs==25.3.0 \
     --hash=sha256:427318ce031701fea540783410126f03899a97ffc6f61596ad581ac2e40e3bc3 \
     --hash=sha256:75d7cefc7fb576747b2c81b4442d4d4a1ce0900973527c011d1030fd3bf4af1b
     # via aiohttp
+backoff==2.2.1 \
+    --hash=sha256:03f829f5bb1923180821643f8753b0502c3b682293992485b0eef2807afa5cba \
+    --hash=sha256:63579f9a0628e06278f7e47b7d7d5b6ce20dc65c5e96a6f3ca99a6adca0396e8
+    # via posthog
 backports-strenum==1.3.1 ; python_full_version < '3.11' \
     --hash=sha256:77c52407342898497714f0596e86188bb7084f89063226f4ba66863482f42414 \
     --hash=sha256:cdcfe36dc897e2615dc793b7d3097f54d359918fc448754a517e6f23044ccf83
@@ -223,6 +227,7 @@ distro==1.9.0 \
     # via
     #   anthropic
     #   openai
+    #   posthog
 docstring-parser==0.16 \
     --hash=sha256:538beabd0af1e2db0146b6bd3caa526c35a34d61af9fd2887f3a8a27a739aa6e \
     --hash=sha256:bf0a1387354d3691d102edef7ec124f219ef639982d096e26e3b60aeffa90637
@@ -730,13 +735,17 @@ pillow==11.2.1 \
     --hash=sha256:fdec757fea0b793056419bca3e9932eb2b0ceec90ef4813ea4c1e072c389eb28 \
     --hash=sha256:fe15238d3798788d00716637b3d4e7bb6bde18b26e5d08335a96e88564a36b6b
     # via pipelex
-pipelex==0.13.0 \
-    --hash=sha256:357fe4e5a61814deac3dd87de9c650f7a842ba81f8603d92a5097a688e5456bd \
-    --hash=sha256:70abab4d8e27c768898e7037317e9f869677cf2e66ad542c4d5e04d6ead8d5c3
+pipelex==0.14.0 \
+    --hash=sha256:6193e82aa2d875283a37007551906f086d5864cf4f493d3caaa9260c3e918ed0 \
+    --hash=sha256:98de691a69208084e46f3ded16eb968edc76333ecfd4284c523f733da03b1c4c
     # via my-project
 polyfactory==2.21.0 \
     --hash=sha256:9483b764756c8622313d99f375889b1c0d92f09affb05742d7bcfa2b5198d8c5 \
     --hash=sha256:a6d8dba91b2515d744cc014b5be48835633f7ccb72519a68f8801759e5b1737a
+    # via pipelex
+posthog==6.7.10 \
+    --hash=sha256:212512af756e7641e398bf36131ad589790a08cfa80c267895f46e0ec943e547 \
+    --hash=sha256:dc0a8dd8ddfa6f721f0066a4e3fb0062c2e19dce3b3ae8875d2a0984f9fd5d59
     # via pipelex
 propcache==0.3.1 \
     --hash=sha256:050b571b2e96ec942898f8eb46ea4bfbb19bd5502424747e83badc2d4a99a44e \
@@ -940,6 +949,7 @@ python-dateutil==2.9.0.post0 \
     #   aiobotocore
     #   botocore
     #   mistralai
+    #   posthog
 python-dotenv==1.1.0 \
     --hash=sha256:41f90bc6f5f177fb41f53e87666db362025010eb28f60a01c9143bfa33a2b2d5 \
     --hash=sha256:d7c01d9e2293916c18baf562d95698754b0dbbb5e74d457c45d4f6561fb9d55d
@@ -989,6 +999,7 @@ requests==2.32.3 \
     # via
     #   google-genai
     #   instructor
+    #   posthog
     #   requests-oauthlib
 requests-oauthlib==2.0.0 \
     --hash=sha256:7dd8a5c40426b779b0868c404bdef9768deccf22749cde15852df527e6269b36 \
@@ -1020,7 +1031,9 @@ shortuuid==1.0.13 \
 six==1.17.0 \
     --hash=sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274 \
     --hash=sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81
-    # via python-dateutil
+    # via
+    #   posthog
+    #   python-dateutil
 sniffio==1.3.1 \
     --hash=sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2 \
     --hash=sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc
@@ -1104,6 +1117,7 @@ typing-extensions==4.13.2 \
     #   openai
     #   pipelex
     #   polyfactory
+    #   posthog
     #   pydantic
     #   pydantic-core
     #   rich
