@@ -17,7 +17,6 @@ jobs:
 
       - name: Check if uv.lock is up to date
         run: |
-          # Generate a new lock file and compare with existing
           uv lock --locked
           if ! git diff --exit-code uv.lock; then
             echo "❌ uv.lock is out of date!"
