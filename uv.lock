@@ -1028,7 +1028,7 @@ wheels = [
 
 [[package]]
 name = "my-project"
-version = "0.4.0"
+version = "0.5.0"
 source = { virtual = "." }
 dependencies = [
     { name = "pipelex", extra = ["anthropic", "bedrock", "fal", "google", "google-genai", "mistralai"] },
