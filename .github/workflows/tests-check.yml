@@ -39,7 +39,9 @@ jobs:
         run: PYTHON_VERSION=${{ matrix.python-version }} make install
 
       - name: Init Pipelex
-        run: echo -e "y\nA\n1" |pipelex init
+        run: |
+          source .venv/bin/activate
+          echo -e "y\nA\n1" |pipelex init
 
       - name: Boot test
         run: make tp TEST=TestFundamentals
