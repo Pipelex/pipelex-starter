@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.6.0] - 2025-11-07
+
+ - Upgraded `pipelex` dependency from `0.14.0` to `0.15.2`
+
 ## [v0.5.1] - 2025-10-28
 
 - Updated README.md instructions
