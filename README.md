@@ -30,6 +30,7 @@ source .venv/bin/activate
 
 # Install
 pip install .  # or uv sync
+pipelex init
 ```
 
 After installation, configure your API keys by creating a `.env` file with your credentials.

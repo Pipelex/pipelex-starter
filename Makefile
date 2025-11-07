@@ -127,8 +127,7 @@ install: env
 	$(call PRINT_TITLE,"Installing dependencies")
 	@. $(VIRTUAL_ENV)/bin/activate && \
 	uv sync --all-extras && \
-	$(VENV_PIPELEX) init config && \
-	echo "Installed dependencies in ${VIRTUAL_ENV} and initialized Pipelex config";
+	echo "Installed dependencies in ${VIRTUAL_ENV}";
 
 lock: env
 	$(call PRINT_TITLE,"Resolving dependencies without update")
