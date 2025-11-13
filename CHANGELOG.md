@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.6.1] - 2025-11-13
+
+- Bump `pipelex` to `v0.15.4`: See `Pipelex` changelog [here](https://docs.pipelex.com/changelog/)
+- Update pytest to `v0.9.1`
+
 ## [v0.6.0] - 2025-11-07
 
  - Upgraded `pipelex` dependency from `0.14.0` to `0.15.2`
