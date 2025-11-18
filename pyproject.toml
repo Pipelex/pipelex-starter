@@ -1,6 +1,6 @@
 [project]
 name = "my-project"
-version = "0.6.2"
+version = "0.6.3"
 description = "Replace this with your project description"
 # authors = [{ name = "Your Name", email = "your.email@example.com" }]
 license = "MIT"
@@ -16,7 +16,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]==0.15.4",
+    "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]==0.15.6",
 ]
 
 [tool.setuptools]
@@ -28,7 +28,7 @@ dev = [
     "boto3-stubs>=1.35.24",
     "mypy>=1.11.2",
     "pyright>=1.1.405",
-    "pytest>=0.9.1",
+    "pytest>=9.0.1",
     "pytest-sugar>=1.0.0",
     "pytest_asyncio>=0.24.0",
     "ruff>=0.6.8",
