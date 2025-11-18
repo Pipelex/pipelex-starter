@@ -9,3 +9,6 @@ pipelex build pipe "Imagine a cute animal mascot for a startup based on its elev
 pipelex build pipe "Given an expense report, apply company rules"
 
 pipelex build pipe "Given a theme, write a Haiku"
+
+pipelex build pipe "Merge a bunch of changelogs from my open-source repo \
+    and an authentic blurb, and write 'build in public' posts for LinkedIn and Twitter"

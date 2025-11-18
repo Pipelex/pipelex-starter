@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+.r1 {font-weight: bold}
+.r2 {color: #d0b344; text-decoration-color: #d0b344; font-weight: bold}
+.r3 {color: #d0b344; text-decoration-color: #d0b344; font-style: italic}
+.r4 {color: #cc555a; text-decoration-color: #cc555a}
+.r5 {color: #98a84b; text-decoration-color: #98a84b; font-weight: bold}
+.r6 {color: #98a84b; text-decoration-color: #98a84b}
+.r7 {color: #c5c8c6; text-decoration-color: #c5c8c6}
+.r8 {color: #c5c8c6; text-decoration-color: #c5c8c6; font-weight: bold}
+.r9 {color: #626463; text-decoration-color: #626463}
+.r10 {color: #608ab1; text-decoration-color: #608ab1}
+.r11 {color: #c5c8c6; text-decoration-color: #c5c8c6; font-style: italic}
+.r12 {color: #cc555a; text-decoration-color: #cc555a; font-weight: bold}
+.r13 {color: #98729f; text-decoration-color: #98729f; font-weight: bold}
+.r14 {color: #68a0b3; text-decoration-color: #68a0b3}
+body {
+    color: #c5c8c6;
+    background-color: #000000;
+}
+</style>
+</head>
+<body>
+    <pre style="font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><code style="font-family:inherit"><span class="r1">Domain: </span><span class="r2">build_in_public_content</span>
+
+Description: <span class="r3">Generating build-in-public social media content from open-source changelogs and blurbs.</span>
+
+Main Pipe: <span class="r4">build_public_content_flow</span>
+
+
+
+<span class="r5">                                              Concepts                                              </span>
+<span class="r6">┌──────────────────────────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r8">Concept: </span><span class="r5">Changelog</span><span class="r8">                                                                              </span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> Refines: </span><span class="r6">Text</span><span class="r7">                                                                                    </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7">                                                                                                  </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> Description: </span><span class="r3">A record of changes made to a software project, typically documenting new features,</span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r3">bug fixes, improvements, and breaking changes for a specific version or time period.</span><span class="r7">             </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7">                                                                                                  </span><span class="r6">│</span>
+<span class="r6">├──────────────────────────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r8">Concept: </span><span class="r5">Blurb</span><span class="r8">                                                                                  </span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> Refines: </span><span class="r6">Text</span><span class="r7">                                                                                    </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7">                                                                                                  </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> Description: </span><span class="r3">A short promotional or descriptive text that provides context, personality, or </span><span class="r7">     </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r3">narrative framing for content.</span><span class="r7">                                                                   </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7">                                                                                                  </span><span class="r6">│</span>
+<span class="r6">├──────────────────────────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r8">Concept: </span><span class="r5">ContentSummary</span><span class="r8">                                                                         </span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7">                                                                                                  </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> Description: </span><span class="r3">A cohesive narrative that combines multiple source materials into a unified </span><span class="r7">        </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r3">overview with key points highlighted.</span><span class="r7">                                                            </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7">                                                                                                  </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r7">Structure:                                                                                      </span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r9">┏━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━┳━━━━━━━━━━┓</span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r9">┃ Field          ┃ Description                                               ┃ Type ┃ Required ┃</span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r9">┡━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━╇━━━━━━━━━━┩</span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r9">│</span><span class="r10"> summary        </span><span class="r9">│</span><span class="r11"> The main narrative text combining all source materials    </span><span class="r9">│</span><span class="r7"> text </span><span class="r9">│</span><span class="r7"> Yes      </span><span class="r9">│</span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r9">├────────────────┼───────────────────────────────────────────────────────────┼──────┼──────────┤</span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r9">│</span><span class="r10"> key_highlights </span><span class="r9">│</span><span class="r11"> List of important points or achievements extracted from   </span><span class="r9">│</span><span class="r7"> text </span><span class="r9">│</span><span class="r7"> Yes      </span><span class="r9">│</span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r9">│</span><span class="r10">                </span><span class="r9">│</span><span class="r11"> the sources                                               </span><span class="r9">│</span><span class="r7">      </span><span class="r9">│</span><span class="r7">          </span><span class="r9">│</span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r9">└────────────────┴───────────────────────────────────────────────────────────┴──────┴──────────┘</span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">├──────────────────────────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r8">Concept: </span><span class="r5">SocialMediaPost</span><span class="r8">                                                                        </span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> Refines: </span><span class="r6">Text</span><span class="r7">                                                                                    </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7">                                                                                                  </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> Description: </span><span class="r3">Content formatted and optimized for sharing on social media platforms, tailored to </span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r3">platform conventions and audience expectations.</span><span class="r7">                                                  </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7">                                                                                                  </span><span class="r6">│</span>
+<span class="r6">└──────────────────────────────────────────────────────────────────────────────────────────────────┘</span>
+
+
+<span class="r12">                                               Pipes                                                </span>
+<span class="r4">┌──────────────────────────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="r4">│</span><span class="r7"> Pipe: </span><span class="r12">merge_content</span><span class="r7">                                                                              </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Type: </span><span class="r13">PipeLLM</span><span class="r7"> (PipeOperator)                                                                     </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Description: </span><span class="r3">Combines all changelogs with the blurb into a cohesive narrative summary with key </span><span class="r7">  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r3">highlights extracted.</span><span class="r7">                                                                            </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r7">Inputs:                   </span><span class="r7">                                                                       </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">┌────────────┬───────────┐</span><span class="r7">                                                                       </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">│</span><span class="r14"> changelogs </span><span class="r9">│</span><span class="r5"> Changelog </span><span class="r9">│</span><span class="r7">                                                                       </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">├────────────┼───────────┤</span><span class="r7">                                                                       </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">│</span><span class="r14"> blurb      </span><span class="r9">│</span><span class="r5"> Blurb     </span><span class="r9">│</span><span class="r7">                                                                       </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">└────────────┴───────────┘</span><span class="r7">                                                                       </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Output: </span><span class="r5">ContentSummary</span><span class="r7">                                                                           </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> LLM Skill: </span><span class="r2">llm_for_writing_cheap</span><span class="r7">                                                                 </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">╭─ System Prompt ──────────────────────────────────────────────────────────────────────────────╮</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">│</span><span class="r7"> You are a content strategist skilled at synthesizing technical changelogs with narrative     </span><span class="r10">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">│</span><span class="r7"> context into cohesive summaries. Your task is to generate a structured ContentSummary        </span><span class="r10">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">│</span><span class="r7"> object.                                                                                      </span><span class="r10">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">╰──────────────────────────────────────────────────────────────────────────────────────────────╯</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">╭─ Prompt ─────────────────────────────────────────────────────────────────────────────────────╮</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> Combine the following changelogs and blurb into a cohesive narrative summary.                </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7">                                                                                              </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> @changelogs                                                                                  </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7">                                                                                              </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> @blurb                                                                                       </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7">                                                                                              </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> Create a unified narrative that weaves together the technical changes with the contextual    </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> framing provided by the blurb. Extract and highlight the most important points and           </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> achievements.                                                                                </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">╰──────────────────────────────────────────────────────────────────────────────────────────────╯</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">├──────────────────────────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="r4">│</span><span class="r7"> Pipe: </span><span class="r12">generate_linkedin_post</span><span class="r7">                                                                     </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Type: </span><span class="r13">PipeLLM</span><span class="r7"> (PipeOperator)                                                                     </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Description: </span><span class="r3">Creates a LinkedIn post optimized for professional audience with build-in-public </span><span class="r7">   </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r3">tone, leveraging the merged content summary and highlights.</span><span class="r7">                                      </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Input: </span><span class="r14">merged_content</span><span class="r7"> (</span><span class="r5">ContentSummary</span><span class="r7">)                                                           </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Output: </span><span class="r5">SocialMediaPost</span><span class="r7">                                                                          </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> LLM Skill: </span><span class="r2">llm_for_writing_cheap</span><span class="r7">                                                                 </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">╭─ System Prompt ──────────────────────────────────────────────────────────────────────────────╮</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">│</span><span class="r7"> You are a professional social media content creator specializing in LinkedIn posts. Create   </span><span class="r10">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">│</span><span class="r7"> engaging, authentic content with a build-in-public tone that resonates with a professional   </span><span class="r10">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">│</span><span class="r7"> audience. The output should be a structured SocialMediaPost.                                 </span><span class="r10">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">╰──────────────────────────────────────────────────────────────────────────────────────────────╯</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">╭─ Prompt ─────────────────────────────────────────────────────────────────────────────────────╮</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> Create a LinkedIn post based on the following content summary and key highlights.            </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7">                                                                                              </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> @merged_content                                                                              </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7">                                                                                              </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> The post should:                                                                             </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> - Have a build-in-public tone that&#x27;s authentic and engaging                                  </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> - Be optimized for LinkedIn&#x27;s professional audience                                          </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> - Highlight key achievements and updates                                                     </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> - Use appropriate formatting for LinkedIn (line breaks, emojis if suitable)                  </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> - Be concise yet informative                                                                 </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> - Encourage engagement from the professional community                                       </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">╰──────────────────────────────────────────────────────────────────────────────────────────────╯</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">├──────────────────────────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="r4">│</span><span class="r7"> Pipe: </span><span class="r12">generate_twitter_post</span><span class="r7">                                                                      </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Type: </span><span class="r13">PipeLLM</span><span class="r7"> (PipeOperator)                                                                     </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Description: </span><span class="r3">Creates a Twitter post optimized for brevity and engagement with build-in-public </span><span class="r7">   </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r3">tone, using the merged content summary and highlights.</span><span class="r7">                                           </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Input: </span><span class="r14">merged_content</span><span class="r7"> (</span><span class="r5">ContentSummary</span><span class="r7">)                                                           </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Output: </span><span class="r5">SocialMediaPost</span><span class="r7">                                                                          </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> LLM Skill: </span><span class="r2">llm_for_writing_cheap</span><span class="r7">                                                                 </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">╭─ System Prompt ──────────────────────────────────────────────────────────────────────────────╮</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">│</span><span class="r7"> You are a social media expert specializing in Twitter content. Create engaging, concise      </span><span class="r10">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">│</span><span class="r7"> posts optimized for Twitter&#x27;s format with a build-in-public tone that showcases progress,    </span><span class="r10">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">│</span><span class="r7"> learnings, and achievements authentically.                                                   </span><span class="r10">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r10">╰──────────────────────────────────────────────────────────────────────────────────────────────╯</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">╭─ Prompt ─────────────────────────────────────────────────────────────────────────────────────╮</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> Create a Twitter post based on the following content summary.                                </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7">                                                                                              </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> @merged_content                                                                              </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7">                                                                                              </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> Requirements:                                                                                </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> - Keep it concise and within Twitter&#x27;s character limits                                      </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> - Use a build-in-public tone (authentic, transparent, sharing the journey)                   </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> - Make it engaging and encourage interaction                                                 </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> - Include relevant hashtags if appropriate                                                   </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> - Focus on the most impactful highlights                                                     </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">╰──────────────────────────────────────────────────────────────────────────────────────────────╯</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">├──────────────────────────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="r4">│</span><span class="r7"> Pipe: </span><span class="r12">social_posts_parallel</span><span class="r7">                                                                      </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Type: </span><span class="r13">PipeParallel</span><span class="r7"> (PipeController)                                                              </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Description: </span><span class="r3">Generates both LinkedIn and Twitter posts concurrently from the merged content.</span><span class="r7">     </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Input: </span><span class="r14">merged_content</span><span class="r7"> (</span><span class="r5">ContentSummary</span><span class="r7">)                                                           </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Output: </span><span class="r5">SocialMediaPost[]</span><span class="r7">                                                                        </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Add Each Output: </span><span class="r2">True</span><span class="r7">                                                                            </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r7">Parallel Branches:                                 </span><span class="r7">                                              </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">┏━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓</span><span class="r7">                                              </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">┃ Branch ┃ Pipe                   ┃ Result name   ┃</span><span class="r7">                                              </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">┡━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩</span><span class="r7">                                              </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">│      1 │</span><span class="r4"> generate_linkedin_post </span><span class="r9">│</span><span class="r14"> linkedin_post </span><span class="r9">│</span><span class="r7">                                              </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">├────────┼────────────────────────┼───────────────┤</span><span class="r7">                                              </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">│      2 │</span><span class="r4"> generate_twitter_post  </span><span class="r9">│</span><span class="r14"> twitter_post  </span><span class="r9">│</span><span class="r7">                                              </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">└────────┴────────────────────────┴───────────────┘</span><span class="r7">                                              </span><span class="r4">│</span>
+<span class="r4">├──────────────────────────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="r4">│</span><span class="r7"> Pipe: </span><span class="r12">build_public_content_flow</span><span class="r7">                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Type: </span><span class="r13">PipeSequence</span><span class="r7"> (PipeController)                                                              </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Description: </span><span class="r3">Main pipeline that orchestrates the complete build-in-public content generation </span><span class="r7">    </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r3">flow: merges changelogs with blurb, then generates social media posts for LinkedIn and Twitter </span><span class="r7">  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r3">in parallel.</span><span class="r7">                                                                                     </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r7">Inputs:                   </span><span class="r7">                                                                       </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">┌────────────┬───────────┐</span><span class="r7">                                                                       </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">│</span><span class="r14"> changelogs </span><span class="r9">│</span><span class="r5"> Changelog </span><span class="r9">│</span><span class="r7">                                                                       </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">├────────────┼───────────┤</span><span class="r7">                                                                       </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">│</span><span class="r14"> blurb      </span><span class="r9">│</span><span class="r5"> Blurb     </span><span class="r9">│</span><span class="r7">                                                                       </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">└────────────┴───────────┘</span><span class="r7">                                                                       </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Output: </span><span class="r5">SocialMediaPost[]</span><span class="r7">                                                                        </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r7">Sequence Steps:                                  </span><span class="r7">                                                </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">┏━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┓</span><span class="r7">                                                </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">┃ Step ┃ Pipe                  ┃ Result name    ┃</span><span class="r7">                                                </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">┡━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━┩</span><span class="r7">                                                </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">│    1 │</span><span class="r4"> merge_content         </span><span class="r9">│</span><span class="r14"> merged_content </span><span class="r9">│</span><span class="r7">                                                </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">├──────┼───────────────────────┼────────────────┤</span><span class="r7">                                                </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">│    2 │</span><span class="r4"> social_posts_parallel </span><span class="r9">│</span><span class="r14"> social_posts   </span><span class="r9">│</span><span class="r7">                                                </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r9">└──────┴───────────────────────┴────────────────┘</span><span class="r7">                                                </span><span class="r4">│</span>
+<span class="r4">└──────────────────────────────────────────────────────────────────────────────────────────────────┘</span>
+</code></pre>
+</body>
+</html>

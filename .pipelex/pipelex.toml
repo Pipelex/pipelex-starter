@@ -53,7 +53,7 @@ excluded_dirs = [
 default_log_level = "INFO"
 
 [pipelex.log_config.package_log_levels]
-pipelex = "INFO"
+pipelex = "DEV"
 
 [cogt]
 [cogt.model_deck_config]
