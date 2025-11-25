@@ -18,6 +18,8 @@ classifiers = [
 dependencies = [
     "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]==0.15.7",
 ]
+[tool.uv.sources]
+pipelex = { path = "../pipelex",editable = true}
 
 [tool.setuptools]
 packages = ["my_project"]
