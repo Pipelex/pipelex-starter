@@ -19,7 +19,7 @@ dependencies = [
     "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]==0.15.7",
 ]
 [tool.uv.sources]
-pipelex = { path = "../pipelex",editable = true}
+pipelex = { path = "../pipelex", editable = true}
 
 [tool.setuptools]
 packages = ["my_project"]
@@ -46,6 +46,10 @@ dev = [
 Homepage = "https://pipelex.com"
 Repository = "https://github.com/yourusername/my-project" # Replace with your repository URL
 Documentation = "https://docs.pipelex.com/"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.uv]
 required-version = ">=0.7.2"
