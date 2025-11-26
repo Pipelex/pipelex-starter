@@ -45,10 +45,6 @@ Homepage = "https://pipelex.com"
 Repository = "https://github.com/yourusername/my-project" # Replace with your repository URL
 Documentation = "https://docs.pipelex.com/"
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [tool.uv]
 required-version = ">=0.7.2"
 
