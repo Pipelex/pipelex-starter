@@ -3,7 +3,6 @@ from pathlib import Path
 import pytest
 from pipelex.hub import get_library_manager, get_pipes, set_current_library
 from pipelex.pipe_run.dry_run import DryRunStatus, dry_run_pipes
-from pipelex.pipelex import Pipelex
 
 
 # We use gha_disabled here because those tests are called directly and explicitly by the tests-check.yml file before the rest of the tests.
