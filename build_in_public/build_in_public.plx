@@ -32,7 +32,7 @@ refines = "Text"
 [pipe.write_build_in_public_posts]
 type = "PipeSequence"
 description = """
-Main pipeline that orchestrates the complete build-in-public content generation flow: merges changelogs with blurb, then generates social media posts for LinkedIn and Twitter in parallel.
+Main pipeline that orchestrates the complete build-in-public content generation flow: merges changelogs with blurb, then generates social media posts for LinkedIn, Twitter, and Discord in parallel.
 """
 inputs = { changelogs = "Changelog", blurb = "Blurb" }
 output = "SocialMediaPost[]"
@@ -57,6 +57,9 @@ prompt = """
 Your job is to curate the changelogs to remove the trivial changes and keep the most important ones.
 
 @changelogs
+
+- Keep mentions of contributors, they are very important.
+- Do not recap what you removed at the end. Just output what you kept.
 """
 
 [pipe.merge_content]
@@ -84,12 +87,13 @@ Be synthetic: mention what matters and if useful, give one or several examples.
 
 [pipe.social_posts_parallel]
 type = "PipeParallel"
-description = "Generates both LinkedIn and Twitter posts concurrently from the merged content."
+description = "Generates LinkedIn, Twitter, and Discord posts concurrently from the merged content."
 inputs = { merged_content = "ContentSummary" }
 output = "SocialMediaPost[]"
 parallels = [
     { pipe = "generate_linkedin_post", result = "linkedin_post" },
     { pipe = "generate_twitter_post", result = "twitter_post" },
+    { pipe = "generate_discord_post", result = "discord_post" },
 ]
 add_each_output = true
 
@@ -140,4 +144,36 @@ Requirements:
 - Make it engaging and encourage interaction
 - Include relevant hashtags if appropriate
 - Focus on the most impactful highlights
+"""
+
+[pipe.generate_discord_post]
+type = "PipeLLM"
+description = """
+Creates a Discord post optimized for community engagement with build-in-public tone, using the merged content summary and highlights.
+"""
+inputs = { merged_content = "ContentSummary" }
+output = "SocialMediaPost"
+model = "claude-4.1-opus"
+system_prompt = """
+You are a community manager specializing in Discord content. Create engaging, conversational posts optimized for Discord's format with a build-in-public tone that resonates with a developer and tech community audience.
+"""
+prompt = """
+Create a Discord post based on the following content summary.
+
+@merged_content
+
+
+✅ DO's
+•	Be conversational and casual
+•	Get to the point quickly 
+•	Invite feedback explicitly — ask a clear question or request input on a specific part of the work.
+•	Use formatting for readability — bullets, short paragraphs, and occasional bold/italic for emphasis.
+•	Show your thought process — highlight what you learned or what trade-offs you're considering.
+❌ DON'Ts
+•	Don't copy-paste the LinkedIn tone — avoid overly polished, corporate, or self-promotional language.
+•	Don't write long walls of text — keep it tight.
+•	Don't make vague calls for feedback — “Thoughts?” gets less engagement than “Does this API shape feel right to you?”
+•	Don't oversell progress — Discord favors transparency over marketing spin.
+
+Alkways address the message to @ everyone.
 """

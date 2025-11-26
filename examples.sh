@@ -1,3 +1,5 @@
+pipelex build pipe "Take a CV in a PDF file, a Job offer text, and analyze if they match"
+
 pipelex build pipe "Take a CV and Job offer in PDF, analyze if they match and generate 5 questions for the interview"
 
 pipelex build pipe "Imagine a cute animal mascot for a startup based on its elevator pitch and some brand guidelines"
