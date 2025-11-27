@@ -1,7 +1,8 @@
+from pathlib import Path
+
 import pytest
-from pipelex.hub import get_pipes
+from pipelex.hub import get_library_manager, get_pipes, set_current_library
 from pipelex.pipe_run.dry_run import DryRunStatus, dry_run_pipes
-from pipelex.pipelex import Pipelex
 
 
 # We use gha_disabled here because those tests are called directly and explicitly by the tests-check.yml file before the rest of the tests.
@@ -12,11 +13,13 @@ class TestFundamentals:
         # Therefore this test will fail if Pipelex.make() fails.
         pass
 
-    def test_validate_libraries(self):
-        Pipelex.get_instance().validate_libraries()
-
     @pytest.mark.asyncio(loop_scope="class")
     async def test_dry_run_all_pipes(self):
+        library_manager = get_library_manager()
+        library_id, _ = library_manager.open_library()
+        set_current_library(library_id)
+        library_manager.load_libraries(library_id=library_id, library_dirs=[Path("my_project")])
+
         results = await dry_run_pipes(pipes=get_pipes(), raise_on_failure=False)
 
         # Check if there were any failures
