@@ -1,9 +1,9 @@
 import os
 
-import pipelex.pipelex
 import pytest
 from pipelex.pipe_run.pipe_run_mode import PipeRunMode
 from pipelex.pipe_run.pipe_run_params import FORCE_DRY_RUN_MODE_ENV_KEY
+from pipelex.pipelex import Pipelex
 from rich import print
 
 
@@ -13,7 +13,7 @@ def reset_pipelex_instance_fixture():
     yield
     # Code to run after each test
     print("\n[magenta]pipelex instance teardown[/magenta]")
-    if pipelex_instance := pipelex.pipelex.Pipelex.get_optional_instance():
+    if pipelex_instance := Pipelex.get_optional_instance():
         pipelex_instance.teardown()
 
 
