@@ -34,23 +34,23 @@ aws_region = "${AWS_REGION}"
 
 [blackboxai]
 display_name = "BlackBox AI"
-enabled = false
+enabled = true
 endpoint = "https://api.blackbox.ai/v1"
 api_key = "${BLACKBOX_API_KEY}"
 
 [fal]
 display_name = "FAL"
-enabled = false
+enabled = true
 api_key = "${FAL_API_KEY}"
 
 [google]
 display_name = "Google AI"
-enabled = false
+enabled = true
 api_key = "${GOOGLE_API_KEY}"
 
 [groq]
 display_name = "Groq"
-enabled = false
+enabled = true
 endpoint = "https://api.groq.com/openai/v1"
 api_key = "${GROQ_API_KEY}"
 
@@ -60,12 +60,12 @@ enabled = true
 api_key = "${MISTRAL_API_KEY}"
 
 [ollama]
-enabled = false
+enabled = true
 endpoint = "http://localhost:11434/v1"
 
 [openai]
 display_name = "OpenAI"
-enabled = false
+enabled = true
 api_key = "${OPENAI_API_KEY}"
 
 [portkey]
@@ -89,7 +89,7 @@ gcp_credentials_file_path = "${GCP_CREDENTIALS_FILE_PATH}"
 
 [xai]
 display_name = "xAI"
-enabled = false
+enabled = true
 endpoint = "https://api.x.ai/v1"
 api_key = "${XAI_API_KEY}"
 

@@ -1,0 +1,10 @@
+{
+  "elevator_pitch": {
+    "concept": "startup_mascot_design.ElevatorPitch",
+    "content": "elevator_pitch_text"
+  },
+  "brand_guidelines": {
+    "concept": "startup_mascot_design.BrandGuidelines",
+    "content": "brand_guidelines_text"
+  }
+}
