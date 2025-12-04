@@ -1,0 +1,14 @@
+{
+  "cv_pdf": {
+    "concept": "native.PDF",
+    "content": {
+      "url": "https://pipelex-web.s3.amazonaws.com/demo/John-Doe-CV.pdf"
+    }
+  },
+  "job_offer_pdf": {
+    "concept": "native.PDF",
+    "content": {
+      "url": "https://pipelex-web.s3.amazonaws.com/demo/Job-Offer.pdf"
+    }
+  }
+}

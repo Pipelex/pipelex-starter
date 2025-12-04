@@ -1,0 +1,4 @@
+[llm.presets]
+
+# llm_for_recruitment = { model = "gpt-4o-mini", temperature = 0.3 }
+llm_for_recruitment = { model = "qwen3-235b-a22b-instruct-2507", temperature = 0.3 }
