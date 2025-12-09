@@ -6,9 +6,11 @@ from pipelex.core.stuffs.list_content import ListContent
 from pipelex.core.stuffs.pdf_content import PDFContent
 from pipelex.pipelex import Pipelex
 from pipelex.pipeline.execute import execute_pipeline
+from pipelex.system.runtime import IntegrationMode
 
-CV_FOLDER = Path("data/CVs")
+# CV_FOLDER = Path("data/CVs")
 # CV_FOLDER = Path("data/OneCV")
+CV_FOLDER = Path("data/CVx2")
 
 
 def get_cv_pdf_contents() -> list[PDFContent]:
@@ -28,11 +30,10 @@ async def run_analyze_cvs_for_job_offer():
 
 if __name__ == "__main__":
     # Initialize Pipelex
-    Pipelex.make()
+    with Pipelex.make(integration_mode=IntegrationMode.CLI) as pipelex:
+        # Run the pipeline with timing
+        start_time = time.perf_counter()
+        result = asyncio.run(run_analyze_cvs_for_job_offer())
+        elapsed_time = time.perf_counter() - start_time
 
-    # Run the pipeline with timing
-    start_time = time.perf_counter()
-    result = asyncio.run(run_analyze_cvs_for_job_offer())
-    elapsed_time = time.perf_counter() - start_time
-
-    print(f"\n⏱️  Pipeline execution time: {elapsed_time:.2f} seconds")
+        print(f"\n⏱️  Pipeline execution time: {elapsed_time:.2f} seconds")
