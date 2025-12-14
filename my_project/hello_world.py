@@ -17,8 +17,11 @@ async def hello_world():
     # Print the output
     pretty_print(pipe_output, title="Your first Pipelex output")
 
+    # get the generated text
+    generated_text = pipe_output.main_stuff_as_str
+    pretty_print(generated_text, title="Generated text")
+
 
 # start Pipelex
-Pipelex.make()
-# run sample using asyncio
-asyncio.run(hello_world())
+with Pipelex.make():
+    asyncio.run(hello_world())
