@@ -1,4 +1,16 @@
 [llm.presets]
 
-llm_for_recruitment = { model = "gpt-4o-mini", temperature = 0.3 }
-# llm_for_recruitment = { model = "qwen3-235b-a22b-instruct-2507", temperature = 0.3 }
+# llm_for_recruitment = { model = "gpt-4o-mini", temperature = 0.3 }
+llm_for_recruitment = { model = "qwen3-235b-a22b-instruct-2507", temperature = 0.3 }
+
+llm_for_marketing_design = { model = "gpt-4o-mini", temperature = 0.9 }
+
+[img_gen.presets]
+# img_gen_for_marketing_design = { model = "fast-lightning-sdxl" }
+# img_gen_for_marketing_design = { model = "nano-banana-pro" }
+
+
+img_gen_for_marketing_design = { model = "gpt-image-1.5" }
+
+# gen_image_high_quality = { model = "gpt-image-1.5", quality = "high" }
+gen_image_high_quality = { model = "fast-lightning-sdxl", quality = "high" }

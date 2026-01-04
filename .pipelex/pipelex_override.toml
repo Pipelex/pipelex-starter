@@ -1,0 +1,38 @@
+
+####################################################################################################
+# Pipelex config
+####################################################################################################
+
+[pipelex.storage_config]
+# Uncomment to change the storage method: "local" (default) or "in_memory"
+# method = "in_memory"
+# local_storage_path = ".pipelex/storage"
+
+[pipelex.builder_config]
+fix_loop_max_attempts = 10
+# Uncomment to change where the generated pipelines are saved
+default_output_dir = "./results"
+# default_bundle_file_name = "bundle"
+# default_directory_base_name = "pipeline"
+
+[pipelex.log_config]
+default_log_level = "INFO"
+
+[pipelex.log_config.package_log_levels]
+pipelex = "DEBUG"
+
+[cogt.model_deck_config]
+is_model_fallback_enabled = true
+# missing_presets_reaction = "raise"
+
+[cogt.llm_config]
+# is_dump_text_prompts_enabled = true
+# is_dump_response_text_enabled = true
+
+[cogt.llm_config.instructor_config]
+# is_dump_kwargs_enabled = true
+# is_dump_response_enabled = true
+# is_dump_error_enabled = true
+
+[cogt.llm_config.llm_job_config]
+max_retries = 3

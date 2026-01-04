@@ -9,3 +9,5 @@ pipelex build pipe "Imagine a cute animal mascot for a startup based on its elev
 pipelex build pipe "Given an expense report, apply company rules"
 
 pipelex build pipe "Given a theme, write a Haiku"
+
+pipelex build pipe "Imagine a crazy funny image to render, like a green cow on the Eiffel Tower but not that, and then render it"

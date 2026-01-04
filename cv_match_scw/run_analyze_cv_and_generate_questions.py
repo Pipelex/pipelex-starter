@@ -10,7 +10,7 @@ from pipelex.system.runtime import IntegrationMode
 
 # CV_FOLDER = Path("data/CVs")
 # CV_FOLDER = Path("data/OneCV")
-CV_FOLDER = Path("data/CVx2")
+CV_FOLDER = Path("data/CVx5")
 
 
 def get_cv_pdf_contents() -> list[PDFContent]:

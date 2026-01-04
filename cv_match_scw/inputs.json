@@ -2,8 +2,12 @@
   "cvs": {
     "concept": "native.PDF",
     "content": [
-      "data/CVs/CV-01.pdf",
-      "data/CVs/CV-02.pdf"
+      {
+        "url": "data/CVx5/CV-01.pdf"
+      },
+      {
+        "url": "data/CVx5/CV-02.pdf"
+      }
     ]
   },
   "job_offer_pdf": {

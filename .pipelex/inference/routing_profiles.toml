@@ -9,55 +9,32 @@
 # =========================================================================================
 
 # Which profile to use (change this to switch routing)
-active = "demo_routing"
+# TODO: TBD
+active = "pipelex_gateway_first" # Change to "pipelex_gateway_first" after enabling gateway
 
-# We recommend using the "pipelex_first" profile to get a head start with all models.
-# The Pipelex Inference backend is currently not recommended for production use,
-# but it's great for development and testing.
-# To use the Pipelex Inference backend (pipelex_first profile):
+# We recommend using the "pipelex_gateway_first" profile to get a head start with all models.
+# To use the Pipelex Gateway backend:
 # 1. Join our Discord community to get your free API key (no credit card required):
 #    Visit https://go.pipelex.com/discord and request your key in the appropriate channel
-# 2. Set the environment variable: export PIPELEX_INFERENCE_API_KEY="your-api-key"
-# 3. The .pipelex/inference/backends.toml is already configured with api_key = "${PIPELEX_INFERENCE_API_KEY}"
-# which will get the key from the environment variable.
+# 2. Set the environment variable (or add it to your .env file):
+#    - Linux/macOS: export PIPELEX_GATEWAY_API_KEY="your-api-key"
+#    - Windows CMD: set PIPELEX_GATEWAY_API_KEY=your-api-key
+#    - Windows PowerShell: $env:PIPELEX_GATEWAY_API_KEY="your-api-key"
+# 3. The .pipelex/inference/backends.toml is already configured with api_key = "${PIPELEX_GATEWAY_API_KEY}"
+#    which will get the key from the environment variable.
 
 # =========================================================================================
 # Routing Profiles
 # =========================================================================================
 
-[profiles.demo_routing]
-description = "Use Pipelex Inference backend for all its supported models"
-default = "pipelex_gateway"
-fallback_order = [
-    "pipelex_gateway",
-    "azure_openai",
-    "bedrock",
-    "blackboxai",
-    "fal",
-    "mistral",
-]
-
-[profiles.demo_routing.routes]
-# Pattern matching: "model-pattern" = "backend-name"
-"gpt-*" = "pipelex_gateway"
-"claude-*" = "pipelex_gateway"
-"grok-*" = "pipelex_gateway"
-"gemini-*" = "pipelex_gateway"
-"mistral-ocr" = "mistral"
-
-[profiles.demo_routing.optional_routes] # Each optional route is considered only if its backend is available
-"*-sdxl" = "fal"
-"flux-*" = "fal"
-"gpt-image-1" = "openai"
-
-# =========================================================================================
 [profiles.pipelex_gateway_first]
-description = "Use Pipelex Inference backend for all its supported models"
+description = "Use Pipelex Gateway backend for all its supported models"
 default = "pipelex_gateway"
 fallback_order = [
     "pipelex_gateway",
     "azure_openai",
     "bedrock",
+    "google",
     "blackboxai",
     "mistral",
     "fal",
@@ -65,15 +42,15 @@ fallback_order = [
 
 [profiles.pipelex_gateway_first.routes]
 # Pattern matching: "model-pattern" = "backend-name"
+
+[profiles.pipelex_gateway_first.optional_routes] # Each optional route is considered only if its backend is available
 "gpt-*" = "pipelex_gateway"
+"gpt-image-1" = "openai"
 "claude-*" = "pipelex_gateway"
 "grok-*" = "pipelex_gateway"
 "gemini-*" = "pipelex_gateway"
-
-[profiles.pipelex_gateway_first.optional_routes] # Each optional route is considered only if its backend is available
 "*-sdxl" = "fal"
 "flux-*" = "fal"
-"gpt-image-1" = "openai"
 "mistral-ocr" = "mistral"
 
 [profiles.all_pipelex_gateway]
@@ -107,6 +84,10 @@ default = "google"
 [profiles.all_groq]
 description = "Use groq backend for all its supported models"
 default = "groq"
+
+[profiles.all_huggingface]
+description = "Use HuggingFace backend for all its supported models"
+default = "huggingface"
 
 [profiles.all_mistral]
 description = "Use Mistral backend for all its supported models"

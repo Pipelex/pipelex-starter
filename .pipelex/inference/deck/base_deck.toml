@@ -35,7 +35,7 @@ vision-groq = "llama-4-scout-17b-16e-instruct"
 
 # Image generation aliases
 base-img-gen = "flux-pro/v1.1"
-best-img-gen = "flux-pro/v1.1-ultra"
+best-img-gen = "flux-2"
 fast-img-gen = "fast-lightning-sdxl"
 
 ####################################################################################################
@@ -95,8 +95,8 @@ cheap_llm = [
     "grok-3-mini",
 ]
 cheap_llm_for_vision = [
-    "gpt-4o-mini",
     "gemini-2.5-flash-lite",
+    "gpt-4o-mini",
     "claude-3-haiku",
 ]
 cheap_llm_for_structured = ["gpt-4o-mini", "mistral-small", "claude-3-haiku"]
@@ -108,7 +108,11 @@ cheap_llm_for_creativity = [
 ]
 
 # --- Waterfalls for Extracts ---------------------------------------------------------------------
-pdf_text_extractor = ["mistral-ocr", "pypdfium2-extract-text"]
+pdf_text_extractor = [
+    "azure-document-intelligence",
+    "mistral-ocr",
+    "pypdfium2-extract-text",
+]
 image_text_extractor = ["mistral-ocr"]
 
 ####################################################################################################
@@ -172,7 +176,7 @@ for_object = "cheap_llm_for_structured"
 choice_default = "extract_text_from_visuals"
 
 [extract.presets]
-extract_text_from_visuals = { model = "mistral-ocr", max_nb_images = 100, image_min_size = 50 }
+extract_text_from_visuals = { model = "azure-document-intelligence", max_nb_images = 100, image_min_size = 50 }
 extract_text_from_pdf = { model = "pypdfium2-extract-text", max_nb_images = 100, image_min_size = 50 }
 
 ####################################################################################################
@@ -188,6 +192,7 @@ choice_default = "gen_image_basic"
 gen_image_basic = { model = "base-img-gen", quality = "medium", guidance_scale = 7.5, is_moderated = true, safety_tolerance = 3 }
 gen_image_fast = { model = "fast-img-gen", nb_steps = 4, guidance_scale = 5.0, is_moderated = true, safety_tolerance = 3 }
 gen_image_high_quality = { model = "best-img-gen", quality = "high", guidance_scale = 8.0, is_moderated = true, safety_tolerance = 3 }
+gen_image_openai_low_quality = { model = "gpt-image-1", quality = "low" }
 
 # Specific skills
 img_gen_for_art = { model = "best-img-gen", quality = "high", guidance_scale = 9.0, is_moderated = false, safety_tolerance = 5 }
