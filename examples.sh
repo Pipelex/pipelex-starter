@@ -11,3 +11,7 @@ pipelex build pipe "Given an expense report, apply company rules"
 pipelex build pipe "Given a theme, write a Haiku"
 
 pipelex build pipe "Imagine a crazy funny image to render, like a green cow on the Eiffel Tower but not that, and then render it"
+
+pipelex run generate_crazy_image --graph
+
+pipelex run analyze_cvs_for_job_offer --inputs cv_match_scw/inputs.json --graph
