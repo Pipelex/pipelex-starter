@@ -12,15 +12,17 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Operating System :: OS Independent",
 ]
 
 dependencies = [
-    "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]==0.17.3",
+    "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]",
+    "pipelex==0.17.3",
 ]
 
 [tool.uv.sources]
-pipelex = { path = "../pipelex", editable = true }
+pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "feature/Chicago" }
 
 
 [tool.setuptools]

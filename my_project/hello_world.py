@@ -23,5 +23,5 @@ async def hello_world():
 
 
 # start Pipelex
-with Pipelex.make():
+with Pipelex.make(library_dirs=["my_project"]):
     asyncio.run(hello_world())
