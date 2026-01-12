@@ -36,21 +36,22 @@
 
 [pipelex.scan_config]
 # Uncomment to customize the excluded directories for scanning
-# excluded_dirs = [
-#     ".venv",
-#     "venv",
-#     "env",
-#     ".env",
-#     "virtualenv",
-#     ".virtualenv",
-#     ".git",
-#     "__pycache__",
-#     ".pytest_cache",
-#     ".mypy_cache",
-#     ".ruff_cache",
-#     "node_modules",
-#     "results",
-# ]
+excluded_dirs = [
+    ".venv",
+    "venv",
+    "env",
+    ".env",
+    "virtualenv",
+    ".virtualenv",
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    "node_modules",
+    "results",
+    "hidden",
+]
 
 [pipelex.builder_config]
 # Uncomment to change where the generated pipelines are saved:

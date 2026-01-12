@@ -16,11 +16,11 @@ classifiers = [
 ]
 
 dependencies = [
-    "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]==0.17.3",
+    "pipelex[anthropic,bedrock,docling,fal,gcp-storage,google,google-genai,huggingface,mistralai,s3]",
 ]
 
 [tool.uv.sources]
-pipelex = { path = "../pipelex", editable = true }
+pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "feature/Chicago" }
 
 [tool.setuptools]
 packages = ["my_project"]
