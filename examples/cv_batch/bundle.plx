@@ -35,7 +35,7 @@ type = "PipeSequence"
 description = """
 Main orchestrator pipe that takes a bunch of CVs and a job offer in PDF format, and analyzes how they match.
 """
-inputs = { cvs = "PDF[]", job_offer_pdf = "PDF" }
+inputs = { cvs = "PDF[]", job_offer_pdf = "Document" }
 output = "MatchAnalysis[]"
 steps = [
     { pipe = "extract_job_offer", result = "job_offer_pages" },
@@ -46,7 +46,7 @@ steps = [
 [pipe.extract_job_offer]
 type = "PipeExtract"
 description = "Extracts text content from the job offer PDF document"
-inputs = { job_offer_pdf = "PDF" }
+inputs = { job_offer_pdf = "Document" }
 output = "Page[]"
 model = "pdf_text_extractor"
 
@@ -70,7 +70,7 @@ Analyze the following job offer content and extract the key requirements for the
 [pipe.process_cv]
 type = "PipeSequence"
 description = "Processes one application"
-inputs = { cv_pdf = "PDF", job_requirements = "JobRequirements" }
+inputs = { cv_pdf = "Document", job_requirements = "JobRequirements" }
 output = "MatchAnalysis"
 steps = [
     { pipe = "extract_cv", result = "cv_pages" },
@@ -81,7 +81,7 @@ steps = [
 [pipe.extract_cv]
 type = "PipeExtract"
 description = "Extracts text content from the CV PDF document"
-inputs = { cv_pdf = "PDF" }
+inputs = { cv_pdf = "Document" }
 output = "Page[]"
 model = "pdf_text_extractor"
 

@@ -18,7 +18,7 @@ async def hello_world():
     pretty_print(pipe_output, title="Your first Pipelex output")
 
 
-# start Pipelex
-Pipelex.make()
-# run sample using asyncio
-asyncio.run(hello_world())
+if __name__ == "__main__":
+    with Pipelex.make(library_dirs=["my_project"]):
+        # run sample using asyncio
+        asyncio.run(hello_world())

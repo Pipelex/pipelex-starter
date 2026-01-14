@@ -1,12 +1,12 @@
 {
   "cv_pdf": {
-    "concept": "native.PDF",
+    "concept": "native.Document",
     "content": {
       "url": "data/CVx5/CV-01.pdf"
     }
   },
   "job_offer_pdf": {
-    "concept": "native.PDF",
+    "concept": "native.Document",
     "content": {
       "url": "https://pipelex-web.s3.amazonaws.com/demo/Job-Offer.pdf"
     }

@@ -22,7 +22,7 @@
         "inputs": [
           {
             "name": "job_offer_pdf",
-            "concept": "PDF",
+            "concept": "Document",
             "content_type": "application/pdf",
             "preview": null,
             "size": null,
@@ -36,7 +36,7 @@
           },
           {
             "name": "cvs",
-            "concept": "PDF",
+            "concept": "Document",
             "content_type": null,
             "preview": null,
             "size": null,
@@ -105,7 +105,7 @@
         "inputs": [
           {
             "name": "job_offer_pdf",
-            "concept": "PDF",
+            "concept": "Document",
             "content_type": "application/pdf",
             "preview": null,
             "size": null,
@@ -244,7 +244,7 @@
         "inputs": [
           {
             "name": "cvs",
-            "concept": "PDF",
+            "concept": "Document",
             "content_type": null,
             "preview": null,
             "size": null,
@@ -313,7 +313,7 @@
         "inputs": [
           {
             "name": "cv_pdf",
-            "concept": "PDF",
+            "concept": "Document",
             "content_type": "application/pdf",
             "preview": null,
             "size": null,
@@ -382,7 +382,7 @@
         "inputs": [
           {
             "name": "cv_pdf",
-            "concept": "PDF",
+            "concept": "Document",
             "content_type": "application/pdf",
             "preview": null,
             "size": null,
@@ -441,7 +441,7 @@
         "inputs": [
           {
             "name": "cv_pdf",
-            "concept": "PDF",
+            "concept": "Document",
             "content_type": "application/pdf",
             "preview": null,
             "size": null,
@@ -510,7 +510,7 @@
         "inputs": [
           {
             "name": "cv_pdf",
-            "concept": "PDF",
+            "concept": "Document",
             "content_type": "application/pdf",
             "preview": null,
             "size": null,
