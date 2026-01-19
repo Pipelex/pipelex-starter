@@ -1,4 +1,3 @@
-pipelex build pipe "Take a CV and Job offer in PDF, analyze if they match and generate 5 questions for the interview" --graph --graph-full-data
 
 pipelex build pipe "Imagine a cute animal mascot for a startup based on its elevator pitch and some brand guidelines" --graph --graph-full-data --output-dir test_graph
 
@@ -28,11 +27,11 @@ pipelex graph render graph.json
 # pipelex run examples/cv_and_offer/cv_job_match.plx --inputs examples/cv_and_offer/inputs.json --no-output --graph --graph-full-data
 pipelex run cv_job_match --inputs cv_and_offer/inputs.json --no-output --graph --graph-full-data -L cv_and_offer
 
-pipelex run examples/cv_batch/bundle.plx --inputs examples/cv_batch/inputs.json --graph
-pipelex run examples/cv_batch/bundle.plx --inputs examples/cv_batch/inputs.json --no-output --graph
+pipelex run examples/cv_batch/bundle.plx --inputs examples/cv_batch/inputs.json
+pipelex run examples/cv_batch/bundle.plx --inputs examples/cv_batch/inputs.json --no-output
 
 
-pipelex build pipe "Take a CV and Job offer in PDF, analyze if they match and generate 5 questions for the interview" --graph
+pipelex build pipe "Take a CV and Job offer, analyze if they match and generate 5 questions for the interview" --graph
 
 pipelex build pipe "Take a series of experimental material and contact angle data measurements and rolling angle data measurements and rank the materials by hydrophobicity" --graph --graph-full-data
 

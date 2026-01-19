@@ -35,7 +35,7 @@ type = "PipeSequence"
 description = """
 Main orchestrator pipe that takes a bunch of CVs and a job offer in PDF format, and analyzes how they match.
 """
-inputs = { cvs = "PDF[]", job_offer_pdf = "Document" }
+inputs = { cvs = "Document[]", job_offer_pdf = "Document" }
 output = "MatchAnalysis[]"
 steps = [
     { pipe = "extract_job_offer", result = "job_offer_pages" },
