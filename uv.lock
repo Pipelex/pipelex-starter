@@ -2065,7 +2065,12 @@ dev = [
 requires-dist = [
     { name = "boto3-stubs", marker = "extra == 'dev'", specifier = ">=1.35.24" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11.2" },
+<<<<<<< HEAD
     { name = "pipelex", extras = ["anthropic", "bedrock", "docling", "fal", "gcp-storage", "google", "google-genai", "huggingface", "mistralai", "s3"], git = "https://github.com/Pipelex/pipelex.git?branch=pre-release%2Fv0.18.0b2" },
+=======
+    { name = "pipelex", git = "https://github.com/Pipelex/pipelex.git?branch=pre-release%2Fv0.18.0b2" },
+    { name = "pipelex", extras = ["mistralai", "anthropic", "google", "google-genai", "bedrock", "fal"], git = "https://github.com/Pipelex/pipelex.git?branch=pre-release%2Fv0.18.0b2" },
+>>>>>>> feature/Chicago
     { name = "pyright", marker = "extra == 'dev'", specifier = ">=1.1.405" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.1" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
