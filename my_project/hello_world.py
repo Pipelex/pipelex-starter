@@ -17,6 +17,10 @@ async def hello_world():
     # Print the output
     pretty_print(pipe_output, title="Your first Pipelex output")
 
+    # get the generated text
+    generated_text = pipe_output.main_stuff_as_str
+    pretty_print(generated_text, title="Generated text")
+
 
 if __name__ == "__main__":
     with Pipelex.make(library_dirs=["my_project"]):

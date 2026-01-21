@@ -30,7 +30,7 @@ async def run_analyze_cvs_for_job_offer():
 
 if __name__ == "__main__":
     # Initialize Pipelex
-    with Pipelex.make(integration_mode=IntegrationMode.CLI) as pipelex:
+    with Pipelex.make(library_dirs=["examples/cv_batch"], integration_mode=IntegrationMode.CLI) as pipelex:
         # Run the pipeline with timing
         start_time = time.perf_counter()
         result = asyncio.run(run_analyze_cvs_for_job_offer())
