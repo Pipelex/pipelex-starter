@@ -43,8 +43,5 @@ jobs:
           source .venv/bin/activate
           echo -e "y\nA\n1" |pipelex init
 
-      - name: Boot test
-        run: make tp TEST=TestFundamentals
-
       - name: Run tests
         run: make gha-tests

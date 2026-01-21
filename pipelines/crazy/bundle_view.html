@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+.r1 {font-weight: bold}
+.r2 {color: #d0b344; text-decoration-color: #d0b344; font-weight: bold}
+.r3 {color: #d0b344; text-decoration-color: #d0b344; font-style: italic}
+.r4 {color: #cc555a; text-decoration-color: #cc555a}
+.r5 {color: #98a84b; text-decoration-color: #98a84b; font-weight: bold}
+.r6 {color: #98a84b; text-decoration-color: #98a84b}
+.r7 {color: #c5c8c6; text-decoration-color: #c5c8c6}
+.r8 {color: #c5c8c6; text-decoration-color: #c5c8c6; font-weight: bold}
+.r9 {color: #cc555a; text-decoration-color: #cc555a; font-weight: bold}
+.r10 {color: #98729f; text-decoration-color: #98729f; font-weight: bold}
+.r11 {color: #626463; text-decoration-color: #626463}
+.r12 {color: #68a0b3; text-decoration-color: #68a0b3}
+.r13 {color: #608ab1; text-decoration-color: #608ab1}
+body {
+    color: #c5c8c6;
+    background-color: #000000;
+}
+</style>
+</head>
+<body>
+    <pre style="font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><code style="font-family:inherit"><span class="r1">Domain: </span><span class="r2">crazy_image_generation</span>
+
+Description: <span class="r3">Imagining and rendering absurd, funny images with unexpected surreal elements</span>
+
+Main Pipe: <span class="r4">generate_crazy_image</span>
+
+
+
+<span class="r5">                                              Concepts                                              </span>
+<span class="r6">┌──────────────────────────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r8">Concept: </span><span class="r5">ImagePrompt</span><span class="r8">                                                                            </span><span class="r7"> </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> Refines: </span><span class="r6">Text</span><span class="r7">                                                                                    </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7">                                                                                                  </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> Description: </span><span class="r3">A detailed textual description of a scene to be used as input for an image </span><span class="r7">         </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7"> </span><span class="r3">generation model, including subjects, setting, style, and visual details.</span><span class="r7">                        </span><span class="r6">│</span>
+<span class="r6">│</span><span class="r7">                                                                                                  </span><span class="r6">│</span>
+<span class="r6">└──────────────────────────────────────────────────────────────────────────────────────────────────┘</span>
+
+
+<span class="r9">                                               Pipes                                                </span>
+<span class="r4">┌──────────────────────────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="r4">│</span><span class="r7"> Pipe: </span><span class="r9">generate_crazy_image</span><span class="r7">                                                                       </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Type: </span><span class="r10">PipeSequence</span><span class="r7"> (PipeController)                                                              </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Description: </span><span class="r3">Main pipeline that orchestrates the full crazy image generation flow - imagines a </span><span class="r7">  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r3">wild, absurd scene concept and renders it as an image</span><span class="r7">                                            </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> No inputs                                                                                        </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Output: </span><span class="r5">Image</span><span class="r7">                                                                                    </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r7">Sequence Steps:                        </span><span class="r7">                                                          </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r11">┏━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓</span><span class="r7">                                                          </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r11">┃ Step ┃ Pipe          ┃ Result name  ┃</span><span class="r7">                                                          </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r11">┡━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━┩</span><span class="r7">                                                          </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r11">│    1 │</span><span class="r4"> imagine_scene </span><span class="r11">│</span><span class="r12"> image_prompt </span><span class="r11">│</span><span class="r7">                                                          </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r11">├──────┼───────────────┼──────────────┤</span><span class="r7">                                                          </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r11">│    2 │</span><span class="r4"> render_image  </span><span class="r11">│</span><span class="r12"> crazy_image  </span><span class="r11">│</span><span class="r7">                                                          </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r11">└──────┴───────────────┴──────────────┘</span><span class="r7">                                                          </span><span class="r4">│</span>
+<span class="r4">├──────────────────────────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="r4">│</span><span class="r7"> Pipe: </span><span class="r9">imagine_scene</span><span class="r7">                                                                              </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Type: </span><span class="r10">PipeLLM</span><span class="r7"> (PipeOperator)                                                                     </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Description: </span><span class="r3">Generates a creative, absurd, and hilarious image concept combining unexpected </span><span class="r7">     </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r3">elements in surreal ways - think flying spaghetti monsters, penguins in business suits at a </span><span class="r7">     </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r3">disco, or a T-Rex doing yoga on the moon</span><span class="r7">                                                         </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> No inputs                                                                                        </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Output: </span><span class="r5">ImagePrompt</span><span class="r7">                                                                              </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> LLM Skill: </span><span class="r2">cheap_llm_for_creativity</span><span class="r7">                                                              </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r13">╭─ System Prompt ──────────────────────────────────────────────────────────────────────────────╮</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r13">│</span><span class="r7"> You are a wildly creative visual concept artist specializing in absurd, surreal, and         </span><span class="r13">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r13">│</span><span class="r7"> hilarious imagery. Your task is to generate a structured image prompt that combines          </span><span class="r13">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r13">│</span><span class="r7"> unexpected elements in surprising and funny ways. Think outside the box - the more           </span><span class="r13">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r13">│</span><span class="r7"> unexpected the combination, the better!                                                      </span><span class="r13">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r13">╰──────────────────────────────────────────────────────────────────────────────────────────────╯</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">╭─ Prompt ─────────────────────────────────────────────────────────────────────────────────────╮</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> Generate a creative, absurd, and funny image concept. Combine unexpected elements in a       </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> surreal way that would make viewers laugh or do a double-take. Be VERY concise and focus on  </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">│</span><span class="r7"> vivid, specific visual details that work well for image generation.                          </span><span class="r6">│</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> </span><span class="r6">╰──────────────────────────────────────────────────────────────────────────────────────────────╯</span><span class="r7"> </span><span class="r4">│</span>
+<span class="r4">├──────────────────────────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="r4">│</span><span class="r7"> Pipe: </span><span class="r9">render_image</span><span class="r7">                                                                               </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Type: </span><span class="r10">PipeImgGen</span><span class="r7"> (PipeOperator)                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Description: </span><span class="r3">Generates the absurd image based on the creative scene description</span><span class="r7">                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Input: </span><span class="r12">image_prompt</span><span class="r7"> (</span><span class="r5">ImagePrompt</span><span class="r7">)                                                                </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Output: </span><span class="r5">Image</span><span class="r7">                                                                                    </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7">                                                                                                  </span><span class="r4">│</span>
+<span class="r4">│</span><span class="r7"> Image Generation Skill: </span><span class="r2">gen_image_high_quality</span><span class="r7">                                                   </span><span class="r4">│</span>
+<span class="r4">└──────────────────────────────────────────────────────────────────────────────────────────────────┘</span>
+</code></pre>
+</body>
+</html>
