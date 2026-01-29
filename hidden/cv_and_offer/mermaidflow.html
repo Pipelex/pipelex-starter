@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline: Cv Job Match</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js" integrity="sha384-rbtjAdnIQE/aQJGEgXrVUlMibdfTSa4PQju4HDhN3sR2PmaKFzhEafuePsl9H/9I" crossorigin="anonymous"></script>
+<!-- DOMPurify for HTML sanitization (XSS prevention) -->
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js" integrity="sha384-eEu5CTj3qGvu9PdJuS+YlkNi7d2XxQROAFYOr59zgObtlcux1ae1Il3u7jvdCSWu" crossorigin="anonymous"></script>
+    <style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--bg-color, #f5f5f5);
+    transition: background-color 0.3s;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+h1 {
+    color: var(--text-color, #333);
+    margin: 0;
+    transition: color 0.3s;
+}
+.theme-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.theme-selector label {
+    font-size: 14px;
+    color: var(--label-color, #666);
+    transition: color 0.3s;
+}
+.theme-selector select {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color, #ccc);
+    background: var(--select-bg, white);
+    color: var(--text-color, #333);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.theme-selector select:hover {
+    border-color: var(--border-hover, #999);
+}
+.mermaid-container {
+    background-color: var(--container-bg, white);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
+.mermaid {
+    display: flex;
+    justify-content: center;
+}
+.hint {
+    color: var(--label-color, #666);
+    font-size: 14px;
+    margin-top: 16px;
+    text-align: center;
+    transition: color 0.3s;
+}
+.data-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 20px;
+    border-radius: 12px;
+    width: 80vw;
+    max-width: 1200px;
+    max-height: 80vh;
+    overflow: auto;
+    z-index: 1000;
+    display: none;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 13px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    min-width: 600px;
+}
+.data-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #444;
+}
+.data-modal-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.data-modal-title-primary {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+}
+.data-modal-title-secondary {
+    font-size: 11px;
+    font-weight: 400;
+    color: #666;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+.data-modal-close {
+    cursor: pointer;
+    color: #888;
+    font-size: 24px;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+.data-modal-close:hover {
+    background: #333;
+    color: #fff;
+}
+.format-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 8px;
+}
+.format-tabs {
+    display: flex;
+    gap: 4px;
+}
+.format-actions {
+    display: flex;
+    gap: 4px;
+}
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    background: #333;
+    color: #888;
+    border: none;
+    transition: all 0.2s;
+}
+.action-btn:hover {
+    background: #444;
+    color: #fff;
+}
+.action-btn.copied {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+.action-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+.format-tab {
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    background: #333;
+    color: #888;
+    border: none;
+    transition: all 0.2s;
+}
+.format-tab:hover {
+    background: #444;
+    color: #ccc;
+}
+.format-tab.active {
+    background: #3b82f6;
+    color: #fff;
+}
+.format-tab:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.data-modal-content {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.5;
+}
+.data-modal-content.text-content {
+    line-height: 1;
+    white-space: pre;
+    word-wrap: normal;
+    overflow-x: auto;
+    padding-right: 20px;
+}
+.data-modal-content.html-content {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 4px;
+}
+.data-modal-content.html-content table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.data-modal-content.html-content th,
+.data-modal-content.html-content td {
+    border: 1px solid #444;
+    padding: 8px 12px;
+    text-align: left;
+}
+.data-modal-content.html-content th {
+    background: #252a30;
+    color: #e0e0e0;
+    font-weight: 600;
+}
+.data-modal-content.html-content tr:hover {
+    background: #2a2530;
+}
+.data-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+.clickable-stuff {
+    cursor: pointer !important;
+}
+.clickable-stuff:hover {
+    filter: brightness(1.1);
+}
+.data-modal-content.pdf-content {
+    min-height: 500px;
+}
+.data-modal-content.pdf-content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    min-height: 500px;
+}
+.data-modal-content.image-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+}
+.data-modal-content.image-content img {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+}
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Pipeline: Cv Job Match</h1>
+    <div class="theme-selector">
+        <label for="theme-select">Theme:</label>
+        <select id="theme-select">
+            <option value="default">Default</option>
+            <option value="dark">Dark</option>
+            <option value="forest">Forest</option>
+            <option value="neutral">Neutral</option>
+            <option value="base">Base</option>
+        </select>
+    </div>
+</div>
+<div class="mermaid-container">
+    <div class="mermaid" id="mermaid-diagram"></div>
+</div>
+<p class="hint">Click on data nodes (rounded pills) to view their full content</p>
+<div class="data-modal-overlay" id="modal-overlay"></div>
+<div class="data-modal" id="data-modal">
+    <div class="data-modal-header">
+        <span class="data-modal-title" id="modal-title">Data Content</span>
+        <span class="data-modal-close" onclick="hideModal()">&times;</span>
+    </div>
+    <div class="format-toolbar">
+        <div class="format-tabs" id="format-tabs">
+            <button class="format-tab active" data-format="html" id="tab-html">HTML</button>
+            <button class="format-tab" data-format="json" id="tab-json">JSON</button>
+            <button class="format-tab" data-format="text" id="tab-text">Pretty</button>
+        </div>
+        <div class="format-actions">
+            <button class="action-btn" id="open-external-btn" onclick="openExternal()" title="Open in new window" style="display: none;">
+                <svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+            </button>
+            <button class="action-btn" id="copy-btn" onclick="copyContent()" title="Copy">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z
+                    m3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z
+                    m0 16H8V7h11v14z"/></svg>
+            </button>
+            <button class="action-btn" id="download-btn" onclick="downloadContent()" title="Download">
+                <svg viewBox="0 0 24 24">
+                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <div class="data-modal-content" id="modal-content"></div>
+</div>
+
+    <script>
+// Embedded stuff data from graph (all formats)
+const stuffDataJson = {"s_35a3b4b37e": {"overall_match_score": 10.0, "matching_skills": "Customer Service, Organizational Skills, Leadership, Sales", "missing_skills": "Experience selling SaaS solutions to Fortune 500 enterprises, Strong executive presence with ability to engage C-suite buyers, Experience in CRM, cloud infrastructure, or enterprise software markets, Track record of building sales teams from early stage through scale, Expertise in account-based selling and strategic account management, Strong analytical skills with proficiency in ACME, sales analytics tools, History of developing talent - multiple direct reports promoted to leadership roles, Experience with channel/partner sales models, Passion for coaching and developing high-performing teams, 12+ years of experience, MBA", "experience_alignment": "The candidate has 8.2 years of experience, which is below the required 12+ years for this executive-level position.", "areas_of_concern": "The candidate lacks the necessary experience in SaaS sales and executive-level responsibilities, which are critical for this role.", "areas_to_explore": "Discuss the candidate's leadership experience and ability to develop teams, as well as their understanding of enterprise sales strategies.", "questions": [{"question_text": "Can you describe your experience in leading and developing sales teams? What strategies have you implemented to ensure their success?", "purpose": "To assess the candidate's leadership experience and ability to develop high-performing teams, which is crucial for the role."}, {"question_text": "What approaches have you used to engage C-suite executives in your previous roles? Can you provide an example of a successful engagement?", "purpose": "To evaluate the candidate's executive presence and ability to build relationships with high-level stakeholders, which is essential for the position."}, {"question_text": "Given your background in retail sales, how do you plan to transition your skills to selling SaaS solutions to enterprise clients?", "purpose": "To explore the candidate's understanding of SaaS sales and their ability to adapt their skills to meet the requirements of the role."}, {"question_text": "Can you discuss a time when you had to analyze sales data to make strategic decisions? What tools did you use, and what was the outcome?", "purpose": "To assess the candidate's analytical skills and familiarity with sales analytics tools, which are important for driving operational rigor."}, {"question_text": "What is your philosophy on coaching and developing talent within a sales team? Can you share a specific instance where you successfully promoted someone to a leadership role?", "purpose": "To investigate the candidate's passion for talent development and their history of fostering leadership within their teams."}]}, "s_7f2e386dfb": {"url": "data/CVx5/CV-01.pdf"}, "s_85346f6ca9": {"url": "https://pipelex-web.s3.amazonaws.com/demo/Job-Offer.pdf"}, "s_d282fc7b51": {"items": [{"text_and_images": {"text": {"text": "# JOHN DOE\n\n\n## Full Address . City, State, ZIP . Phone Number . E-mail\n\nOBJECTIVE: Design apparel print for an innovative retail company\n\nEDUCATION:\n\nUNIVERSITY OF MINNESOTA\nCollege of Design\n\" Bachelor of Science in Graphic Design\n\n\" Cumulative GPA 3.93, Dean's List\n\n\" Twin cities Iron Range Scholarship\n\nCity, State\nMay 2011\n\nWORK EXPERIENCE:\n\nAMERICAN EAGLE\nSales Associate\n\nCity, State\nJuly 2009 - present\n\n\u00b7 Collaborated with the store merchandiser creating displays to attract clientele\n\n\" Use my trend awareness to assist customers in their shopping experience\n\n\" Thoroughly scan every piece of merchandise for inventory control\n\n\" Process shipment to increase my product knowledge\n\nPLANET BEACH\nSpa Consultant\nCity, State\nAug. 2008 - present\n\n\" Sell retail and memberships to meet company sales goals\n\n\" Build organizational skills by single handedly running all operating procedures\n\n\" Communicate with clients to fulfill their wants and needs\n\n\" Attend promotional events to market our services\n\n\" Handle cash and deposits during opening and closing\n\n\" Received employee of the month award twice\n\nHEARTBREAKER\nSales Associate\nCity, State\nMay 2008 - Aug. 2008\n\n\u00b7 Stocked sales floor with fast fashion inventory\n\n\u00b7 Marked down items allowing me to see unsuccessful merchandise in a retail market\n\n\" Offered advice and assistance to each guest\n\nVICTORIA'S SECRET\nFashion Representative\nCity, State\nJan. 2006 - Feb. 2009\n\n\" Applied my leadership skills by assisting in the training of coworkers\n\n\" Set up mannequins and displays in order to entice future customers\n\n\u00b7 Provided superior customer service by helping with consumer decisions\n\n\" Took seasonal inventory\n\nVOLUNTEER EXPERIENCE:\n\nTARGET CORPORATION\nBrand Ambassador\n\nCity, State\nAugust 2009\n\n\" Represented Periscope Marketing and Target Inc. at a college event\n\n\" Engaged University of Minnesota freshman in the Target brand experience\n"}, "images": []}, "page_view": null}]}, "s_09958cc830": {"items": [{"text_and_images": {"text": {"text": "# Vice President, Enterprise Sales\n\nACME \u00b7 San Francisco, CA (Hybrid)\nFull-time . Executive Level\n\n\n## About ACME\n\nACME is the global leader in CRM, empowering companies to connect with their customers in entirely new ways.\nBuilt on our core values of Trust, Customer Success, Innovation, and Equality, we're transforming how businesses\nengage with their customers across sales, service, marketing, and more.\n\n\n## The Opportunity\n\nWe're seeking an exceptional Vice President of Enterprise Sales to lead our North American Enterprise\nsegment and drive the next phase of our growth. This is a high-impact role where you'll build and scale a world-\nclass sales organization, own significant revenue accountability, and work directly with C-suite executives at\nFortune 500 companies.\n\nAs VP of Enterprise Sales, you'll lead 60+ enterprise account executives, own $180M+ in ARR quota, and play a\ncritical role in shaping our go-to-market strategy. This is an opportunity to make your mark at one of the world's\nmost innovative technology companies.\n\n\n## What You'll Do\n\n\u00b7 Lead & Scale: Build and develop a high-performing team of 60+ enterprise sales professionals across multiple\nregions\n\n\u00b7 Drive Revenue: Own and deliver $180M+ ARR with full P&L accountability and strategic planning\nresponsibility\n\n\u00b7 Strategic Execution: Develop and implement sales strategies that accelerate pipeline growth and increase\nwin rates\n\n\u00b7 Customer Relationships: Build and maintain executive relationships with C-level stakeholders at our largest\naccounts\n\n\u00b7 Sales Excellence: Drive operational rigor through accurate forecasting, process optimization, and data-driven\ndecision making\n\n\u00b7 Talent Development: Coach, mentor, and develop the next generation of sales leaders\n\n\u00b7 Cross-functional Leadership: Partner with Product, Marketing, Customer Success, and Channel teams to\ndeliver integrated solutions\n\n\u00b7 Innovation: Champion new sales methodologies, tools, and approaches that improve team productivity\n\n\n## What You Bring\n\n\n### Required Qualifications\n\n\u00b7 12+ years of progressive B2B sales experience with at least 5 years in VP-level or equivalent leadership roles\n\n\u00b7 Proven track record of building and scaling enterprise sales teams of 50+ people\n\n\u00b7 Demonstrated success managing $100M+ ARR quotas and consistently exceeding targets\n\n\u00b7 Deep expertise in complex, consultative sales with 6-12 month sales cycles\n\n<!-- PageBreak -->\n\n"}, "images": []}, "page_view": null}, {"text_and_images": {"text": {"text": "\u00b7 Experience selling SaaS solutions to Fortune 500 enterprises\n\n\u00b7 Strong executive presence with ability to engage C-suite buyers\n\n\u00b7 Bachelor's degree required; MBA preferred\n\n\n### What Sets You Apart\n\n\u00b7 Experience in CRM, cloud infrastructure, or enterprise software markets\n\n\u00b7 Track record of building sales teams from early stage through scale\n\n\u00b7 Expertise in account-based selling and strategic account management\n\n\u00b7 Strong analytical skills with proficiency in ACME, sales analytics tools\n\n\u00b7 History of developing talent - multiple direct reports promoted to leadership roles\n\n\u00b7 Experience with channel/partner sales models\n\n\u00b7 Passion for coaching and developing high-performing teams\n\n\n### Leadership Competencies\n\n\u00b7 Strategic thinking and business acumen\n\n\u00b7 Exceptional communication and executive presence\n\n\u00b7 Data-driven decision making\n\n\u00b7 Change management and organizational development\n\n\u00b7 Cross-functional collaboration\n\n\u00b7 Diversity, equity, and inclusion advocacy\n\n\n### Compensation & Benefits\n\n\n#### Total Target Compensation: $975,000\n\n\u00b7 Base Salary: $325,000\n\n\u00b7 Variable Compensation: $650,000 (at 100% quota attainment)\n\n\u00b7 Equity: RSU grant valued at $500,000 (4-year vesting)\n\n\u00b7 Sign-on Bonus: $100,000\n\n\n#### Comprehensive Benefits Package\n\n\n<table>\n<tr>\n<td>\u00b7 Premium medical, dental, and vision coverage</td>\n<td>\u00b7 401(k) with 6% company match</td>\n</tr>\n<tr>\n<td>\u00b7 Flexible PTO policy</td>\n<td>\u00b7 $5,000 annual professional development budget</td>\n</tr>\n<tr>\n<td>\u00b7 Executive coaching program</td>\n<td>\u00b7 Wellness reimbursement ($1,200/year)</td>\n</tr>\n<tr>\n<td>\u00b7 8 paid volunteer days (VTO)</td>\n<td>\u00b7 Paid parental leave (26 weeks primary caregiver)</td>\n</tr>\n<tr>\n<td>\u00b7 Employee stock purchase plan (15% discount)</td>\n<td>\u00b7 Relocation assistance available</td>\n</tr>\n</table>\n"}, "images": []}, "page_view": null}]}, "s_5f1107a2c5": {"skills": "Graphic Design, Trend Awareness, Customer Service, Organizational Skills, Leadership, Sales, Inventory Control", "years_of_experience": 8.2, "education": "Bachelor of Science in Graphic Design, University of Minnesota, College of Design", "previous_roles": "Sales Associate at American Eagle, Spa Consultant at Planet Beach, Sales Associate at Heartbreaker, Fashion Representative at Victoria's Secret, Brand Ambassador at Target Corporation", "key_achievements": "Received employee of the month award twice at Planet Beach"}, "s_7d1841499d": {"required_skills": "Experience selling SaaS solutions to Fortune 500 enterprises, Strong executive presence with ability to engage C-suite buyers", "preferred_skills": "Experience in CRM, cloud infrastructure, or enterprise software markets, Track record of building sales teams from early stage through scale, Expertise in account-based selling and strategic account management, Strong analytical skills with proficiency in ACME, sales analytics tools, History of developing talent - multiple direct reports promoted to leadership roles, Experience with channel/partner sales models, Passion for coaching and developing high-performing teams", "responsibilities": "Lead and develop a high-performing team of 60+ enterprise sales professionals, Own and deliver $180M+ ARR with full P&L accountability, Develop and implement sales strategies that accelerate pipeline growth, Build and maintain executive relationships with C-level stakeholders, Drive operational rigor through accurate forecasting and process optimization, Coach, mentor, and develop the next generation of sales leaders, Partner with cross-functional teams to deliver integrated solutions, Champion new sales methodologies and tools", "qualifications": "12+ years of experience, Bachelor's degree required; MBA preferred", "experience_level": "Executive Level"}, "s_bdd2d8f94a": {"overall_match_score": 10.0, "matching_skills": "Customer Service, Organizational Skills, Leadership, Sales", "missing_skills": "Experience selling SaaS solutions to Fortune 500 enterprises, Strong executive presence with ability to engage C-suite buyers, Experience in CRM, cloud infrastructure, or enterprise software markets, Track record of building sales teams from early stage through scale, Expertise in account-based selling and strategic account management, Strong analytical skills with proficiency in ACME, sales analytics tools, History of developing talent - multiple direct reports promoted to leadership roles, Experience with channel/partner sales models, Passion for coaching and developing high-performing teams, 12+ years of experience, MBA", "experience_alignment": "The candidate has 8.2 years of experience, which is below the required 12+ years for this executive-level position.", "areas_of_concern": "The candidate lacks the necessary experience in SaaS sales and executive-level responsibilities, which are critical for this role.", "areas_to_explore": "Discuss the candidate's leadership experience and ability to develop teams, as well as their understanding of enterprise sales strategies."}, "s_a809a9f552": {"items": [{"question_text": "Can you describe your experience in leading and developing sales teams? What strategies have you implemented to ensure their success?", "purpose": "To assess the candidate's leadership experience and ability to develop high-performing teams, which is crucial for the role."}, {"question_text": "What approaches have you used to engage C-suite executives in your previous roles? Can you provide an example of a successful engagement?", "purpose": "To evaluate the candidate's executive presence and ability to build relationships with high-level stakeholders, which is essential for the position."}, {"question_text": "Given your background in retail sales, how do you plan to transition your skills to selling SaaS solutions to enterprise clients?", "purpose": "To explore the candidate's understanding of SaaS sales and their ability to adapt their skills to meet the requirements of the role."}, {"question_text": "Can you discuss a time when you had to analyze sales data to make strategic decisions? What tools did you use, and what was the outcome?", "purpose": "To assess the candidate's analytical skills and familiarity with sales analytics tools, which are important for driving operational rigor."}, {"question_text": "What is your philosophy on coaching and developing talent within a sales team? Can you share a specific instance where you successfully promoted someone to a leadership role?", "purpose": "To investigate the candidate's passion for talent development and their history of fostering leadership within their teams."}]}};
+const stuffDataText = {"s_35a3b4b37e": " Attribute            \u2503 Value                                                                       \n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n overall_match_score  \u2502 10.0                                                                        \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n matching_skills      \u2502 Customer Service, Organizational Skills, Leadership, Sales                  \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n missing_skills       \u2502 Experience selling SaaS solutions to Fortune 500 enterprises, Strong executi\n                      \u2502 to engage C-suite buyers, Experience in CRM, cloud infrastructure, or enterp\n                      \u2502 Track record of building sales teams from early stage through scale, Experti\n                      \u2502 selling and strategic account management, Strong analytical skills with prof\n                      \u2502 analytics tools, History of developing talent - multiple direct reports prom\n                      \u2502 roles, Experience with channel/partner sales models, Passion for coaching an\n                      \u2502 high-performing teams, 12+ years of experience, MBA                         \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n experience_alignment \u2502 The candidate has 8.2 years of experience, which is below the required 12+ y\n                      \u2502 executive-level position.                                                   \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n areas_of_concern     \u2502 The candidate lacks the necessary experience in SaaS sales and executive-lev\n                      \u2502 which are critical for this role.                                           \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n areas_to_explore     \u2502 Discuss the candidate's leadership experience and ability to develop teams, \n                      \u2502 understanding of enterprise sales strategies.                               \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n questions            \u2502   1   \u2502  Attribute     \u2503 Value                                              \n                      \u2502       \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n                      \u2502       \u2502  question_text \u2502 Can you describe your experience in leading and dev\n                      \u2502       \u2502                \u2502 strategies have you implemented to ensure their suc\n                      \u2502       \u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n                      \u2502       \u2502  purpose       \u2502 To assess the candidate's leadership experience and\n                      \u2502       \u2502                \u2502 high-performing teams, which is crucial for the rol\n                      \u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n                      \u2502   2   \u2502  Attribute     \u2503 Value                                              \n                      \u2502       \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n                      \u2502       \u2502  question_text \u2502 What approaches have you used to engage C-suite exe\n                      \u2502       \u2502                \u2502 Can you provide an example of a successful engageme\n                      \u2502       \u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n                      \u2502       \u2502  purpose       \u2502 To evaluate the candidate's executive presence and \n                      \u2502       \u2502                \u2502 with high-level stakeholders, which is essential fo\n                      \u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n                      \u2502   3   \u2502  Attribute     \u2503 Value                                              \n                      \u2502       \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n                      \u2502       \u2502  question_text \u2502 Given your background in retail sales, how do you p\n                      \u2502       \u2502                \u2502 to selling SaaS solutions to enterprise clients?   \n                      \u2502       \u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n                      \u2502       \u2502  purpose       \u2502 To explore the candidate's understanding of SaaS sa\n                      \u2502       \u2502                \u2502 their skills to meet the requirements of the role. \n                      \u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n                      \u2502   4   \u2502  Attribute     \u2503 Value                                              \n                      \u2502       \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n                      \u2502       \u2502  question_text \u2502 Can you discuss a time when you had to analyze sale\n                      \u2502       \u2502                \u2502 decisions? What tools did you use, and what was the\n                      \u2502       \u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n                      \u2502       \u2502  purpose       \u2502 To assess the candidate's analytical skills and fam\n                      \u2502       \u2502                \u2502 tools, which are important for driving operational \n                      \u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n                      \u2502   5   \u2502  Attribute     \u2503 Value                                              \n                      \u2502       \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n                      \u2502       \u2502  question_text \u2502 What is your philosophy on coaching and developing \n                      \u2502       \u2502                \u2502 you share a specific instance where you successfull\n                      \u2502       \u2502                \u2502 leadership role?                                   \n                      \u2502       \u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n                      \u2502       \u2502  purpose       \u2502 To investigate the candidate's passion for talent d\n                      \u2502       \u2502                \u2502 fostering leadership within their teams.           \n", "s_7f2e386dfb": "{\n    \"url\": \"data/CVx5/CV-01.pdf\"\n}\n", "s_85346f6ca9": "{\n    \"url\": \"https://pipelex-web.s3.amazonaws.com/demo/Job-Offer.pdf\"\n}\n", "s_d282fc7b51": "   1    \u2502 \u250f\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n        \u2502 \u2503                                                    JOHN DOE                             \n        \u2502 \u2517\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n        \u2502                                                                                           \n        \u2502                                                                                           \n        \u2502                              Full Address . City, State, ZIP . Phone Number . E-mail      \n        \u2502                                                                                           \n        \u2502 OBJECTIVE: Design apparel print for an innovative retail company                          \n        \u2502                                                                                           \n        \u2502 EDUCATION:                                                                                \n        \u2502                                                                                           \n        \u2502 UNIVERSITY OF MINNESOTA College of Design \" Bachelor of Science in Graphic Design         \n        \u2502                                                                                           \n        \u2502 \" Cumulative GPA 3.93, Dean's List                                                        \n        \u2502                                                                                           \n        \u2502 \" Twin cities Iron Range Scholarship                                                      \n        \u2502                                                                                           \n        \u2502 City, State May 2011                                                                      \n        \u2502                                                                                           \n        \u2502 WORK EXPERIENCE:                                                                          \n        \u2502                                                                                           \n        \u2502 AMERICAN EAGLE Sales Associate                                                            \n        \u2502                                                                                           \n        \u2502 City, State July 2009 - present                                                           \n        \u2502                                                                                           \n        \u2502 \u00b7 Collaborated with the store merchandiser creating displays to attract clientele         \n        \u2502                                                                                           \n        \u2502 \" Use my trend awareness to assist customers in their shopping experience                 \n        \u2502                                                                                           \n        \u2502 \" Thoroughly scan every piece of merchandise for inventory control                        \n        \u2502                                                                                           \n        \u2502 \" Process shipment to increase my product knowledge                                       \n        \u2502                                                                                           \n        \u2502 PLANET BEACH Spa Consultant City, State Aug. 2008 - present                               \n        \u2502                                                                                           \n        \u2502 \" Sell retail and memberships to meet company sales goals                                 \n        \u2502                                                                                           \n        \u2502 \" Build organizational skills by single handedly running all operating procedures         \n        \u2502                                                                                           \n        \u2502 \" Communicate with clients to fulfill their wants and needs                               \n        \u2502                                                                                           \n        \u2502 \" Attend promotional events to market our services                                        \n        \u2502                                                                                           \n        \u2502 \" Handle cash and deposits during opening and closing                                     \n        \u2502                                                                                           \n        \u2502 \" Received employee of the month award twice                                              \n        \u2502                                                                                           \n        \u2502 HEARTBREAKER Sales Associate City, State May 2008 - Aug. 2008                             \n        \u2502                                                                                           \n        \u2502 \u00b7 Stocked sales floor with fast fashion inventory                                         \n        \u2502                                                                                           \n        \u2502 \u00b7 Marked down items allowing me to see unsuccessful merchandise in a retail market        \n        \u2502                                                                                           \n        \u2502 \" Offered advice and assistance to each guest                                             \n        \u2502                                                                                           \n        \u2502 VICTORIA'S SECRET Fashion Representative City, State Jan. 2006 - Feb. 2009                \n        \u2502                                                                                           \n        \u2502 \" Applied my leadership skills by assisting in the training of coworkers                  \n        \u2502                                                                                           \n        \u2502 \" Set up mannequins and displays in order to entice future customers                      \n        \u2502                                                                                           \n        \u2502 \u00b7 Provided superior customer service by helping with consumer decisions                   \n        \u2502                                                                                           \n        \u2502 \" Took seasonal inventory                                                                 \n        \u2502                                                                                           \n        \u2502 VOLUNTEER EXPERIENCE:                                                                     \n        \u2502                                                                                           \n        \u2502 TARGET CORPORATION Brand Ambassador                                                       \n        \u2502                                                                                           \n        \u2502 City, State August 2009                                                                   \n        \u2502                                                                                           \n        \u2502 \" Represented Periscope Marketing and Target Inc. at a college event                      \n        \u2502                                                                                           \n        \u2502 \" Engaged University of Minnesota freshman in the Target brand experience                 \n", "s_09958cc830": "   1    \u2502 \u250f\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n        \u2502 \u2503                                        Vice President, Enterprise Sales                 \n        \u2502 \u2517\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n        \u2502                                                                                           \n        \u2502 ACME \u00b7 San Francisco, CA (Hybrid) Full-time . Executive Level                             \n        \u2502                                                                                           \n        \u2502                                                                                           \n        \u2502                                                     About ACME                            \n        \u2502                                                                                           \n        \u2502 ACME is the global leader in CRM, empowering companies to connect with their customers in \n        \u2502 on our core values of Trust, Customer Success, Innovation, and Equality, we're transformin\n        \u2502 with their customers across sales, service, marketing, and more.                          \n        \u2502                                                                                           \n        \u2502                                                                                           \n        \u2502                                                  The Opportunity                          \n        \u2502                                                                                           \n        \u2502 We're seeking an exceptional Vice President of Enterprise Sales to lead our North American\n        \u2502 drive the next phase of our growth. This is a high-impact role where you'll build and scal\n        \u2502 organization, own significant revenue accountability, and work directly with C-suite execu\n        \u2502 companies.                                                                                \n        \u2502                                                                                           \n        \u2502 As VP of Enterprise Sales, you'll lead 60+ enterprise account executives, own $180M+ in AR\n        \u2502 critical role in shaping our go-to-market strategy. This is an opportunity to make your ma\n        \u2502 most innovative technology companies.                                                     \n        \u2502                                                                                           \n        \u2502                                                                                           \n        \u2502                                                   What You'll Do                          \n        \u2502                                                                                           \n        \u2502 \u00b7 Lead & Scale: Build and develop a high-performing team of 60+ enterprise sales professio\n        \u2502 regions                                                                                   \n        \u2502                                                                                           \n        \u2502 \u00b7 Drive Revenue: Own and deliver $180M+ ARR with full P&L accountability and strategic pla\n        \u2502                                                                                           \n        \u2502 \u00b7 Strategic Execution: Develop and implement sales strategies that accelerate pipeline gro\n        \u2502 rates                                                                                     \n        \u2502                                                                                           \n        \u2502 \u00b7 Customer Relationships: Build and maintain executive relationships with C-level stakehol\n        \u2502 accounts                                                                                  \n        \u2502                                                                                           \n        \u2502 \u00b7 Sales Excellence: Drive operational rigor through accurate forecasting, process optimiza\n        \u2502 decision making                                                                           \n        \u2502                                                                                           \n        \u2502 \u00b7 Talent Development: Coach, mentor, and develop the next generation of sales leaders     \n        \u2502                                                                                           \n        \u2502 \u00b7 Cross-functional Leadership: Partner with Product, Marketing, Customer Success, and Chan\n        \u2502 integrated solutions                                                                      \n        \u2502                                                                                           \n        \u2502 \u00b7 Innovation: Champion new sales methodologies, tools, and approaches that improve team pr\n        \u2502                                                                                           \n        \u2502                                                                                           \n        \u2502                                                   What You Bring                          \n        \u2502                                                                                           \n        \u2502                                              Required Qualifications                      \n        \u2502                                                                                           \n        \u2502 \u00b7 12+ years of progressive B2B sales experience with at least 5 years in VP-level or equiv\n        \u2502                                                                                           \n        \u2502 \u00b7 Proven track record of building and scaling enterprise sales teams of 50+ people        \n        \u2502                                                                                           \n        \u2502 \u00b7 Demonstrated success managing $100M+ ARR quotas and consistently exceeding targets      \n        \u2502                                                                                           \n        \u2502 \u00b7 Deep expertise in complex, consultative sales with 6-12 month sales cycles              \n        \u2502                                                                                           \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n   2    \u2502 \u00b7 Experience selling SaaS solutions to Fortune 500 enterprises                            \n        \u2502                                                                                           \n        \u2502 \u00b7 Strong executive presence with ability to engage C-suite buyers                         \n        \u2502                                                                                           \n        \u2502 \u00b7 Bachelor's degree required; MBA preferred                                               \n        \u2502                                                                                           \n        \u2502                                                What Sets You Apart                        \n        \u2502                                                                                           \n        \u2502 \u00b7 Experience in CRM, cloud infrastructure, or enterprise software markets                 \n        \u2502                                                                                           \n        \u2502 \u00b7 Track record of building sales teams from early stage through scale                     \n        \u2502                                                                                           \n        \u2502 \u00b7 Expertise in account-based selling and strategic account management                     \n        \u2502                                                                                           \n        \u2502 \u00b7 Strong analytical skills with proficiency in ACME, sales analytics tools                \n        \u2502                                                                                           \n        \u2502 \u00b7 History of developing talent - multiple direct reports promoted to leadership roles     \n        \u2502                                                                                           \n        \u2502 \u00b7 Experience with channel/partner sales models                                            \n        \u2502                                                                                           \n        \u2502 \u00b7 Passion for coaching and developing high-performing teams                               \n        \u2502                                                                                           \n        \u2502                                              Leadership Competencies                      \n        \u2502                                                                                           \n        \u2502 \u00b7 Strategic thinking and business acumen                                                  \n        \u2502                                                                                           \n        \u2502 \u00b7 Exceptional communication and executive presence                                        \n        \u2502                                                                                           \n        \u2502 \u00b7 Data-driven decision making                                                             \n        \u2502                                                                                           \n        \u2502 \u00b7 Change management and organizational development                                        \n        \u2502                                                                                           \n        \u2502 \u00b7 Cross-functional collaboration                                                          \n        \u2502                                                                                           \n        \u2502 \u00b7 Diversity, equity, and inclusion advocacy                                               \n        \u2502                                                                                           \n        \u2502                                              Compensation & Benefits                      \n        \u2502                                                                                           \n        \u2502                                        Total Target Compensation: $975,000                \n        \u2502                                                                                           \n        \u2502 \u00b7 Base Salary: $325,000                                                                   \n        \u2502                                                                                           \n        \u2502 \u00b7 Variable Compensation: $650,000 (at 100% quota attainment)                              \n        \u2502                                                                                           \n        \u2502 \u00b7 Equity: RSU grant valued at $500,000 (4-year vesting)                                   \n        \u2502                                                                                           \n        \u2502 \u00b7 Sign-on Bonus: $100,000                                                                 \n        \u2502                                                                                           \n        \u2502                                           Comprehensive Benefits Package                  \n        \u2502                                                                                           \n", "s_5f1107a2c5": " Attribute           \u2503 Value                                                                        \n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n skills              \u2502 Graphic Design, Trend Awareness, Customer Service, Organizational Skills, Lea\n                     \u2502 Inventory Control                                                            \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n years_of_experience \u2502 8.2                                                                          \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n education           \u2502 Bachelor of Science in Graphic Design, University of Minnesota, College of De\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n previous_roles      \u2502 Sales Associate at American Eagle, Spa Consultant at Planet Beach, Sales Asso\n                     \u2502 Fashion Representative at Victoria's Secret, Brand Ambassador at Target Corpo\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n key_achievements    \u2502 Received employee of the month award twice at Planet Beach                   \n", "s_7d1841499d": " Attribute        \u2503 Value                                                                           \n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n required_skills  \u2502 Experience selling SaaS solutions to Fortune 500 enterprises, Strong executive p\n                  \u2502 engage C-suite buyers                                                           \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n preferred_skills \u2502 Experience in CRM, cloud infrastructure, or enterprise software markets, Track r\n                  \u2502 teams from early stage through scale, Expertise in account-based selling and str\n                  \u2502 management, Strong analytical skills with proficiency in ACME, sales analytics t\n                  \u2502 developing talent - multiple direct reports promoted to leadership roles, Experi\n                  \u2502 channel/partner sales models, Passion for coaching and developing high-performin\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n responsibilities \u2502 Lead and develop a high-performing team of 60+ enterprise sales professionals, O\n                  \u2502 ARR with full P&L accountability, Develop and implement sales strategies that ac\n                  \u2502 growth, Build and maintain executive relationships with C-level stakeholders, Dr\n                  \u2502 through accurate forecasting and process optimization, Coach, mentor, and develo\n                  \u2502 sales leaders, Partner with cross-functional teams to deliver integrated solutio\n                  \u2502 methodologies and tools                                                         \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n qualifications   \u2502 12+ years of experience, Bachelor's degree required; MBA preferred              \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n experience_level \u2502 Executive Level                                                                 \n", "s_bdd2d8f94a": " Attribute            \u2503 Value                                                                       \n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n overall_match_score  \u2502 10.0                                                                        \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n matching_skills      \u2502 Customer Service, Organizational Skills, Leadership, Sales                  \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n missing_skills       \u2502 Experience selling SaaS solutions to Fortune 500 enterprises, Strong executi\n                      \u2502 to engage C-suite buyers, Experience in CRM, cloud infrastructure, or enterp\n                      \u2502 Track record of building sales teams from early stage through scale, Experti\n                      \u2502 selling and strategic account management, Strong analytical skills with prof\n                      \u2502 analytics tools, History of developing talent - multiple direct reports prom\n                      \u2502 roles, Experience with channel/partner sales models, Passion for coaching an\n                      \u2502 high-performing teams, 12+ years of experience, MBA                         \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n experience_alignment \u2502 The candidate has 8.2 years of experience, which is below the required 12+ y\n                      \u2502 executive-level position.                                                   \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n areas_of_concern     \u2502 The candidate lacks the necessary experience in SaaS sales and executive-lev\n                      \u2502 which are critical for this role.                                           \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n areas_to_explore     \u2502 Discuss the candidate's leadership experience and ability to develop teams, \n                      \u2502 understanding of enterprise sales strategies.                               \n", "s_a809a9f552": "    1    \u2502  Attribute     \u2503 Value                                                                   \n         \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n         \u2502  question_text \u2502 Can you describe your experience in leading and developing sales teams? \n         \u2502                \u2502 you implemented to ensure their success?                                \n         \u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n         \u2502  purpose       \u2502 To assess the candidate's leadership experience and ability to develop h\n         \u2502                \u2502 which is crucial for the role.                                          \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n    2    \u2502  Attribute     \u2503 Value                                                                   \n         \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n         \u2502  question_text \u2502 What approaches have you used to engage C-suite executives in your previ\n         \u2502                \u2502 provide an example of a successful engagement?                          \n         \u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n         \u2502  purpose       \u2502 To evaluate the candidate's executive presence and ability to build rela\n         \u2502                \u2502 high-level stakeholders, which is essential for the position.           \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n    3    \u2502  Attribute     \u2503 Value                                                                   \n         \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n         \u2502  question_text \u2502 Given your background in retail sales, how do you plan to transition you\n         \u2502                \u2502 SaaS solutions to enterprise clients?                                   \n         \u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n         \u2502  purpose       \u2502 To explore the candidate's understanding of SaaS sales and their ability\n         \u2502                \u2502 to meet the requirements of the role.                                   \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n    4    \u2502  Attribute     \u2503 Value                                                                   \n         \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n         \u2502  question_text \u2502 Can you discuss a time when you had to analyze sales data to make strate\n         \u2502                \u2502 tools did you use, and what was the outcome?                            \n         \u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n         \u2502  purpose       \u2502 To assess the candidate's analytical skills and familiarity with sales a\n         \u2502                \u2502 are important for driving operational rigor.                            \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n    5    \u2502  Attribute     \u2503 Value                                                                   \n         \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n         \u2502  question_text \u2502 What is your philosophy on coaching and developing talent within a sales\n         \u2502                \u2502 specific instance where you successfully promoted someone to a leadershi\n         \u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n         \u2502  purpose       \u2502 To investigate the candidate's passion for talent development and their \n         \u2502                \u2502 leadership within their teams.                                          \n"};
+const stuffDataHtml = {"s_35a3b4b37e": "<table ><tr><th>overall_match_score</th><td>10.0</td></tr><tr><th>matching_skills</th><td>Customer Service, Organizational Skills, Leadership, Sales</td></tr><tr><th>missing_skills</th><td>Experience selling SaaS solutions to Fortune 500 enterprises, Strong executive presence with ability to engage C-suite buyers, Experience in CRM, cloud infrastructure, or enterprise software markets, Track record of building sales teams from early stage through scale, Expertise in account-based selling and strategic account management, Strong analytical skills with proficiency in ACME, sales analytics tools, History of developing talent - multiple direct reports promoted to leadership roles, Experience with channel/partner sales models, Passion for coaching and developing high-performing teams, 12+ years of experience, MBA</td></tr><tr><th>experience_alignment</th><td>The candidate has 8.2 years of experience, which is below the required 12+ years for this executive-level position.</td></tr><tr><th>areas_of_concern</th><td>The candidate lacks the necessary experience in SaaS sales and executive-level responsibilities, which are critical for this role.</td></tr><tr><th>areas_to_explore</th><td>Discuss the candidate&#x27;s leadership experience and ability to develop teams, as well as their understanding of enterprise sales strategies.</td></tr><tr><th>questions</th><td><table ><thead><tr><th>question_text</th><th>purpose</th></tr></thead><tbody><tr><td>Can you describe your experience in leading and developing sales teams? What strategies have you implemented to ensure their success?</td><td>To assess the candidate&#x27;s leadership experience and ability to develop high-performing teams, which is crucial for the role.</td></tr><tr><td>What approaches have you used to engage C-suite executives in your previous roles? Can you provide an example of a successful engagement?</td><td>To evaluate the candidate&#x27;s executive presence and ability to build relationships with high-level stakeholders, which is essential for the position.</td></tr><tr><td>Given your background in retail sales, how do you plan to transition your skills to selling SaaS solutions to enterprise clients?</td><td>To explore the candidate&#x27;s understanding of SaaS sales and their ability to adapt their skills to meet the requirements of the role.</td></tr><tr><td>Can you discuss a time when you had to analyze sales data to make strategic decisions? What tools did you use, and what was the outcome?</td><td>To assess the candidate&#x27;s analytical skills and familiarity with sales analytics tools, which are important for driving operational rigor.</td></tr><tr><td>What is your philosophy on coaching and developing talent within a sales team? Can you share a specific instance where you successfully promoted someone to a leadership role?</td><td>To investigate the candidate&#x27;s passion for talent development and their history of fostering leadership within their teams.</td></tr></tbody></table></td></tr></table>", "s_7f2e386dfb": "<a href=\"data/CVx5/CV-01.pdf\" class=\"msg-pdf\">data/CVx5/CV-01.pdf</a>", "s_85346f6ca9": "<a href=\"https://pipelex-web.s3.amazonaws.com/demo/Job-Offer.pdf\" class=\"msg-pdf\">https://pipelex-web.s3.amazonaws.com/demo/Job-Offer.pdf</a>", "s_d282fc7b51": "<table ><thead><tr><th>text_and_images</th><th>page_view</th></tr></thead><tbody><tr><td><table ><tr><th>text</th><td><table ><tr><th>text</th><td># JOHN DOE\n\n\n## Full Address . City, State, ZIP . Phone Number . E-mail\n\nOBJECTIVE: Design apparel print for an innovative retail company\n\nEDUCATION:\n\nUNIVERSITY OF MINNESOTA\nCollege of Design\n&quot; Bachelor of Science in Graphic Design\n\n&quot; Cumulative GPA 3.93, Dean&#x27;s List\n\n&quot; Twin cities Iron Range Scholarship\n\nCity, State\nMay 2011\n\nWORK EXPERIENCE:\n\nAMERICAN EAGLE\nSales Associate\n\nCity, State\nJuly 2009 - present\n\n\u00b7 Collaborated with the store merchandiser creating displays to attract clientele\n\n&quot; Use my trend awareness to assist customers in their shopping experience\n\n&quot; Thoroughly scan every piece of merchandise for inventory control\n\n&quot; Process shipment to increase my product knowledge\n\nPLANET BEACH\nSpa Consultant\nCity, State\nAug. 2008 - present\n\n&quot; Sell retail and memberships to meet company sales goals\n\n&quot; Build organizational skills by single handedly running all operating procedures\n\n&quot; Communicate with clients to fulfill their wants and needs\n\n&quot; Attend promotional events to market our services\n\n&quot; Handle cash and deposits during opening and closing\n\n&quot; Received employee of the month award twice\n\nHEARTBREAKER\nSales Associate\nCity, State\nMay 2008 - Aug. 2008\n\n\u00b7 Stocked sales floor with fast fashion inventory\n\n\u00b7 Marked down items allowing me to see unsuccessful merchandise in a retail market\n\n&quot; Offered advice and assistance to each guest\n\nVICTORIA&#x27;S SECRET\nFashion Representative\nCity, State\nJan. 2006 - Feb. 2009\n\n&quot; Applied my leadership skills by assisting in the training of coworkers\n\n&quot; Set up mannequins and displays in order to entice future customers\n\n\u00b7 Provided superior customer service by helping with consumer decisions\n\n&quot; Took seasonal inventory\n\nVOLUNTEER EXPERIENCE:\n\nTARGET CORPORATION\nBrand Ambassador\n\nCity, State\nAugust 2009\n\n&quot; Represented Periscope Marketing and Target Inc. at a college event\n\n&quot; Engaged University of Minnesota freshman in the Target brand experience\n</td></tr></table></td></tr><tr><th>images</th><td></td></tr></table></td><td>None</td></tr></tbody></table>", "s_09958cc830": "<table ><thead><tr><th>text_and_images</th><th>page_view</th></tr></thead><tbody><tr><td><table ><tr><th>text</th><td><table ><tr><th>text</th><td># Vice President, Enterprise Sales\n\nACME \u00b7 San Francisco, CA (Hybrid)\nFull-time . Executive Level\n\n\n## About ACME\n\nACME is the global leader in CRM, empowering companies to connect with their customers in entirely new ways.\nBuilt on our core values of Trust, Customer Success, Innovation, and Equality, we&#x27;re transforming how businesses\nengage with their customers across sales, service, marketing, and more.\n\n\n## The Opportunity\n\nWe&#x27;re seeking an exceptional Vice President of Enterprise Sales to lead our North American Enterprise\nsegment and drive the next phase of our growth. This is a high-impact role where you&#x27;ll build and scale a world-\nclass sales organization, own significant revenue accountability, and work directly with C-suite executives at\nFortune 500 companies.\n\nAs VP of Enterprise Sales, you&#x27;ll lead 60+ enterprise account executives, own $180M+ in ARR quota, and play a\ncritical role in shaping our go-to-market strategy. This is an opportunity to make your mark at one of the world&#x27;s\nmost innovative technology companies.\n\n\n## What You&#x27;ll Do\n\n\u00b7 Lead &amp; Scale: Build and develop a high-performing team of 60+ enterprise sales professionals across multiple\nregions\n\n\u00b7 Drive Revenue: Own and deliver $180M+ ARR with full P&amp;L accountability and strategic planning\nresponsibility\n\n\u00b7 Strategic Execution: Develop and implement sales strategies that accelerate pipeline growth and increase\nwin rates\n\n\u00b7 Customer Relationships: Build and maintain executive relationships with C-level stakeholders at our largest\naccounts\n\n\u00b7 Sales Excellence: Drive operational rigor through accurate forecasting, process optimization, and data-driven\ndecision making\n\n\u00b7 Talent Development: Coach, mentor, and develop the next generation of sales leaders\n\n\u00b7 Cross-functional Leadership: Partner with Product, Marketing, Customer Success, and Channel teams to\ndeliver integrated solutions\n\n\u00b7 Innovation: Champion new sales methodologies, tools, and approaches that improve team productivity\n\n\n## What You Bring\n\n\n### Required Qualifications\n\n\u00b7 12+ years of progressive B2B sales experience with at least 5 years in VP-level or equivalent leadership roles\n\n\u00b7 Proven track record of building and scaling enterprise sales teams of 50+ people\n\n\u00b7 Demonstrated success managing $100M+ ARR quotas and consistently exceeding targets\n\n\u00b7 Deep expertise in complex, consultative sales with 6-12 month sales cycles\n\n&lt;!-- PageBreak --&gt;\n\n</td></tr></table></td></tr><tr><th>images</th><td></td></tr></table></td><td>None</td></tr><tr><td><table ><tr><th>text</th><td><table ><tr><th>text</th><td>\u00b7 Experience selling SaaS solutions to Fortune 500 enterprises\n\n\u00b7 Strong executive presence with ability to engage C-suite buyers\n\n\u00b7 Bachelor&#x27;s degree required; MBA preferred\n\n\n### What Sets You Apart\n\n\u00b7 Experience in CRM, cloud infrastructure, or enterprise software markets\n\n\u00b7 Track record of building sales teams from early stage through scale\n\n\u00b7 Expertise in account-based selling and strategic account management\n\n\u00b7 Strong analytical skills with proficiency in ACME, sales analytics tools\n\n\u00b7 History of developing talent - multiple direct reports promoted to leadership roles\n\n\u00b7 Experience with channel/partner sales models\n\n\u00b7 Passion for coaching and developing high-performing teams\n\n\n### Leadership Competencies\n\n\u00b7 Strategic thinking and business acumen\n\n\u00b7 Exceptional communication and executive presence\n\n\u00b7 Data-driven decision making\n\n\u00b7 Change management and organizational development\n\n\u00b7 Cross-functional collaboration\n\n\u00b7 Diversity, equity, and inclusion advocacy\n\n\n### Compensation &amp; Benefits\n\n\n#### Total Target Compensation: $975,000\n\n\u00b7 Base Salary: $325,000\n\n\u00b7 Variable Compensation: $650,000 (at 100% quota attainment)\n\n\u00b7 Equity: RSU grant valued at $500,000 (4-year vesting)\n\n\u00b7 Sign-on Bonus: $100,000\n\n\n#### Comprehensive Benefits Package\n\n\n&lt;table&gt;\n&lt;tr&gt;\n&lt;td&gt;\u00b7 Premium medical, dental, and vision coverage&lt;/td&gt;\n&lt;td&gt;\u00b7 401(k) with 6% company match&lt;/td&gt;\n&lt;/tr&gt;\n&lt;tr&gt;\n&lt;td&gt;\u00b7 Flexible PTO policy&lt;/td&gt;\n&lt;td&gt;\u00b7 $5,000 annual professional development budget&lt;/td&gt;\n&lt;/tr&gt;\n&lt;tr&gt;\n&lt;td&gt;\u00b7 Executive coaching program&lt;/td&gt;\n&lt;td&gt;\u00b7 Wellness reimbursement ($1,200/year)&lt;/td&gt;\n&lt;/tr&gt;\n&lt;tr&gt;\n&lt;td&gt;\u00b7 8 paid volunteer days (VTO)&lt;/td&gt;\n&lt;td&gt;\u00b7 Paid parental leave (26 weeks primary caregiver)&lt;/td&gt;\n&lt;/tr&gt;\n&lt;tr&gt;\n&lt;td&gt;\u00b7 Employee stock purchase plan (15% discount)&lt;/td&gt;\n&lt;td&gt;\u00b7 Relocation assistance available&lt;/td&gt;\n&lt;/tr&gt;\n&lt;/table&gt;\n</td></tr></table></td></tr><tr><th>images</th><td></td></tr></table></td><td>None</td></tr></tbody></table>", "s_5f1107a2c5": "<table ><tr><th>skills</th><td>Graphic Design, Trend Awareness, Customer Service, Organizational Skills, Leadership, Sales, Inventory Control</td></tr><tr><th>years_of_experience</th><td>8.2</td></tr><tr><th>education</th><td>Bachelor of Science in Graphic Design, University of Minnesota, College of Design</td></tr><tr><th>previous_roles</th><td>Sales Associate at American Eagle, Spa Consultant at Planet Beach, Sales Associate at Heartbreaker, Fashion Representative at Victoria&#x27;s Secret, Brand Ambassador at Target Corporation</td></tr><tr><th>key_achievements</th><td>Received employee of the month award twice at Planet Beach</td></tr></table>", "s_7d1841499d": "<table ><tr><th>required_skills</th><td>Experience selling SaaS solutions to Fortune 500 enterprises, Strong executive presence with ability to engage C-suite buyers</td></tr><tr><th>preferred_skills</th><td>Experience in CRM, cloud infrastructure, or enterprise software markets, Track record of building sales teams from early stage through scale, Expertise in account-based selling and strategic account management, Strong analytical skills with proficiency in ACME, sales analytics tools, History of developing talent - multiple direct reports promoted to leadership roles, Experience with channel/partner sales models, Passion for coaching and developing high-performing teams</td></tr><tr><th>responsibilities</th><td>Lead and develop a high-performing team of 60+ enterprise sales professionals, Own and deliver $180M+ ARR with full P&amp;L accountability, Develop and implement sales strategies that accelerate pipeline growth, Build and maintain executive relationships with C-level stakeholders, Drive operational rigor through accurate forecasting and process optimization, Coach, mentor, and develop the next generation of sales leaders, Partner with cross-functional teams to deliver integrated solutions, Champion new sales methodologies and tools</td></tr><tr><th>qualifications</th><td>12+ years of experience, Bachelor&#x27;s degree required; MBA preferred</td></tr><tr><th>experience_level</th><td>Executive Level</td></tr></table>", "s_bdd2d8f94a": "<table ><tr><th>overall_match_score</th><td>10.0</td></tr><tr><th>matching_skills</th><td>Customer Service, Organizational Skills, Leadership, Sales</td></tr><tr><th>missing_skills</th><td>Experience selling SaaS solutions to Fortune 500 enterprises, Strong executive presence with ability to engage C-suite buyers, Experience in CRM, cloud infrastructure, or enterprise software markets, Track record of building sales teams from early stage through scale, Expertise in account-based selling and strategic account management, Strong analytical skills with proficiency in ACME, sales analytics tools, History of developing talent - multiple direct reports promoted to leadership roles, Experience with channel/partner sales models, Passion for coaching and developing high-performing teams, 12+ years of experience, MBA</td></tr><tr><th>experience_alignment</th><td>The candidate has 8.2 years of experience, which is below the required 12+ years for this executive-level position.</td></tr><tr><th>areas_of_concern</th><td>The candidate lacks the necessary experience in SaaS sales and executive-level responsibilities, which are critical for this role.</td></tr><tr><th>areas_to_explore</th><td>Discuss the candidate&#x27;s leadership experience and ability to develop teams, as well as their understanding of enterprise sales strategies.</td></tr></table>", "s_a809a9f552": "<table ><thead><tr><th>question_text</th><th>purpose</th></tr></thead><tbody><tr><td>Can you describe your experience in leading and developing sales teams? What strategies have you implemented to ensure their success?</td><td>To assess the candidate&#x27;s leadership experience and ability to develop high-performing teams, which is crucial for the role.</td></tr><tr><td>What approaches have you used to engage C-suite executives in your previous roles? Can you provide an example of a successful engagement?</td><td>To evaluate the candidate&#x27;s executive presence and ability to build relationships with high-level stakeholders, which is essential for the position.</td></tr><tr><td>Given your background in retail sales, how do you plan to transition your skills to selling SaaS solutions to enterprise clients?</td><td>To explore the candidate&#x27;s understanding of SaaS sales and their ability to adapt their skills to meet the requirements of the role.</td></tr><tr><td>Can you discuss a time when you had to analyze sales data to make strategic decisions? What tools did you use, and what was the outcome?</td><td>To assess the candidate&#x27;s analytical skills and familiarity with sales analytics tools, which are important for driving operational rigor.</td></tr><tr><td>What is your philosophy on coaching and developing talent within a sales team? Can you share a specific instance where you successfully promoted someone to a leadership role?</td><td>To investigate the candidate&#x27;s passion for talent development and their history of fostering leadership within their teams.</td></tr></tbody></table>"};
+const stuffMetadata = {"s_35a3b4b37e": {"name": "interview_sheet", "concept": "InterviewSheet"}, "s_7f2e386dfb": {"name": "cv_pdf", "concept": "Document"}, "s_85346f6ca9": {"name": "job_offer_pdf", "concept": "Document"}, "s_d282fc7b51": {"name": "cv_pages", "concept": "Page"}, "s_09958cc830": {"name": "job_offer_pages", "concept": "Page"}, "s_5f1107a2c5": {"name": "cv_analysis", "concept": "CVAnalysis"}, "s_7d1841499d": {"name": "job_requirements", "concept": "JobRequirements"}, "s_bdd2d8f94a": {"name": "match_analysis", "concept": "MatchAnalysis"}, "s_a809a9f552": {"name": "interview_questions", "concept": "InterviewQuestion"}};
+const stuffContentType = {"s_7f2e386dfb": "application/pdf", "s_85346f6ca9": "application/pdf"};
+const mermaidCode = "flowchart TD\n\n    %% Pipe and stuff nodes within controller subgraphs\n    subgraph sg_n_dab285a3c1[\"cv_job_match\"]\n        subgraph sg_n_2e1e5efb52[\"analyze_documents\"]\n            n_4de4c1177a[\"analyze_cv\"]\n            s_5f1107a2c5([\"cv_analysis\u003cbr/\u003eCVAnalysis\"]):::stuff\n            n_f4bf5f97b8[\"analyze_job_offer\"]\n            s_7d1841499d([\"job_requirements\u003cbr/\u003eJobRequirements\"]):::stuff\n        end\n        subgraph sg_n_e370e76d3a[\"extract_documents\"]\n            n_dd4b9cc64e[\"extract_cv\"]\n            s_d282fc7b51([\"cv_pages\u003cbr/\u003ePage\"]):::stuff\n            n_ac9945da43[\"extract_job_offer\"]\n            s_09958cc830([\"job_offer_pages\u003cbr/\u003ePage\"]):::stuff\n        end\n        n_06f945a880[\"compose_interview_sheet\"]\n        s_35a3b4b37e([\"interview_sheet\u003cbr/\u003eInterviewSheet\"]):::stuff\n        n_e16653d42d[\"evaluate_match\"]\n        s_bdd2d8f94a([\"match_analysis\u003cbr/\u003eMatchAnalysis\"]):::stuff\n        n_fb2c9a6d71[\"generate_interview_questions\"]\n        s_a809a9f552([\"interview_questions\u003cbr/\u003eInterviewQuestion\"]):::stuff\n    end\n\n    %% Pipeline input stuff nodes (no producer)\n    s_7f2e386dfb([\"cv_pdf\u003cbr/\u003ePDF\"]):::stuff\n    s_85346f6ca9([\"job_offer_pdf\u003cbr/\u003ePDF\"]):::stuff\n\n    %% Data flow edges: producer -\u003e stuff -\u003e consumer\n    n_f4bf5f97b8 --\u003e s_7d1841499d\n    n_e16653d42d --\u003e s_bdd2d8f94a\n    n_ac9945da43 --\u003e s_09958cc830\n    n_dd4b9cc64e --\u003e s_d282fc7b51\n    n_4de4c1177a --\u003e s_5f1107a2c5\n    n_fb2c9a6d71 --\u003e s_a809a9f552\n    n_06f945a880 --\u003e s_35a3b4b37e\n    s_7d1841499d --\u003e n_e16653d42d\n    s_7d1841499d --\u003e n_fb2c9a6d71\n    s_bdd2d8f94a --\u003e n_fb2c9a6d71\n    s_bdd2d8f94a --\u003e n_06f945a880\n    s_85346f6ca9 --\u003e n_ac9945da43\n    s_09958cc830 --\u003e n_f4bf5f97b8\n    s_d282fc7b51 --\u003e n_4de4c1177a\n    s_7f2e386dfb --\u003e n_dd4b9cc64e\n    s_5f1107a2c5 --\u003e n_e16653d42d\n    s_5f1107a2c5 --\u003e n_fb2c9a6d71\n    s_a809a9f552 --\u003e n_06f945a880\n\n    %% Style definitions\n    classDef failed fill:#ffcccc,stroke:#cc0000\n    classDef stuff fill:#fff3e6,stroke:#cc6600,stroke-width:2px\n    classDef controller fill:#e6f3ff,stroke:#0066cc\n\n    %% Subgraph depth-based coloring\n    style sg_n_2e1e5efb52 fill:#e6ffe6\n    style sg_n_dab285a3c1 fill:#e6f3ff\n    style sg_n_e370e76d3a fill:#e6ffe6";
+
+// Track current state
+let currentStuffId = null;
+let currentFormat = 'html';
+let currentTheme = "dark";
+
+// Escape HTML to prevent XSS when displaying text content
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Make all links in a container open in new windows
+function makeLinksOpenInNewWindow(container) {
+    if (!container) return;
+    const links = container.querySelectorAll('a');
+    links.forEach(link => {
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+    });
+}
+
+// Validate that a URL is a safe HTTP/HTTPS URL (prevents javascript: and data: URL injection)
+function isValidHttpUrl(url) {
+    if (!url || typeof url !== 'string') return false;
+    return url.startsWith('https://') || url.startsWith('http://');
+}
+
+// Extract URL from stuff data (handles various data structures)
+// Returns null for invalid/unsafe URLs (javascript:, data:, etc.)
+function extractUrl(jsonData) {
+    if (!jsonData) return null;
+    // Check if data itself is a URL string
+    if (typeof jsonData === 'string') {
+        return isValidHttpUrl(jsonData) ? jsonData : null;
+    }
+    // Prefer display_link (pre-signed S3 URL) over url (internal pipelex-storage:// URL)
+    const candidates = [jsonData.display_link, jsonData.src, jsonData.href, jsonData.uri, jsonData.url];
+    for (const candidate of candidates) {
+        if (isValidHttpUrl(candidate)) return candidate;
+    }
+    return null;
+}
+
+// Theme-specific color palettes for custom node styling
+const themePalettes = {
+    default: {
+        page: { bg: '#f8fafc', text: '#1e293b', label: '#64748b', border: '#cbd5e1',
+                borderHover: '#94a3b8', selectBg: 'white', containerBg: 'white' },
+        failed: { fill: '#fee2e2', stroke: '#dc2626' },
+        controller: { fill: '#dbeafe', stroke: '#2563eb' },
+        pipe: { fill: '#dbeafe', stroke: '#2563eb' },
+        stuff: { fill: '#fef3c7', stroke: '#d97706' },
+        subgraph: ['#eff6ff', '#ecfdf5', '#fefce8', '#fdf4ff', '#f0fdfa']
+    },
+    dark: {
+        page: { bg: '#1a1a2e', text: '#e0f7fa', label: '#80deea', border: '#2d4a5a',
+                borderHover: '#00bcd4', selectBg: '#2d4a5a', containerBg: '#16213e' },
+        failed: { fill: '#3a1a1a', stroke: '#ff5252' },
+        controller: { fill: '#1a3a4a', stroke: '#00e5ff' },
+        pipe: { fill: '#1a3a4a', stroke: '#00e5ff' },
+        stuff: { fill: '#2a1a3a', stroke: '#ff4081' },
+        subgraph: ['#1e3a4a', '#1a3a3a', '#2a3a4a', '#1a2a4a', '#2a4a4a']
+    },
+    forest: {
+        page: { bg: '#f0fdf4', text: '#14532d', label: '#166534', border: '#86efac',
+                borderHover: '#4ade80', selectBg: 'white', containerBg: '#fafffe' },
+        failed: { fill: '#fecaca', stroke: '#b91c1c' },
+        controller: { fill: '#dcfce7', stroke: '#16a34a' },
+        pipe: { fill: '#dcfce7', stroke: '#16a34a' },
+        stuff: { fill: '#fef9c3', stroke: '#ca8a04' },
+        subgraph: ['#d1fae5', '#bbf7d0', '#d9f99d', '#fef08a', '#a7f3d0']
+    },
+    neutral: {
+        page: { bg: '#fafafa', text: '#171717', label: '#525252', border: '#d4d4d4',
+                borderHover: '#a3a3a3', selectBg: 'white', containerBg: 'white' },
+        failed: { fill: '#fecaca', stroke: '#991b1b' },
+        controller: { fill: '#e5e5e5', stroke: '#525252' },
+        pipe: { fill: '#e5e5e5', stroke: '#525252' },
+        stuff: { fill: '#fef3c7', stroke: '#92400e' },
+        subgraph: ['#f5f5f5', '#e5e5e5', '#fafaf9', '#f5f5f4', '#fafafa']
+    },
+    base: {
+        page: { bg: '#fff', text: '#18181b', label: '#52525b', border: '#e4e4e7',
+                borderHover: '#a1a1aa', selectBg: 'white', containerBg: '#fafafa' },
+        failed: { fill: '#ffe4e6', stroke: '#e11d48' },
+        controller: { fill: '#e0f2fe', stroke: '#0284c7' },
+        pipe: { fill: '#e0f2fe', stroke: '#0284c7' },
+        stuff: { fill: '#ffedd5', stroke: '#ea580c' },
+        subgraph: ['#f0f9ff', '#f0fdf4', '#fffbeb', '#fdf4ff', '#ecfeff']
+    }
+};
+
+function applyPageTheme(theme) {
+    const palette = themePalettes[theme]?.page || themePalettes.default.page;
+    document.documentElement.style.setProperty('--bg-color', palette.bg);
+    document.documentElement.style.setProperty('--text-color', palette.text);
+    document.documentElement.style.setProperty('--label-color', palette.label);
+    document.documentElement.style.setProperty('--border-color', palette.border);
+    document.documentElement.style.setProperty('--border-hover', palette.borderHover);
+    document.documentElement.style.setProperty('--select-bg', palette.selectBg);
+    document.documentElement.style.setProperty('--container-bg', palette.containerBg);
+}
+
+function applyThemeColors(code, theme) {
+    const palette = themePalettes[theme] || themePalettes.default;
+    let result = code;
+
+    // Replace classDef colors
+    result = result.replace(
+        /classDef\s+failed\s+fill:[^,]+,stroke:[^\s\n]+/g,
+        `classDef failed fill:${palette.failed.fill},stroke:${palette.failed.stroke}`
+    );
+    result = result.replace(
+        /classDef\s+controller\s+fill:[^,]+,stroke:[^\s\n]+/g,
+        `classDef controller fill:${palette.controller.fill},stroke:${palette.controller.stroke}`
+    );
+    result = result.replace(
+        /classDef\s+pipe\s+fill:[^,]+,stroke:[^\s\n]+/g,
+        `classDef pipe fill:${palette.pipe.fill},stroke:${palette.pipe.stroke}`
+    );
+    result = result.replace(
+        /classDef\s+pipe_failed\s+fill:[^,]+,stroke:[^\s\n]+/g,
+        `classDef pipe_failed fill:${palette.failed.fill},stroke:${palette.failed.stroke}`
+    );
+    result = result.replace(
+        /classDef\s+stuff\s+fill:[^,]+,stroke:[^,]+/g,
+        `classDef stuff fill:${palette.stuff.fill},stroke:${palette.stuff.stroke}`
+    );
+
+    // Replace subgraph fill colors (style sg_xxx fill:#xxx)
+    const subgraphColors = palette.subgraph;
+    let colorIndex = 0;
+    result = result.replace(
+        /style\s+(sg_[^\s]+)\s+fill:#[a-fA-F0-9]+/g,
+        (match, subgraphId) => {
+            const color = subgraphColors[colorIndex % subgraphColors.length];
+            colorIndex++;
+            return `style ${subgraphId} fill:${color}`;
+        }
+    );
+
+    return result;
+}
+
+function initMermaid(theme) {
+    mermaid.initialize({
+        startOnLoad: false,
+        theme: theme,
+        flowchart: {
+            useMaxWidth: true,
+            htmlLabels: true,
+            curve: 'basis'
+        }
+    });
+}
+
+function attachClickHandlers() {
+    // Wait for mermaid to render, then attach click handlers
+    setTimeout(() => {
+        const svgContainer = document.querySelector('.mermaid svg');
+        if (!svgContainer) return;
+
+        // Find nodes by their flowchart IDs - use any available data source
+        const allStuffIds = new Set([
+            ...Object.keys(stuffDataJson || {}),
+            ...Object.keys(stuffDataText || {}),
+            ...Object.keys(stuffDataHtml || {})
+        ]);
+
+        for (const stuffId of allStuffIds) {
+            // Mermaid generates IDs like 'flowchart-s_xxx-123'
+            const nodes = svgContainer.querySelectorAll(`[id^="flowchart-${stuffId}"]`);
+            nodes.forEach(node => {
+                node.classList.add('clickable-stuff');
+                node.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showModal(stuffId);
+                });
+            });
+        }
+    }, 500);
+}
+
+async function renderDiagram(theme) {
+    const container = document.getElementById('mermaid-diagram');
+    const themedCode = applyThemeColors(mermaidCode, theme);
+    container.innerHTML = themedCode;
+    container.removeAttribute('data-processed');
+    applyPageTheme(theme);
+    initMermaid(theme);
+    await mermaid.run({ nodes: [container] });
+    attachClickHandlers();
+}
+
+// Set initial theme in dropdown
+document.getElementById('theme-select').value = currentTheme;
+
+// Handle theme change
+document.getElementById('theme-select').addEventListener('change', async (e) => {
+    currentTheme = e.target.value;
+    await renderDiagram(currentTheme);
+});
+
+// Initial render on page load
+renderDiagram(currentTheme);
+
+// Set up format tab handlers
+document.querySelectorAll('.format-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        if (tab.disabled) return;
+        const format = tab.dataset.format;
+        setFormat(format);
+    });
+});
+
+function setFormat(format) {
+    currentFormat = format;
+    // Update tab styling
+    document.querySelectorAll('.format-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`tab-${format}`).classList.add('active');
+    // Re-render content if modal is open
+    if (currentStuffId) {
+        renderContent(currentStuffId, format);
+    }
+}
+
+function renderContent(stuffId, format) {
+    const content = document.getElementById('modal-content');
+    content.classList.remove('html-content', 'text-content', 'pdf-content', 'image-content');
+
+    // Handle PDF content type with iframe viewer
+    const contentType = stuffContentType?.[stuffId];
+    const jsonData = stuffDataJson?.[stuffId];
+
+    if (format === 'html' && contentType === 'application/pdf') {
+        const pdfUrl = extractUrl(jsonData);
+        if (pdfUrl) {
+            content.classList.add('pdf-content');
+            content.innerHTML = '';
+            const iframe = document.createElement('iframe');
+            iframe.src = pdfUrl;
+            iframe.style.cssText = 'width:100%; height:100%; border:none; min-height:500px;';
+            content.appendChild(iframe);
+            updateOpenExternalButton(stuffId, contentType, jsonData);
+            return;
+        }
+    }
+
+    // Handle image content type
+    if (format === 'html' && contentType?.startsWith('image/')) {
+        const imageUrl = extractUrl(jsonData);
+        if (imageUrl) {
+            content.classList.add('image-content');
+            content.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.style.cssText = 'max-width:100%; max-height:100%; object-fit:contain;';
+            img.alt = 'Image content';
+            content.appendChild(img);
+            updateOpenExternalButton(stuffId, contentType, jsonData);
+            return;
+        }
+    }
+
+    if (format === 'json') {
+        const data = stuffDataJson?.[stuffId];
+        content.innerHTML = '';
+        content.textContent = data ? JSON.stringify(data, null, 2) : 'No JSON data available';
+    } else if (format === 'text') {
+        const data = stuffDataText?.[stuffId];
+        content.classList.add('text-content');
+        content.innerHTML = '';
+        content.textContent = data || 'No text data available';
+    } else if (format === 'html') {
+        const data = stuffDataHtml?.[stuffId];
+        if (data) {
+            content.classList.add('html-content');
+            content.innerHTML = DOMPurify.sanitize(data);
+            makeLinksOpenInNewWindow(content);
+        } else {
+            content.innerHTML = '';
+            content.textContent = 'No HTML data available';
+        }
+    }
+
+    updateOpenExternalButton(stuffId, contentType, jsonData);
+}
+
+// Update visibility of the "open in new window" button (PDF only)
+function updateOpenExternalButton(stuffId, contentType, jsonData) {
+    const openExternalBtn = document.getElementById('open-external-btn');
+    if (!openExternalBtn) return;
+
+    const url = extractUrl(jsonData);
+    // Only show for PDFs (images are handled by the download button)
+    const shouldShow = contentType === 'application/pdf' && !!url;
+    openExternalBtn.style.display = shouldShow ? '' : 'none';
+}
+
+function updateTabAvailability(stuffId) {
+    const jsonTab = document.getElementById('tab-json');
+    const textTab = document.getElementById('tab-text');
+    const htmlTab = document.getElementById('tab-html');
+
+    jsonTab.disabled = !stuffDataJson?.[stuffId];
+    textTab.disabled = !stuffDataText?.[stuffId];
+
+    // For PDF and image content types, the tab can render from JSON data via extractUrl()
+    const contentType = stuffContentType?.[stuffId];
+    const jsonData = stuffDataJson?.[stuffId];
+    const canRenderFromJson = (contentType === 'application/pdf' || contentType?.startsWith('image/')) && extractUrl(jsonData);
+    htmlTab.disabled = !stuffDataHtml?.[stuffId] && !canRenderFromJson;
+
+    // Update HTML tab label based on content type
+    if (contentType === 'application/pdf') {
+        htmlTab.textContent = 'PDF';
+    } else if (contentType?.startsWith('image/')) {
+        htmlTab.textContent = 'Image';
+    } else {
+        htmlTab.textContent = 'HTML';
+    }
+
+    // Find first available format (HTML -> JSON -> Pretty)
+    if (!htmlTab.disabled) return 'html';
+    if (!jsonTab.disabled) return 'json';
+    if (!textTab.disabled) return 'text';
+    return 'html';
+}
+
+function showModal(stuffId) {
+    currentStuffId = stuffId;
+    const modal = document.getElementById('data-modal');
+    const overlay = document.getElementById('modal-overlay');
+    const title = document.getElementById('modal-title');
+
+    // Build title from metadata (name + concept as primary, ID as secondary)
+    const meta = stuffMetadata?.[stuffId];
+    if (meta && (meta.name || meta.concept)) {
+        const primaryParts = [];
+        if (meta.name) primaryParts.push(escapeHtml(meta.name));
+        if (meta.concept) primaryParts.push(`(${escapeHtml(meta.concept)})`);
+        const primary = `<span class="data-modal-title-primary">${primaryParts.join(' ')}</span>`;
+        const secondary = `<span class="data-modal-title-secondary">${escapeHtml(stuffId)}</span>`;
+        title.innerHTML = primary + secondary;
+    } else {
+        title.innerHTML = `<span class="data-modal-title-primary">${escapeHtml(stuffId)}</span>`;
+    }
+
+    // Update tab availability and select best format
+    const availableFormat = updateTabAvailability(stuffId);
+
+    // If current format is not available, switch to available one
+    const currentTab = document.getElementById(`tab-${currentFormat}`);
+    if (currentTab.disabled) {
+        setFormat(availableFormat);
+    } else {
+        renderContent(stuffId, currentFormat);
+    }
+
+    modal.style.display = 'block';
+    overlay.style.display = 'block';
+}
+
+function hideModal() {
+    document.getElementById('data-modal').style.display = 'none';
+    document.getElementById('modal-overlay').style.display = 'none';
+    currentStuffId = null;
+}
+
+// Get current content based on format
+function getCurrentContent() {
+    if (!currentStuffId) return null;
+
+    if (currentFormat === 'json') {
+        const data = stuffDataJson?.[currentStuffId];
+        if (!data) return null;
+        return { content: JSON.stringify(data, null, 2), ext: 'json', mime: 'application/json' };
+    } else if (currentFormat === 'text') {
+        const data = stuffDataText?.[currentStuffId];
+        if (!data) return null;
+        return { content: data, ext: 'txt', mime: 'text/plain' };
+    } else if (currentFormat === 'html') {
+        const data = stuffDataHtml?.[currentStuffId];
+        if (!data) return null;
+        return { content: data, ext: 'html', mime: 'text/html' };
+    }
+    return null;
+}
+
+// Copy content to clipboard
+function copyContent() {
+    const data = getCurrentContent();
+    if (!data) return;
+
+    navigator.clipboard.writeText(data.content).then(() => {
+        const btn = document.getElementById('copy-btn');
+        const checkIcon = '<svg viewBox="0 0 24 24">' +
+            '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+        const copyIcon = '<svg viewBox="0 0 24 24">' +
+            '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z' +
+            'm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z' +
+            'm0 16H8V7h11v14z"/></svg>';
+        btn.innerHTML = checkIcon;
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.innerHTML = copyIcon;
+            btn.classList.remove('copied');
+        }, 1500);
+    });
+}
+
+// Download content as file
+function downloadContent() {
+    if (!currentStuffId) return;
+
+    // Get name from metadata or use ID
+    const meta = stuffMetadata?.[currentStuffId];
+    const baseName = meta?.name || currentStuffId || 'data';
+    const contentType = stuffContentType?.[currentStuffId];
+    const jsonData = stuffDataJson?.[currentStuffId];
+
+    // For images, download the actual image file directly
+    if (contentType?.startsWith('image/')) {
+        const imageUrl = extractUrl(jsonData);
+        if (imageUrl) {
+            const ext = contentType.split('/')[1] || 'png';
+            const filename = `${baseName.replace(/[^a-zA-Z0-9_-]/g, '_')}.${ext}`;
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            return;
+        }
+    }
+
+    // For PDFs, download the actual PDF file directly
+    // Must fetch and create blob to work around cross-origin download restrictions
+    if (contentType === 'application/pdf') {
+        const pdfUrl = extractUrl(jsonData);
+        if (pdfUrl) {
+            const filename = `${baseName.replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`;
+            fetch(pdfUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                })
+                .catch(err => {
+                    console.error('Failed to download PDF:', err);
+                    window.open(pdfUrl, '_blank');
+                });
+            return;
+        }
+    }
+
+    const data = getCurrentContent();
+    if (!data) return;
+
+    const filename = `${baseName.replace(/[^a-zA-Z0-9_-]/g, '_')}.${data.ext}`;
+    const blob = new Blob([data.content], { type: data.mime });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+// Close modal when clicking overlay
+document.getElementById('modal-overlay').addEventListener('click', hideModal);
+
+// Close modal with Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') hideModal();
+});
+
+// Open external URL for PDF content
+function openExternal() {
+    if (!currentStuffId) return;
+    const contentType = stuffContentType?.[currentStuffId];
+    const jsonData = stuffDataJson?.[currentStuffId];
+
+    if (contentType === 'application/pdf') {
+        const url = extractUrl(jsonData);
+        if (url) {
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+    }
+}
+    </script>
+</body>
+</html>

@@ -48,7 +48,7 @@ type = "PipeExtract"
 description = "Extracts text content from the job offer PDF document"
 inputs = { job_offer_pdf = "Document" }
 output = "Page[]"
-model = "pdf_text_extractor"
+model = "$extract-text-from-pdf"
 
 [pipe.analyze_job_requirements]
 type = "PipeLLM"
@@ -57,7 +57,7 @@ Parses and summarizes the job requirements from the extracted job offer content,
 """
 inputs = { job_offer_pages = "Page" }
 output = "JobRequirements"
-model = "llm_for_recruitment"
+model = "$writing-factual"
 system_prompt = """
 You are an expert HR analyst specializing in parsing job descriptions. Your task is to extract and summarize job requirements into a structured format.
 """
@@ -83,7 +83,7 @@ type = "PipeExtract"
 description = "Extracts text content from the CV PDF document"
 inputs = { cv_pdf = "Document" }
 output = "Page[]"
-model = "pdf_text_extractor"
+model = "$extract-text-from-pdf"
 
 [pipe.analyze_cv]
 type = "PipeLLM"
@@ -92,7 +92,7 @@ Parses and summarizes the candidate's professional profile from the extracted CV
 """
 inputs = { cv_pages = "Page" }
 output = "CandidateProfile"
-model = "llm_for_recruitment"
+model = "$writing-factual"
 system_prompt = """
 You are an expert HR analyst specializing in parsing and summarizing candidate CVs. Your task is to extract and structure the candidate's professional profile into a structured format.
 """
@@ -109,7 +109,7 @@ Evaluates how well the candidate matches the job requirements, calculating a mat
 """
 inputs = { candidate_profile = "CandidateProfile", job_requirements = "JobRequirements" }
 output = "MatchAnalysis"
-model = "llm_for_recruitment"
+model = "$writing-factual"
 system_prompt = """
 You are an expert HR analyst specializing in candidate-job fit evaluation. Your task is to produce a structured match analysis comparing a candidate's profile against job requirements.
 """

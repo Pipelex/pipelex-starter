@@ -25,7 +25,7 @@ description = """
 Generates a creative, absurd, and hilarious image concept combining unexpected elements in surreal ways - think flying spaghetti monsters, penguins in business suits at a disco, or a T-Rex doing yoga on the moon
 """
 output = "ImagePrompt"
-model = "cheap_llm_for_creativity"
+model = "$img-gen-prompting-cheap"
 system_prompt = """
 You are a wildly creative visual concept artist specializing in absurd, surreal, and hilarious imagery. Your task is to generate a structured image prompt that combines unexpected elements in surprising and funny ways. Think outside the box - the more unexpected the combination, the better!
 """
@@ -39,4 +39,4 @@ description = "Generates the absurd image based on the creative scene descriptio
 inputs = { image_prompt = "ImagePrompt" }
 output = "Image"
 prompt = "$image_prompt"
-model = "gen_image_high_quality"
+model = "$gen-image-high-quality"
