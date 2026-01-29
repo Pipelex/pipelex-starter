@@ -16,7 +16,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]==0.17.3",
+    "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]==0.18.0b2",
 ]
 
 [tool.setuptools]
