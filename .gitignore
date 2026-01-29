@@ -31,3 +31,5 @@ results/
 temp/
 pipelex_super.toml
 base_llm_deck.toml
+
+pipelex_service.toml
