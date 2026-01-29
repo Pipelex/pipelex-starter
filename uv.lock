@@ -1386,7 +1386,7 @@ name = "my-project"
 version = "0.6.7"
 source = { virtual = "." }
 dependencies = [
-    { name = "pipelex", extra = ["anthropic", "bedrock", "fal", "google", "google-genai", "mistralai"] },
+    { name = "pipelex", extra = ["anthropic", "bedrock", "fal", "google", "google-genai", "mistralai", "s3"] },
 ]
 
 [package.optional-dependencies]
@@ -1410,7 +1410,7 @@ dev = [
 requires-dist = [
     { name = "boto3-stubs", marker = "extra == 'dev'", specifier = ">=1.35.24" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11.2" },
-    { name = "pipelex", extras = ["mistralai", "anthropic", "google", "google-genai", "bedrock", "fal"], specifier = "==0.18.0b2" },
+    { name = "pipelex", extras = ["mistralai", "s3", "anthropic", "google", "google-genai", "bedrock", "fal"], specifier = "==0.18.0b2" },
     { name = "pyright", marker = "extra == 'dev'", specifier = ">=1.1.405" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.1" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
@@ -1949,6 +1949,10 @@ google-genai = [
 ]
 mistralai = [
     { name = "mistralai" },
+]
+s3 = [
+    { name = "aioboto3" },
+    { name = "boto3" },
 ]
 
 [[package]]
