@@ -36,3 +36,4 @@ pipelex_service.toml
 pipelex_override.toml
 
 .DS_Store
+.pipelex/storage/
