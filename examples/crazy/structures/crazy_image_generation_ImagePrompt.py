@@ -10,7 +10,6 @@ If you want to customize this structure:
 To regenerate: pipelex build structures <target_directory>
 """
 
-
 from pipelex.core.stuffs.text_content import TextContent
 
 

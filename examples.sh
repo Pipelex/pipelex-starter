@@ -32,7 +32,7 @@ pipelex build pipe "Take a CV and Job offer, analyze if they match and generate 
 
 pipelex build pipe "Take a CV PDF and Job offer PDF, analyze if they match and generate 5 questions for the interview"
 
-pipelex build pipe "Take a series of experimental material and contact angle data measurements and rolling angle data measurements and rank the materials by hydrophobicity" --graph --graph-full-data
+pipelex build pipe "Take a series of experimental material and contact angle data measurements and rolling angle data measurements and rank the materials by hydrophobicity"
 
 pipelex build pipe "Take a document, extract its content, review the text to determine the extraction quality (confidence percentage between 0 and 100) and if it's below 98, pass it to a Vision model, along with the text, to complete/perfect it, otherwise, if it's above 98, return it as is."
 

@@ -9,7 +9,7 @@
 # =========================================================================================
 
 # Which profile to use (change this to switch routing)
-active = "all_pipelex_gateway"
+active = "demo"
 
 # We recommend using the "all_pipelex_gateway" profile to get a head start with all models.
 # To use the Pipelex Gateway backend:
@@ -144,3 +144,13 @@ description = "Example routing profile using specific models"
 
 "grok-3" = "pipelex_gateway"
 "grok-3-mini" = "xai"
+
+# =========================================================================================
+# Custom Profiles
+# =========================================================================================
+[profiles.demo]
+description = "Demo routing profile using patterns"
+default = "pipelex_gateway"
+
+[profiles.demo.routes]
+"*-sdxl" = "fal"

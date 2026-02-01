@@ -29,7 +29,7 @@ type = "PipeExtract"
 description = "Extract content from the document into individual pages"
 inputs = { document = "Document" }
 output = "Page[]"
-model = "$extract-text-from-pdf"
+model = "@default-text-from-pdf"
 
 [pipe.process_all_pages]
 type = "PipeBatch"
