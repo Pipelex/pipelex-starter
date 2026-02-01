@@ -1,6 +1,6 @@
 domain = "slide_master"
 description = "Data model for slide prompt generation with reusable themes"
-main_pipe = "generate_design_proposal_from_rough_brief"
+main_pipe = "generate_design_proposals_from_rough_brief"
 
 # Input concept for design brief
 
@@ -141,6 +141,42 @@ Generate a complete theme with:
 6. **Exclusions**: Things to avoid based on the brief context
 """
 
+[pipe.generate_multiple_themes]
+type = "PipeLLM"
+description = "Generate a presentation theme from a polished design brief"
+inputs = { brief = "SlideDesignBrief" }
+output = "Theme[]"
+prompt = """
+You are an expert presentation designer. Create {{ _nb_output }} cohesive visual themes based on this design brief.
+
+@brief
+
+Generate a complete theme with:
+
+1. **Name**: A short, memorable theme name reflecting the brand personality and topic
+
+2. **Colors**: A harmonious color palette appropriate for the brand personality and audience
+   - If brand_guidelines specify colors, use them
+   - Otherwise, choose colors that match the personality (e.g., formal = navy/gray, playful = vibrant, innovative = bold accents)
+   - Ensure sufficient contrast for readability
+
+3. **Typography**: Font choices that match the personality
+   - Formal: serif or clean sans-serif (e.g., Georgia, Helvetica)
+   - Playful: rounded or friendly fonts (e.g., Nunito, Poppins)
+   - Innovative: modern geometric fonts (e.g., Futura, Montserrat)
+   - Artsy: distinctive display fonts with classic body text
+
+4. **Layout**: Appropriate settings for the presentation goal
+   - Aspect ratio: 16:9 for most presentations, 4:3 for traditional settings
+   - Margins and alignment based on content density needs
+
+5. **Style**: Overall visual approach
+   - Match the brand personality and audience expectations
+   - Define icon and graphic styles that complement the theme
+
+6. **Exclusions**: Things to avoid based on the brief context
+"""
+
 [pipe.generate_theme_from_rough_brief]
 type = "PipeSequence"
 description = "Transform a design brief into a complete presentation theme"
@@ -153,7 +189,7 @@ steps = [
 
 [pipe.render_visual_proposal]
 type = "PipeImgGen"
-description = "Generate a visual mockup image from a theme prompt"
+description = "Generate a visual mockup image from a theme"
 inputs = { theme = "Theme" }
 output = "Image"
 aspect_ratio = "landscape_16_9"
@@ -174,13 +210,13 @@ The composition should be a grid of 4 slides, each with the following layout:
 Make the mosaic edge to edge, no space between the slides.
 """
 
-[pipe.generate_design_proposal_from_rough_brief]
+[pipe.generate_design_proposals_from_rough_brief]
 type = "PipeSequence"
-description = "Transform a design brief into a theme with visual mockup"
+description = "Transform a design brief into multiple themes with visual mockups"
 inputs = { brief = "SlideDesignBrief" }
-output = "Image"
+output = "Image[]"
 steps = [
     { pipe = "polish_brief", result = "polished_brief" },
-    { pipe = "generate_theme", result = "theme" },
-    { pipe = "render_visual_proposal", result = "design_proposal" }
+    { pipe = "generate_multiple_themes", nb_output = 3, result = "themes" },
+    { pipe = "render_visual_proposal", batch_over = "themes", batch_as = "theme", result = "design_proposals" }
 ]
