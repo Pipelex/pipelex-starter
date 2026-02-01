@@ -86,6 +86,18 @@ refines = "Text"
 
 # Pipes
 
+[pipe.generate_design_proposals_from_rough_brief]
+type = "PipeSequence"
+description = "Transform a design brief into multiple themes with visual mockups and HTML report"
+inputs = { brief = "SlideDesignBrief" }
+output = "Text"
+steps = [
+    { pipe = "polish_brief", result = "polished_brief" },
+    { pipe = "generate_multiple_themes", nb_output = 3, result = "themes" },
+    { pipe = "render_visual_proposal", batch_over = "themes", batch_as = "theme", result = "design_proposals" },
+    { pipe = "compose_proposals_report", result = "proposals_report" }
+]
+
 [pipe.polish_brief]
 type = "PipeLLM"
 description = "Polish and complete a slide design brief by filling missing fields"
@@ -210,13 +222,87 @@ The composition should be a grid of 4 slides, each with the following layout:
 Make the mosaic edge to edge, no space between the slides.
 """
 
-[pipe.generate_design_proposals_from_rough_brief]
-type = "PipeSequence"
-description = "Transform a design brief into multiple themes with visual mockups"
-inputs = { brief = "SlideDesignBrief" }
-output = "Image[]"
-steps = [
-    { pipe = "polish_brief", result = "polished_brief" },
-    { pipe = "generate_multiple_themes", nb_output = 3, result = "themes" },
-    { pipe = "render_visual_proposal", batch_over = "themes", batch_as = "theme", result = "design_proposals" }
-]
+[pipe.compose_proposals_report]
+type = "PipeCompose"
+description = "Generate an HTML report presenting the design proposals"
+inputs = { brief = "SlideDesignBrief", polished_brief = "SlideDesignBrief", themes = "Theme[]", design_proposals = "Image[]" }
+output = "Text"
+
+[pipe.compose_proposals_report.template]
+category = "html"
+template = """
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 1400px; margin: 0 auto; padding: 40px; background: #f5f5f5; }
+    h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 15px; }
+    h2 { color: #34495e; margin-top: 30px; }
+    .brief-section { background: white; padding: 25px; border-radius: 10px; margin: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .brief-section h3 { color: #e74c3c; margin-top: 0; }
+    .proposals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-top: 30px; }
+    .proposal-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .proposal-card img { width: 100%; height: auto; display: block; }
+    .theme-details { padding: 20px; }
+    .theme-name { font-size: 1.3em; font-weight: bold; color: #2c3e50; margin-bottom: 15px; }
+    .color-swatches { display: flex; gap: 8px; margin: 10px 0; }
+    .swatch { width: 30px; height: 30px; border-radius: 5px; border: 1px solid #ddd; }
+    .detail-row { margin: 8px 0; font-size: 0.9em; }
+    .detail-label { color: #7f8c8d; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <h1>Design Proposals</h1>
+
+  <div class="brief-section">
+    <h3>Original Brief</h3>
+    <p><strong>Topic:</strong> {{ brief.topic }}</p>
+    {% if brief.brand_personality %}<p><strong>Brand Personality:</strong> {{ brief.brand_personality }}</p>{% endif %}
+    {% if brief.goal %}<p><strong>Goal:</strong> {{ brief.goal }}</p>{% endif %}
+    {% if brief.audience %}<p><strong>Audience:</strong> {{ brief.audience }}</p>{% endif %}
+    {% if brief.brand_guidelines %}<p><strong>Brand Guidelines:</strong> {{ brief.brand_guidelines }}</p>{% endif %}
+    {% if brief.existing_references %}<p><strong>References:</strong> {{ brief.existing_references }}</p>{% endif %}
+  </div>
+
+  {% if brief != polished_brief %}
+  <div class="brief-section">
+    <h3>Enhanced Brief</h3>
+    <p><strong>Topic:</strong> {{ polished_brief.topic }}</p>
+    {% if polished_brief.brand_personality %}<p><strong>Brand Personality:</strong> {{ polished_brief.brand_personality }}</p>{% endif %}
+    {% if polished_brief.goal %}<p><strong>Goal:</strong> {{ polished_brief.goal }}</p>{% endif %}
+    {% if polished_brief.audience %}<p><strong>Audience:</strong> {{ polished_brief.audience }}</p>{% endif %}
+    {% if polished_brief.brand_guidelines %}<p><strong>Brand Guidelines:</strong> {{ polished_brief.brand_guidelines }}</p>{% endif %}
+    {% if polished_brief.existing_references %}<p><strong>References:</strong> {{ polished_brief.existing_references }}</p>{% endif %}
+  </div>
+  {% endif %}
+
+  <h2>Design Proposals</h2>
+  <div class="proposals-grid">
+    {% for proposal in design_proposals.items %}
+    <div class="proposal-card">
+      <img src="{{ proposal.public_url }}" alt="Design proposal {{ loop.index }}">
+    </div>
+    {% endfor %}
+  </div>
+
+  <h2>Theme Details</h2>
+  <div class="proposals-grid">
+    {% for theme in themes.items %}
+    <div class="proposal-card">
+      <div class="theme-details">
+        <div class="theme-name">{{ theme.name }}</div>
+        <div class="color-swatches">
+          <div class="swatch" style="background: {{ theme.colors.primary }}" title="Primary"></div>
+          <div class="swatch" style="background: {{ theme.colors.secondary }}" title="Secondary"></div>
+          <div class="swatch" style="background: {{ theme.colors.accent }}" title="Accent"></div>
+        </div>
+        <div class="detail-row"><span class="detail-label">Font:</span> {{ theme.typography.font_family }}</div>
+        <div class="detail-row"><span class="detail-label">Style:</span> {{ theme.style.overall }}</div>
+        <div class="detail-row"><span class="detail-label">Layout:</span> {{ theme.layout.aspect_ratio }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</body>
+</html>
+"""
