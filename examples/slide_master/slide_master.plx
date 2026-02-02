@@ -90,7 +90,7 @@ refines = "Text"
 type = "PipeSequence"
 description = "Transform a design brief into multiple themes with visual mockups and HTML report"
 inputs = { brief = "SlideDesignBrief" }
-output = "Text"
+output = "Html"
 steps = [
     { pipe = "polish_brief", result = "polished_brief" },
     { pipe = "generate_multiple_themes", nb_output = 3, result = "themes" },
@@ -226,7 +226,7 @@ Make the mosaic edge to edge, no space between the slides.
 type = "PipeCompose"
 description = "Generate an HTML report presenting the design proposals"
 inputs = { brief = "SlideDesignBrief", polished_brief = "SlideDesignBrief", themes = "Theme[]", design_proposals = "Image[]" }
-output = "Text"
+output = "Html"
 
 [pipe.compose_proposals_report.template]
 category = "html"
@@ -278,7 +278,7 @@ template = """
 
   <h2>Design Proposals</h2>
   <div class="proposals-grid">
-    {% for proposal in design_proposals.items %}
+    {% for proposal in design_proposals %}
     <div class="proposal-card">
       <img src="{{ proposal.public_url }}" alt="Design proposal {{ loop.index }}">
     </div>
@@ -287,7 +287,7 @@ template = """
 
   <h2>Theme Details</h2>
   <div class="proposals-grid">
-    {% for theme in themes.items %}
+    {% for theme in themes %}
     <div class="proposal-card">
       <div class="theme-details">
         <div class="theme-name">{{ theme.name }}</div>
