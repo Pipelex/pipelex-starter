@@ -39,4 +39,4 @@ description = "Generates the absurd image based on the creative scene descriptio
 inputs = { image_prompt = "ImagePrompt" }
 output = "Image"
 prompt = "$image_prompt"
-model = "$gen-image-high-quality"
+model = "@default-small"

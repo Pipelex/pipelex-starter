@@ -1,4 +1,4 @@
-domain = "slide_master"
+domain = "slide_designer"
 description = "Data model for slide prompt generation with reusable themes"
 main_pipe = "generate_design_proposals_from_rough_brief"
 
@@ -59,10 +59,10 @@ description = "Complete presentation theme with colors, typography, layout, and 
 
 [concept.Theme.structure]
 name = { type = "text", description = "Theme name identifier", required = true }
-colors = { type = "concept", concept_ref = "slide_master.ColorPalette", description = "Color palette for the theme", required = true }
-typography = { type = "concept", concept_ref = "slide_master.Typography", description = "Typography settings", required = true }
-layout = { type = "concept", concept_ref = "slide_master.LayoutSettings", description = "Layout configuration", required = true }
-style = { type = "concept", concept_ref = "slide_master.StyleSettings", description = "Visual style settings", required = true }
+colors = { type = "concept", concept_ref = "ColorPalette", description = "Color palette for the theme", required = true }
+typography = { type = "concept", concept_ref = "Typography", description = "Typography settings", required = true }
+layout = { type = "concept", concept_ref = "LayoutSettings", description = "Layout configuration", required = true }
+style = { type = "concept", concept_ref = "StyleSettings", description = "Visual style settings", required = true }
 exclusions = { type = "text", description = "Elements to avoid in the design (e.g., no gradients, no stock photos)" }
 
 # Slide content concept
