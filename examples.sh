@@ -1,5 +1,5 @@
 
-pipelex build pipe "Imagine a cute animal mascot for a startup based on its elevator pitch and some brand guidelines" --graph --graph-full-data --output-dir test_graph
+pipelex build pipe "Imagine a cute animal mascot for a startup based on its elevator pitch and some brand guidelines" --output-dir test_graph
 
 pipelex build pipe "Imagine a cute animal mascot for a startup based on its elevator pitch \
     and some brand guidelines, propose 2 different ideas, and for each, 3 style variants in the image generation prompt, \
@@ -9,7 +9,7 @@ pipelex build pipe "Given an expense report, apply company rules"
 
 pipelex build pipe "Given a theme, write a Haiku"
 
-pipelex build pipe "Imagine a crazy funny image to render, like a green cow on the Eiffel Tower but not that, and then render it"--no-output --graph --graph-full-data
+pipelex build pipe "Imagine a crazy funny image to render, like a green cow on the Eiffel Tower but not that, and then render it"
 
 pipelex run generate_crazy_image
 
@@ -31,6 +31,8 @@ pipelex run examples/cv_batch/bundle.plx --inputs examples/cv_batch/inputs.json
 pipelex build pipe "Take a CV and Job offer, analyze if they match and generate 5 questions for the interview"
 
 pipelex build pipe "Take a CV PDF and Job offer PDF, analyze if they match and generate 5 questions for the interview"
+
+pipelex build pipe "Analyze a Job offer to build a scorecard, then batch process CVs to score them, if a CV fits, generate 5 questions for the interview, otherwise draft a rejection email"
 
 pipelex build pipe "Take a series of experimental material and contact angle data measurements and rolling angle data measurements and rank the materials by hydrophobicity"
 

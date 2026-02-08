@@ -9,7 +9,7 @@
 # =========================================================================================
 
 # Which profile to use (change this to switch routing)
-active = "demo"
+active = "all_pipelex_gateway"
 
 # We recommend using the "all_pipelex_gateway" profile to get a head start with all models.
 # To use the Pipelex Gateway backend:

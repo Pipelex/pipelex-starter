@@ -39,7 +39,7 @@ api_key = "${BLACKBOX_API_KEY}"
 
 [fal]
 display_name = "FAL"
-enabled = true
+enabled = false
 api_key = "${FAL_API_KEY}"
 
 [google]
