@@ -1,0 +1,114 @@
+domain = "smart_document_refiner"
+description = "Extract PDF, evaluate OCR quality per page, and conditionally refine low-quality pages using vision"
+main_pipe = "refine_document"
+
+[concept.QualityScore]
+description = "Assessment of text extraction quality for a document page"
+
+[concept.QualityScore.structure]
+confidence = { type = "integer", description = "Percentage score (0-100) indicating extraction quality", required = true }
+issues_found = { type = "text", description = "Description of any extraction issues detected" }
+
+[concept.RefinedText]
+description = "The final corrected and completed text content extracted from a page"
+refines = "Text"
+
+[pipe.refine_document]
+type = "PipeSequence"
+description = "Main pipeline that extracts a document, evaluates each page's OCR quality, and conditionally refines low-quality pages using vision"
+inputs = { document = "Document" }
+output = "RefinedText[]"
+steps = [
+    { pipe = "extract_pages", result = "pages" },
+    { pipe = "process_all_pages", result = "refined_pages" },
+]
+
+[pipe.extract_pages]
+type = "PipeExtract"
+description = "Extract content from the document into individual pages"
+inputs = { document = "Document" }
+output = "Page[]"
+model = "@default-text-from-pdf"
+
+[pipe.process_all_pages]
+type = "PipeBatch"
+description = "Process each page through quality evaluation and conditional refinement"
+inputs = { pages = "Page[]" }
+output = "RefinedText[]"
+branch_pipe_code = "process_single_page"
+input_list_name = "pages"
+input_item_name = "page"
+
+[pipe.process_single_page]
+type = "PipeSequence"
+description = "Evaluate extraction quality for a single page and refine if needed"
+inputs = { page = "Page" }
+output = "RefinedText"
+steps = [
+    { pipe = "evaluate_quality", result = "quality_score" },
+    { pipe = "route_by_quality", result = "refined_text" },
+]
+
+[pipe.evaluate_quality]
+type = "PipeLLM"
+description = "Analyze extracted text and determine a confidence percentage for extraction quality"
+inputs = { page = "Page" }
+output = "QualityScore"
+model = "$retrieval"
+system_prompt = """
+You are a document quality assessment expert. Evaluate the quality of text extraction from document pages and provide a confidence score.
+"""
+prompt = """
+Analyze the following extracted page content and evaluate the quality of the text extraction.
+
+Look for signs of extraction issues such as:
+- Missing or garbled characters
+- Broken words or sentences
+- Formatting artifacts
+- Incomplete text blocks
+- OCR errors
+
+@page
+
+Provide your assessment as a structured response with a confidence score (0-100).
+"""
+
+[pipe.route_by_quality]
+type = "PipeCondition"
+description = "Route to vision refinement if confidence is below 90, otherwise pass through the text as-is"
+inputs = { page = "Page", quality_score = "QualityScore" }
+output = "RefinedText"
+expression_template = "{{ 'low_confidence' if quality_score.confidence < 90 else 'high_confidence' }}"
+outcomes = { low_confidence = "refine_with_vision", high_confidence = "passthrough_text" }
+default_outcome = "refine_with_vision"
+
+[pipe.passthrough_text]
+type = "PipeLLM"
+description = "Return the extracted text as-is since quality is sufficient"
+inputs = { page = "Page" }
+output = "RefinedText"
+model = "$retrieval"
+prompt = """
+Return the extracted text from the following page exactly as it is, without any modifications.
+
+@page
+"""
+
+[pipe.refine_with_vision]
+type = "PipeLLM"
+description = "Use vision capabilities to analyze the original page image and correct extraction errors"
+inputs = { page = "Page", quality_score = "QualityScore" }
+output = "RefinedText"
+model = "$vision"
+system_prompt = """
+You are a document text refinement specialist with vision capabilities. Analyze the original page image and compare it with the extracted text to identify and correct any extraction errors.
+"""
+prompt = """
+Analyze the page image and refine the extracted text based on the quality assessment.
+
+$page
+
+@quality_score
+
+Review the original page image carefully. Identify any missing text, OCR errors, or formatting issues. Provide the complete, corrected text.
+"""

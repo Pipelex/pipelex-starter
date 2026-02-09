@@ -1,0 +1,163 @@
+domain = "social_media_kit"
+description = "Generate platform-specific social media posts and a hero image from a product announcement"
+main_pipe = "create_social_media_kit"
+
+[concept.TwitterPost]
+description = "A concise social media post optimized for Twitter/X (max 280 characters)"
+refines = "Text"
+
+[concept.LinkedInPost]
+description = "A professional social media post optimized for LinkedIn"
+refines = "Text"
+
+[concept.InstagramCaption]
+description = "An engaging caption with hashtags optimized for Instagram"
+refines = "Text"
+
+[concept.HeroPrompt]
+description = "A detailed image generation prompt for the hero image"
+refines = "Text"
+
+[pipe.create_social_media_kit]
+type = "PipeSequence"
+description = "Main pipeline that generates platform-specific social media content and a hero image from a product announcement"
+inputs = { announcement = "Text" }
+output = "Html"
+steps = [
+    { pipe = "generate_all_content", result = "all_content" },
+    { pipe = "compose_kit_html", result = "kit_html" },
+]
+
+[pipe.generate_all_content]
+type = "PipeParallel"
+description = "Generate all social media posts and hero image concurrently"
+inputs = { announcement = "Text" }
+output = "Anything"
+parallels = [
+    { pipe = "write_twitter_post", result = "twitter_post" },
+    { pipe = "write_linkedin_post", result = "linkedin_post" },
+    { pipe = "write_instagram_caption", result = "instagram_caption" },
+    { pipe = "create_hero_image", result = "hero_image" },
+]
+add_each_output = true
+
+[pipe.write_twitter_post]
+type = "PipeLLM"
+description = "Write a concise Twitter/X post (max 280 characters)"
+inputs = { announcement = "Text" }
+output = "TwitterPost"
+model = "$writing-creative"
+system_prompt = "You are a social media expert. Write punchy, engaging tweets that drive engagement. Keep under 280 characters."
+prompt = """
+Write a Twitter/X post for this product announcement. Keep it under 280 characters. Include 1-2 relevant hashtags.
+
+@announcement
+"""
+
+[pipe.write_linkedin_post]
+type = "PipeLLM"
+description = "Write a professional LinkedIn post"
+inputs = { announcement = "Text" }
+output = "LinkedInPost"
+model = "$writing-creative"
+system_prompt = "You are a social media expert. Write professional, insightful LinkedIn posts that build thought leadership."
+prompt = """
+Write a LinkedIn post for this product announcement. Use a professional but engaging tone. Include a call-to-action.
+
+@announcement
+"""
+
+[pipe.write_instagram_caption]
+type = "PipeLLM"
+description = "Write an Instagram caption with hashtags"
+inputs = { announcement = "Text" }
+output = "InstagramCaption"
+model = "$writing-creative"
+system_prompt = "You are a social media expert. Write engaging Instagram captions with relevant hashtags that boost discoverability."
+prompt = """
+Write an Instagram caption for this product announcement. Make it engaging and include 5-10 relevant hashtags.
+
+@announcement
+"""
+
+[pipe.create_hero_image]
+type = "PipeSequence"
+description = "Generate a hero image by first creating a prompt then rendering it"
+inputs = { announcement = "Text" }
+output = "Image"
+steps = [
+    { pipe = "write_image_prompt", result = "hero_prompt" },
+    { pipe = "render_hero_image", result = "hero_image" },
+]
+
+[pipe.write_image_prompt]
+type = "PipeLLM"
+description = "Create an image generation prompt for the hero image"
+inputs = { announcement = "Text" }
+output = "HeroPrompt"
+model = "$img-gen-prompting-cheap"
+prompt = """
+Create a vivid image generation prompt for a hero image that visually represents this product announcement. The image should be modern, professional, and eye-catching for social media.
+
+@announcement
+"""
+
+[pipe.render_hero_image]
+type = "PipeImgGen"
+description = "Render the hero image from the prompt"
+inputs = { hero_prompt = "HeroPrompt" }
+output = "Image"
+prompt = "$hero_prompt"
+model = "@default-small"
+aspect_ratio = "landscape_16_9"
+
+[pipe.compose_kit_html]
+type = "PipeCompose"
+description = "Compose all social media posts and hero image into an HTML toolkit page"
+inputs = { announcement = "Text", twitter_post = "TwitterPost", linkedin_post = "LinkedInPost", instagram_caption = "InstagramCaption", hero_image = "Image" }
+output = "Html"
+
+[pipe.compose_kit_html.template]
+category = "html"
+template = """
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 1200px; margin: 0 auto; padding: 40px; background: #f0f2f5; }
+        h1 { color: #1a1a2e; }
+        .hero { width: 100%; border-radius: 12px; margin: 20px 0; }
+        .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; }
+        .card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .card h3 { margin-top: 0; }
+        .twitter h3 { color: #1DA1F2; }
+        .linkedin h3 { color: #0077B5; }
+        .instagram h3 { color: #E4405F; }
+        .content { white-space: pre-wrap; line-height: 1.6; }
+        .original { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #667eea; }
+    </style>
+</head>
+<body>
+    <h1>Social Media Post Kit</h1>
+    <div class="original">
+        <h3>Original Announcement</h3>
+        <p>{{ announcement }}</p>
+    </div>
+    <img class="hero" src="{{ hero_image.public_url }}" alt="Hero image">
+    <div class="cards">
+        <div class="card twitter">
+            <h3>Twitter/X</h3>
+            <div class="content">{{ twitter_post }}</div>
+        </div>
+        <div class="card linkedin">
+            <h3>LinkedIn</h3>
+            <div class="content">{{ linkedin_post }}</div>
+        </div>
+        <div class="card instagram">
+            <h3>Instagram</h3>
+            <div class="content">{{ instagram_caption }}</div>
+        </div>
+    </div>
+</body>
+</html>
+"""

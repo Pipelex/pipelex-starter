@@ -1,0 +1,128 @@
+domain = "customer_feedback_response"
+description = "Classifying customer feedback sentiment and routing to appropriate response templates."
+main_pipe = "classify_and_respond"
+
+[concept.CustomerFeedback]
+description = "Customer feedback or review submitted by a customer about a product, service, or experience."
+refines = "Text"
+
+[concept.SentimentAnalysis]
+description = "Analysis of emotional tone and key information extracted from customer feedback."
+
+[concept.SentimentAnalysis.structure]
+sentiment = { type = "text", description = "The overall emotional tone detected in the feedback", required = true }
+confidence = { type = "number", description = "Confidence score of the sentiment classification", required = true }
+key_phrases = { type = "text", description = "Important phrases or topics identified in the feedback", required = true }
+
+[concept.Response]
+description = "A response message to be sent to a customer acknowledging their feedback."
+refines = "Text"
+
+[pipe.classify_and_respond]
+type = "PipeSequence"
+description = """
+Main pipeline that analyzes customer feedback sentiment and routes to the appropriate response template based on the classification result. This is the entry point for the customer feedback classification and response workflow.
+"""
+inputs = { customer_feedback = "CustomerFeedback" }
+output = "Response"
+steps = [
+    { pipe = "analyze_sentiment", result = "sentiment_analysis" },
+    { pipe = "route_response", result = "response" },
+]
+
+[pipe.analyze_sentiment]
+type = "PipeLLM"
+description = """
+Analyzes customer feedback to determine emotional tone (positive/negative/neutral), confidence level, and extract key phrases from the text.
+"""
+inputs = { customer_feedback = "CustomerFeedback" }
+output = "SentimentAnalysis"
+model = "$retrieval"
+system_prompt = """
+You are a sentiment analysis expert. Your task is to analyze customer feedback and produce a structured analysis of the emotional tone, your confidence in the classification, and key phrases from the text.
+"""
+prompt = """
+Analyze the following customer feedback to determine its sentiment and extract key information:
+
+@customer_feedback
+"""
+
+[pipe.route_response]
+type = "PipeCondition"
+description = "Routes to the appropriate response template based on the detected sentiment value from the analysis."
+inputs = { customer_feedback = "CustomerFeedback", sentiment_analysis = "SentimentAnalysis" }
+output = "Response"
+expression_template = "{{ sentiment_analysis.sentiment }}"
+outcomes = { positive = "respond_positive", negative = "respond_negative", neutral = "respond_neutral" }
+default_outcome = "fail"
+
+[pipe.respond_negative]
+type = "PipeCompose"
+description = """
+Generates an empathetic response addressing concerns from negative feedback with understanding and commitment to improvement.
+"""
+inputs = { customer_feedback = "CustomerFeedback", sentiment_analysis = "SentimentAnalysis" }
+output = "Response"
+
+[pipe.respond_negative.template]
+template = """
+Thank you for taking the time to share your feedback with us.
+
+We sincerely apologize that your experience did not meet your expectations. We understand your concerns regarding: $sentiment_analysis.key_phrases
+
+Your feedback is incredibly valuable to us, and we are committed to addressing these issues. Our team will review your comments carefully and work to improve.
+
+We would love the opportunity to make things right. Please don't hesitate to reach out to us directly so we can resolve this matter to your satisfaction.
+
+Thank you for helping us become better.
+"""
+templating_style = { tag_style = "no_tag", text_format = "plain" }
+category = "markdown"
+
+[pipe.respond_neutral]
+type = "PipeCompose"
+description = """
+Generates a balanced, professional response for neutral feedback, thanking the customer for their input.
+"""
+inputs = { customer_feedback = "CustomerFeedback", sentiment_analysis = "SentimentAnalysis" }
+output = "Response"
+
+[pipe.respond_neutral.template]
+template = """
+Thank you for taking the time to share your feedback with us.
+
+Your input:
+@customer_feedback
+
+We appreciate you letting us know about your experience. Your feedback helps us understand how we're doing and where we can improve.
+
+Analysis summary:
+@sentiment_analysis
+
+If you have any additional thoughts or suggestions, please don't hesitate to reach out. We value your perspective and are always looking for ways to better serve you.
+
+Best regards,
+Customer Support Team
+"""
+templating_style = { tag_style = "no_tag", text_format = "plain" }
+category = "markdown"
+
+[pipe.respond_positive]
+type = "PipeCompose"
+description = """
+Generates an enthusiastic response acknowledging positive customer feedback with appreciation and encouragement.
+"""
+inputs = { customer_feedback = "CustomerFeedback", sentiment_analysis = "SentimentAnalysis" }
+output = "Response"
+
+[pipe.respond_positive.template]
+template = """
+Thank you so much for your wonderful feedback! We're thrilled to hear about your positive experience.
+
+Your feedback:
+@customer_feedback
+
+We truly appreciate you taking the time to share your thoughts with us. Your kind words motivate our team to continue delivering excellent service. We look forward to serving you again!
+"""
+templating_style = { tag_style = "no_tag", text_format = "plain" }
+category = "markdown"

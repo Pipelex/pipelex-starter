@@ -1,0 +1,122 @@
+domain = "product_catalog"
+description = "From product descriptions, generate cards with AI images and build a complete HTML catalog"
+main_pipe = "build_product_catalog"
+
+[concept.ProductCard]
+description = "A structured product card with marketing content"
+
+[concept.ProductCard.structure]
+name = { type = "text", description = "Product name", required = true }
+tagline = { type = "text", description = "Short marketing tagline", required = true }
+description = { type = "text", description = "Detailed product description", required = true }
+key_features = { type = "text", description = "Key features and benefits", required = true }
+target_audience = { type = "text", description = "Target audience for this product" }
+
+[concept.ProductPrompt]
+description = "An image generation prompt for a product photo"
+refines = "Text"
+
+[pipe.build_product_catalog]
+type = "PipeSequence"
+description = "Main pipeline: batch-process products to create cards with images, then compose HTML catalog"
+inputs = { products = "Text[]" }
+output = "Html"
+steps = [
+    { pipe = "create_product_card", batch_over = "products", batch_as = "product", result = "product_cards" },
+    { pipe = "create_product_image", batch_over = "product_cards", batch_as = "product_card", result = "product_images" },
+    { pipe = "compose_catalog", result = "catalog_html" },
+]
+
+[pipe.create_product_card]
+type = "PipeLLM"
+description = "Generate a structured product card from a product description"
+inputs = { product = "Text" }
+output = "ProductCard"
+model = "$writing-creative"
+system_prompt = "You are a product marketing specialist. Create compelling product cards that highlight key features and benefits."
+prompt = """
+Create a product marketing card from this product description:
+
+@product
+
+Generate a compelling name, tagline, detailed description, key features, and target audience.
+"""
+
+[pipe.create_product_image]
+type = "PipeSequence"
+description = "Generate a product image by first writing a prompt then rendering it"
+inputs = { product_card = "ProductCard" }
+output = "Image"
+steps = [
+    { pipe = "write_product_prompt", result = "product_prompt" },
+    { pipe = "render_product_image", result = "product_image" },
+]
+
+[pipe.write_product_prompt]
+type = "PipeLLM"
+description = "Create an image generation prompt for the product"
+inputs = { product_card = "ProductCard" }
+output = "ProductPrompt"
+model = "$img-gen-prompting-cheap"
+prompt = """
+Create a vivid product photo prompt for:
+Product: $product_card.name
+Description: $product_card.tagline
+
+The image should be a clean, professional product shot with good lighting on a simple background.
+"""
+
+[pipe.render_product_image]
+type = "PipeImgGen"
+description = "Render the product image"
+inputs = { product_prompt = "ProductPrompt" }
+output = "Image"
+prompt = "$product_prompt"
+model = "@default-small"
+aspect_ratio = "square"
+
+[pipe.compose_catalog]
+type = "PipeCompose"
+description = "Compose all product cards and images into a styled HTML catalog"
+inputs = { product_cards = "ProductCard[]", product_images = "Image[]" }
+output = "Html"
+
+[pipe.compose_catalog.template]
+category = "html"
+template = """
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 1400px; margin: 0 auto; padding: 40px; background: #fafafa; }
+        h1 { text-align: center; color: #1a1a2e; margin-bottom: 40px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+        .card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s; }
+        .card:hover { transform: translateY(-4px); }
+        .card img { width: 100%; height: 250px; object-fit: cover; }
+        .card-body { padding: 20px; }
+        .card-body h3 { margin: 0 0 8px 0; color: #1a1a2e; }
+        .tagline { color: #667eea; font-weight: 500; margin-bottom: 12px; }
+        .features { font-size: 0.9em; color: #666; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <h1>Product Catalog</h1>
+    <div class="grid">
+        {% for card in product_cards %}
+        <div class="card">
+            {% if product_images[loop.index0] %}
+            <img src="{{ product_images[loop.index0].public_url }}" alt="{{ card.name }}">
+            {% endif %}
+            <div class="card-body">
+                <h3>{{ card.name }}</h3>
+                <div class="tagline">{{ card.tagline }}</div>
+                <p>{{ card.description }}</p>
+                <div class="features"><strong>Features:</strong> {{ card.key_features }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
+"""

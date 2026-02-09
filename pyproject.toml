@@ -23,7 +23,7 @@ dependencies = [
 [tool.uv.sources]
 # pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "pre-release/v0.18.0b2" }
 # pipelex = { git = "https://github.com/Pipelex/pipelex.git", rev = "feature/Chicago" }
-pipelex = { git = "https://github.com/Pipelex/pipelex.git", rev = "6e77a2930652820f2d46c3f03da4a5bd1a2644ac" }
+pipelex = { git = "https://github.com/Pipelex/pipelex.git", rev = "e7ff99bec4678c685c9e9cc2a7c914755d8d8633" }
 # pipelex = { path = "../pipelex", editable = true }
 
 [tool.setuptools]

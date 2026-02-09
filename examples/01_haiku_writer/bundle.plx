@@ -1,0 +1,26 @@
+domain = "haiku_composition"
+description = "Writing traditional haiku poems following the 5-7-5 syllable pattern based on given themes."
+main_pipe = "compose_haiku"
+
+[concept.Haiku]
+description = """
+A traditional Japanese poem consisting of three lines following the 5-7-5 syllable pattern, typically evoking nature or seasonal imagery.
+"""
+refines = "Text"
+
+[pipe.compose_haiku]
+type = "PipeLLM"
+description = """
+Main pipe of the pipeline. Generate a traditional haiku poem following the 5-7-5 syllable pattern based on the given theme, capturing its essence with vivid imagery and natural elements.
+"""
+inputs = { theme = "Text" }
+output = "Haiku"
+model = "$writing-creative"
+system_prompt = """
+You are a master haiku poet skilled in the traditional Japanese art form. You will generate a structured haiku output based on the given theme.
+"""
+prompt = """
+Compose a traditional haiku poem based on the following theme: $theme
+
+Follow the classic 5-7-5 syllable pattern across three lines. Capture the essence of the theme with vivid imagery and incorporate natural or seasonal elements typical of the haiku form.
+"""

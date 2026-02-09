@@ -1,0 +1,69 @@
+domain = "multilingual_translation"
+description = "Translating text into multiple languages simultaneously using parallel execution"
+main_pipe = "translate_to_all_languages"
+
+[concept.Translation]
+description = "A translation of text into a specific language."
+
+[concept.Translation.structure]
+language = { type = "text", description = "The target language of the translation", required = true }
+translated_text = { type = "text", description = "The translated content in the target language", required = true }
+
+[pipe.translate_to_all_languages]
+type = "PipeParallel"
+description = """
+Main orchestrator pipe that translates source text into French, Spanish, and Japanese simultaneously using parallel execution
+"""
+inputs = { source_text = "Text" }
+output = "Anything"
+parallels = [
+    { pipe = "translate_to_french", result = "french_translation" },
+    { pipe = "translate_to_spanish", result = "spanish_translation" },
+    { pipe = "translate_to_japanese", result = "japanese_translation" },
+]
+add_each_output = true
+
+[pipe.translate_to_french]
+type = "PipeLLM"
+description = "Translate the source text into French"
+inputs = { source_text = "Text" }
+output = "Translation"
+model = "$writing-creative"
+system_prompt = """
+You are a professional translator specializing in French. Your task is to translate text into French and provide a structured translation output.
+"""
+prompt = """
+Translate the following text into French:
+
+@source_text
+"""
+
+[pipe.translate_to_japanese]
+type = "PipeLLM"
+description = "Translate the source text into Japanese"
+inputs = { source_text = "Text" }
+output = "Translation"
+model = "$writing-creative"
+system_prompt = """
+You are a professional translator specializing in Japanese. Your task is to translate text into Japanese accurately while preserving the original meaning, tone, and nuance. You will output a structured translation.
+"""
+prompt = """
+Translate the following text into Japanese:
+
+@source_text
+"""
+
+[pipe.translate_to_spanish]
+type = "PipeLLM"
+description = "Translate the source text into Spanish"
+inputs = { source_text = "Text" }
+output = "Translation"
+model = "$writing-creative"
+system_prompt = """
+You are a professional translator specializing in Spanish. Your task is to translate text into Spanish and provide a structured translation output.
+"""
+prompt = """
+Translate the following text into Spanish:
+
+@source_text
+"""

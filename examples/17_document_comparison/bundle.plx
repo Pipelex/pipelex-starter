@@ -1,0 +1,168 @@
+domain = "document_comparison"
+description = "Extract and compare two PDF documents, producing a structured comparison report"
+main_pipe = "compare_documents"
+
+[concept.DocumentAnalysis]
+description = "Structured analysis of a document's key content"
+
+[concept.DocumentAnalysis.structure]
+title = { type = "text", description = "Document title or identifier", required = true }
+key_points = { type = "text", description = "Main points and arguments", required = true }
+structure = { type = "text", description = "Document structure and organization", required = true }
+tone = { type = "text", description = "Writing tone and style" }
+
+[concept.ComparisonReport]
+description = "Detailed comparison between two documents"
+
+[concept.ComparisonReport.structure]
+similarities = { type = "text", description = "Key similarities between the documents", required = true }
+differences = { type = "text", description = "Key differences between the documents", required = true }
+unique_to_first = { type = "text", description = "Points unique to the first document", required = true }
+unique_to_second = { type = "text", description = "Points unique to the second document", required = true }
+recommendation = { type = "text", description = "Overall assessment and recommendation", required = true }
+
+[pipe.compare_documents]
+type = "PipeSequence"
+description = "Main pipeline: extract both documents in parallel, analyze them, compare, and produce a report"
+inputs = { doc_a = "Document", doc_b = "Document" }
+output = "Html"
+steps = [
+    { pipe = "extract_both", result = "extracted" },
+    { pipe = "analyze_both", result = "analyzed" },
+    { pipe = "compare_analyses", result = "comparison" },
+    { pipe = "render_comparison_report", result = "report_html" },
+]
+
+[pipe.extract_both]
+type = "PipeParallel"
+description = "Extract both documents concurrently"
+inputs = { doc_a = "Document", doc_b = "Document" }
+output = "Anything"
+parallels = [
+    { pipe = "extract_doc_a", result = "pages_a" },
+    { pipe = "extract_doc_b", result = "pages_b" },
+]
+add_each_output = true
+
+[pipe.extract_doc_a]
+type = "PipeExtract"
+description = "Extract pages from the first document"
+inputs = { doc_a = "Document" }
+output = "Page[]"
+model = "@default-text-from-pdf"
+
+[pipe.extract_doc_b]
+type = "PipeExtract"
+description = "Extract pages from the second document"
+inputs = { doc_b = "Document" }
+output = "Page[]"
+model = "@default-text-from-pdf"
+
+[pipe.analyze_both]
+type = "PipeParallel"
+description = "Analyze both documents concurrently"
+inputs = { pages_a = "Page", pages_b = "Page" }
+output = "Anything"
+parallels = [
+    { pipe = "analyze_doc_a", result = "analysis_a" },
+    { pipe = "analyze_doc_b", result = "analysis_b" },
+]
+add_each_output = true
+
+[pipe.analyze_doc_a]
+type = "PipeLLM"
+description = "Analyze the first document's content"
+inputs = { pages_a = "Page" }
+output = "DocumentAnalysis"
+model = "$retrieval"
+system_prompt = "You are a document analysis expert. Extract structured information from documents."
+prompt = """
+Analyze the following document and extract its key information:
+
+@pages_a
+"""
+
+[pipe.analyze_doc_b]
+type = "PipeLLM"
+description = "Analyze the second document's content"
+inputs = { pages_b = "Page" }
+output = "DocumentAnalysis"
+model = "$retrieval"
+system_prompt = "You are a document analysis expert. Extract structured information from documents."
+prompt = """
+Analyze the following document and extract its key information:
+
+@pages_b
+"""
+
+[pipe.compare_analyses]
+type = "PipeLLM"
+description = "Compare the two document analyses and produce a detailed comparison report"
+inputs = { analysis_a = "DocumentAnalysis", analysis_b = "DocumentAnalysis" }
+output = "ComparisonReport"
+model = "$writing-factual"
+system_prompt = "You are an expert document comparator. Produce thorough, objective comparisons."
+prompt = """
+Compare these two document analyses and produce a detailed comparison report:
+
+**Document A:**
+@analysis_a
+
+**Document B:**
+@analysis_b
+
+Identify similarities, differences, unique points in each, and provide a recommendation.
+"""
+
+[pipe.render_comparison_report]
+type = "PipeCompose"
+description = "Render the comparison report as a styled HTML page"
+inputs = { analysis_a = "DocumentAnalysis", analysis_b = "DocumentAnalysis", comparison = "ComparisonReport" }
+output = "Html"
+
+[pipe.render_comparison_report.template]
+category = "html"
+template = """
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 1000px; margin: 0 auto; padding: 40px; }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 15px; }
+        .section { background: white; padding: 20px; border-radius: 8px; margin: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .doc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .doc-a { border-left: 4px solid #e74c3c; }
+        .doc-b { border-left: 4px solid #3498db; }
+        .similarities { border-left: 4px solid #2ecc71; }
+        .differences { border-left: 4px solid #e67e22; }
+        h2 { color: #34495e; }
+        h3 { margin-top: 0; }
+    </style>
+</head>
+<body>
+    <h1>Document Comparison Report</h1>
+    <div class="doc-grid">
+        <div class="section doc-a">
+            <h3>Document A: {{ analysis_a.title }}</h3>
+            <p><strong>Key Points:</strong> {{ analysis_a.key_points }}</p>
+        </div>
+        <div class="section doc-b">
+            <h3>Document B: {{ analysis_b.title }}</h3>
+            <p><strong>Key Points:</strong> {{ analysis_b.key_points }}</p>
+        </div>
+    </div>
+    <div class="section similarities">
+        <h2>Similarities</h2>
+        <p>{{ comparison.similarities }}</p>
+    </div>
+    <div class="section differences">
+        <h2>Differences</h2>
+        <p>{{ comparison.differences }}</p>
+    </div>
+    <div class="section">
+        <h2>Recommendation</h2>
+        <p>{{ comparison.recommendation }}</p>
+    </div>
+</body>
+</html>
+"""

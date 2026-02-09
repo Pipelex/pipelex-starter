@@ -1,0 +1,29 @@
+domain = "product_name_generation"
+description = "Generating creative product name suggestions from product descriptions."
+system_prompt = "None"
+main_pipe = "generate_product_names"
+
+[concept.ProductDescription]
+description = "A description of a product including its features, purpose, and characteristics."
+refines = "Text"
+
+[concept.ProductName]
+description = "A creative, marketable name for a product."
+refines = "Text"
+
+[pipe.generate_product_names]
+type = "PipeLLM"
+description = """
+Main pipe of the pipeline. Generate exactly 5 creative, marketable product name suggestions based on the product description using creative-writer talent.
+"""
+inputs = { product_description = "ProductDescription" }
+output = "ProductName[5]"
+model = "$writing-creative"
+system_prompt = """
+You are a creative product naming expert. Your task is to generate exactly 5 creative, marketable product names based on the provided product description. Each name should be memorable, catchy, and suitable for marketing purposes. You will output structured data.
+"""
+prompt = """
+Generate exactly 5 creative product name suggestions for the following product:
+
+@product_description
+"""

@@ -39,3 +39,8 @@ pipelex build pipe "Take a series of experimental material and contact angle dat
 pipelex build pipe "Take a document, extract its content, review the text to determine the extraction quality (confidence percentage between 0 and 100) and if it's below 98, pass it to a Vision model, along with the text, to complete/perfect it, otherwise, if it's above 98, return it as is."
 
 pipelex build pipe "Take a scanned page, extract its content, review the text to determine the extraction quality (confidence percentage between 0 and 100) and if it's below 98, pass it to a Vision model, along with the text, to complete/perfect it, otherwise, if it's above 98, return it as is"
+
+
+### Fintech
+
+A workflow that I will use every month to analyse and validate the expense reports of my employees. As an input there are expense report files and receipts, and the set of validation rules for my company. I have around 15 expenses report every month.
