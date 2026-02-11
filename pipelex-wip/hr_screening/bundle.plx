@@ -1,0 +1,265 @@
+domain = "hr_screening"
+description = "Analyze a job offer to build a scorecard, batch process CVs to score them, generate interview questions for fitting candidates or draft rejection emails for others"
+main_pipe = "screen_candidates"
+
+# ── Concepts ──────────────────────────────────────────────────────────
+
+[concept.Criterion]
+description = "A single evaluation criterion for scoring candidates"
+
+[concept.Criterion.structure]
+name = {type = "text", description = "Name of the criterion", required = true}
+description = {type = "text", description = "What this criterion evaluates", required = true}
+weight = {type = "number", description = "Importance weight from 1 to 10", required = true}
+
+[concept.Scorecard]
+description = "Evaluation scorecard built from a job offer"
+
+[concept.Scorecard.structure]
+job_title = {type = "text", description = "Title of the position", required = true}
+company = {type = "text", description = "Company name"}
+required_skills = {type = "list", item_type = "text", description = "Skills required for the position"}
+preferred_skills = {type = "list", item_type = "text", description = "Nice-to-have skills"}
+required_experience_years = {type = "integer", description = "Minimum years of experience required"}
+criteria = {type = "list", item_type = "concept", item_concept_ref = "hr_screening.Criterion", description = "Evaluation criteria with weights"}
+
+[concept.CriterionScore]
+description = "Score for a single evaluation criterion"
+
+[concept.CriterionScore.structure]
+criterion_name = {type = "text", description = "Name of the criterion being scored", required = true}
+score = {type = "number", description = "Score from 0 to 10", required = true}
+justification = {type = "text", description = "Explanation for the score", required = true}
+
+[concept.CvEvaluation]
+description = "Complete evaluation of a candidate CV against the scorecard"
+
+[concept.CvEvaluation.structure]
+candidate_name = {type = "text", description = "Full name of the candidate", required = true}
+overall_score = {type = "number", description = "Weighted overall score from 0 to 10", required = true}
+fit = {type = "text", description = "Whether the candidate fits the position", required = true, choices = ["yes", "no"]}
+strengths = {type = "list", item_type = "text", description = "Key strengths of the candidate"}
+weaknesses = {type = "list", item_type = "text", description = "Key weaknesses or gaps"}
+criterion_scores = {type = "list", item_type = "concept", item_concept_ref = "hr_screening.CriterionScore", description = "Individual criterion scores"}
+
+[concept.InterviewQuestions]
+description = "Five interview questions tailored to a candidate"
+refines = "Text"
+
+[concept.RejectionEmail]
+description = "A professional rejection email to a candidate"
+refines = "Text"
+
+[concept.CvResult]
+description = "Final result for a candidate including either interview questions or rejection email"
+
+[concept.CvResult.structure]
+candidate_name = {type = "text", description = "Full name of the candidate", required = true}
+fit = {type = "text", description = "Whether the candidate fits", required = true, choices = ["yes", "no"]}
+overall_score = {type = "number", description = "Weighted overall score", required = true}
+interview_questions = "5 interview questions if candidate fits, empty otherwise"
+rejection_email = "Rejection email if candidate does not fit, empty otherwise"
+
+# ── Main Pipe ─────────────────────────────────────────────────────────
+
+[pipe.screen_candidates]
+type = "PipeSequence"
+description = "Full HR screening: build scorecard from job offer, then batch-evaluate CVs"
+inputs = {job_offer = "Document", cvs = "Document[]"}
+output = "CvResult[]"
+steps = [
+    {pipe = "extract_job_offer", result = "job_pages"},
+    {pipe = "build_scorecard", result = "scorecard"},
+    {pipe = "evaluate_cv", batch_over = "cvs", batch_as = "cv", result = "results"},
+]
+
+# ── Job Offer Analysis ────────────────────────────────────────────────
+
+[pipe.extract_job_offer]
+type = "PipeExtract"
+description = "Extract text content from the job offer PDF"
+inputs = {job_offer = "Document"}
+output = "Page[]"
+model = "@default-text-from-pdf"
+
+[pipe.build_scorecard]
+type = "PipeLLM"
+description = "Analyze the job offer and build an evaluation scorecard with weighted criteria"
+inputs = {job_pages = "Page[]"}
+output = "Scorecard"
+model = "$writing-factual"
+prompt = """
+You are an experienced HR professional. Analyze the following job offer and build a comprehensive evaluation scorecard.
+
+For each criterion, assign a weight from 1 (low importance) to 10 (critical) based on how the job offer emphasizes it.
+
+Include criteria for:
+- Required technical skills
+- Years of experience
+- Education level
+- Soft skills mentioned
+- Industry knowledge
+- Any other requirements mentioned in the offer
+
+Job Offer:
+
+@job_pages
+"""
+
+# ── Per-CV Evaluation (branch for batch) ──────────────────────────────
+
+[pipe.evaluate_cv]
+type = "PipeSequence"
+description = "Extract, score, and route a single CV"
+inputs = {cv = "Document", scorecard = "Scorecard"}
+output = "CvResult"
+steps = [
+    {pipe = "extract_cv", result = "cv_pages"},
+    {pipe = "score_cv", result = "evaluation"},
+    {pipe = "route_by_fit", result = "cv_result"},
+]
+
+[pipe.extract_cv]
+type = "PipeExtract"
+description = "Extract text content from a candidate CV"
+inputs = {cv = "Document"}
+output = "Page[]"
+model = "@default-text-from-pdf"
+
+[pipe.score_cv]
+type = "PipeLLM"
+description = "Score a candidate CV against the scorecard criteria"
+inputs = {cv_pages = "Page[]", scorecard = "Scorecard"}
+output = "CvEvaluation"
+model = "$writing-factual"
+prompt = """
+You are an experienced HR professional evaluating a candidate CV against a job scorecard.
+
+Score the candidate on EACH criterion from the scorecard on a scale of 0 to 10.
+Compute the weighted overall score.
+Determine if the candidate fits: answer "yes" if the overall weighted score is 6.0 or above, "no" otherwise.
+List key strengths and weaknesses.
+
+Scorecard:
+
+@scorecard
+
+Candidate CV:
+
+@cv_pages
+"""
+
+# ── Conditional Routing ───────────────────────────────────────────────
+
+[pipe.route_by_fit]
+type = "PipeCondition"
+description = "Route candidate to interview questions or rejection email based on fit"
+inputs = {evaluation = "CvEvaluation", scorecard = "Scorecard"}
+output = "CvResult"
+expression = "evaluation.fit"
+default_outcome = "handle_rejection"
+
+[pipe.route_by_fit.outcomes]
+yes = "handle_fit"
+no = "handle_rejection"
+
+# ── Fit Branch ────────────────────────────────────────────────────────
+
+[pipe.handle_fit]
+type = "PipeSequence"
+description = "Generate interview questions and build result for fitting candidate"
+inputs = {evaluation = "CvEvaluation", scorecard = "Scorecard"}
+output = "CvResult"
+steps = [
+    {pipe = "generate_interview_questions", result = "interview_questions"},
+    {pipe = "compose_fit_result", result = "cv_result"},
+]
+
+[pipe.generate_interview_questions]
+type = "PipeLLM"
+description = "Generate 5 tailored interview questions for a fitting candidate"
+inputs = {evaluation = "CvEvaluation", scorecard = "Scorecard"}
+output = "InterviewQuestions"
+model = "$writing-factual"
+prompt = """
+You are an experienced HR professional preparing for a candidate interview.
+
+Based on the candidate evaluation and the job scorecard, generate exactly 5 interview questions that:
+1. Probe areas where the candidate scored lower
+2. Validate claimed strengths
+3. Assess cultural fit and soft skills
+4. Include at least one behavioral question ("Tell me about a time when...")
+5. Include at least one technical/role-specific question
+
+Format each question with a number and a brief note on what it assesses.
+
+Candidate: $evaluation.candidate_name
+
+Evaluation:
+
+@evaluation
+
+Scorecard:
+
+@scorecard
+"""
+
+[pipe.compose_fit_result]
+type = "PipeCompose"
+description = "Build CvResult for a fitting candidate with interview questions"
+inputs = {evaluation = "CvEvaluation", interview_questions = "InterviewQuestions"}
+output = "CvResult"
+
+[pipe.compose_fit_result.construct]
+candidate_name = {from = "evaluation.candidate_name"}
+fit = {from = "evaluation.fit"}
+overall_score = {from = "evaluation.overall_score"}
+interview_questions = {from = "interview_questions"}
+rejection_email = ""
+
+# ── Rejection Branch ──────────────────────────────────────────────────
+
+[pipe.handle_rejection]
+type = "PipeSequence"
+description = "Draft rejection email and build result for non-fitting candidate"
+inputs = {evaluation = "CvEvaluation", scorecard = "Scorecard"}
+output = "CvResult"
+steps = [
+    {pipe = "draft_rejection_email", result = "rejection_email"},
+    {pipe = "compose_rejection_result", result = "cv_result"},
+]
+
+[pipe.draft_rejection_email]
+type = "PipeLLM"
+description = "Draft a professional and empathetic rejection email"
+inputs = {evaluation = "CvEvaluation", scorecard = "Scorecard"}
+output = "RejectionEmail"
+model = "$writing-factual"
+prompt = """
+You are an experienced HR professional drafting a rejection email.
+
+Write a professional, empathetic rejection email for this candidate. The email should:
+- Address the candidate by name
+- Thank them for applying to the position ($scorecard.job_title)
+- Be respectful and encouraging without being specific about why they were rejected
+- Wish them well in their job search
+- Be signed by "The Recruitment Team"
+
+Keep it concise (under 150 words).
+
+Candidate: $evaluation.candidate_name
+Position: $scorecard.job_title
+"""
+
+[pipe.compose_rejection_result]
+type = "PipeCompose"
+description = "Build CvResult for a rejected candidate with rejection email"
+inputs = {evaluation = "CvEvaluation", rejection_email = "RejectionEmail"}
+output = "CvResult"
+
+[pipe.compose_rejection_result.construct]
+candidate_name = {from = "evaluation.candidate_name"}
+fit = {from = "evaluation.fit"}
+overall_score = {from = "evaluation.overall_score"}
+interview_questions = ""
+rejection_email = {from = "rejection_email"}

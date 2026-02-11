@@ -51,7 +51,7 @@ default-small-creative = "gemini-2.5-flash-lite"
 [llm.presets]
 
 # Writing
-writing-factual = { model = "@default-premium", temperature = 0.1, description = "Factual writing with high accuracy" }
+writing-factual = { model = "claude-4.5-haiku", temperature = 0.1, description = "Factual writing with high accuracy" }
 writing-creative = { model = "@default-premium", temperature = 0.9, description = "Creative writing with high variability" }
 
 # Retrieval
