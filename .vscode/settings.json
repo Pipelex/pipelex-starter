@@ -21,6 +21,6 @@
     "python.testing.pytestEnabled": true,
     "djlint.showInstallError": false,
     "files.associations": {
-        "*.plx": "plx"
+        "*.mthds": "mthds"
     }
 }
