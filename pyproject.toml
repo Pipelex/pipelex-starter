@@ -5,7 +5,7 @@ description = "Replace this with your project description"
 # authors = [{ name = "Your Name", email = "your.email@example.com" }]
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.15"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -19,7 +19,7 @@ classifiers = [
 dependencies = ["pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]"]
 
 [tool.uv.sources]
-pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "pre-release/v0.18.0b2" }
+pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "pre-release/v0.18.0b3" }
 
 
 [tool.setuptools]
