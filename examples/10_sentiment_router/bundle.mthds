@@ -21,7 +21,7 @@ refines = "Text"
 [pipe.classify_and_respond]
 type = "PipeSequence"
 description = """
-Main pipeline that analyzes customer feedback sentiment and routes to the appropriate response template based on the classification result. This is the entry point for the customer feedback classification and response workflow.
+Main pipeline that analyzes customer feedback sentiment and routes to the appropriate response template based on the classification result. This is the entry point for the customer feedback classification and response method.
 """
 inputs = { customer_feedback = "CustomerFeedback" }
 output = "Response"

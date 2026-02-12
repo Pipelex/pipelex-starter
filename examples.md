@@ -20,10 +20,10 @@ pipelex run batch_cv_job_match --inputs cv_batch/inputs.json
 
 pipelex graph render graph.json
 
-pipelex run examples/cv_and_offer/cv_job_match.plx --inputs examples/cv_and_offer/inputs.json --no-output --graph --graph-full-data
+pipelex run examples/cv_and_offer/cv_job_match.mthds --inputs examples/cv_and_offer/inputs.json --no-output --graph --graph-full-data
 pipelex run cv_job_match --inputs cv_and_offer/inputs.json -L cv_and_offer
 
-pipelex run examples/cv_batch/bundle.plx --inputs examples/cv_batch/inputs.json
+pipelex run examples/cv_batch/bundle.mthds --inputs examples/cv_batch/inputs.json
 
 
 pipelex build pipe "Take a CV and Job offer, analyze if they match and generate 5 questions for the interview"
@@ -42,11 +42,11 @@ pipelex build pipe "Take a scanned page, extract its content, review the text to
 
 ### Fintech
 
-A workflow that I will use every month to analyse and validate the expense reports of my employees. As an input there are expense report files and receipts, and the set of validation rules for my company. I have around 15 expenses report every month.
+A method that I will use every month to analyse and validate the expense reports of my employees. As an input there are expense report files and receipts, and the set of validation rules for my company. I have around 15 expenses report every month.
 
 Take image files from receipts and extract the information in order to build an expense report. The filename of the images will be used as a purpose for the expense, for instance "lunch with client ACME". Of course the expense must be categorized and also based on the category we shall apply company rules (say we have a directory of markdown files, one for each category of expense). So each expense will be rejected or validated with a short comment and confidence score. 
 
-A Pipelex workflow to extract a company expense policy PDF like @demo_files/policies.pdf using a document extraction model and structure it so that we can later use it to validate expense reports
+A Pipelex method to extract a company expense policy PDF like @demo_files/policies.pdf using a document extraction model and structure it so that we can later use it to validate expense reports
 
 ## HR
 
@@ -56,4 +56,4 @@ Analyze a Job offer to build a scorecard, then batch process CVs to score them, 
 
 ### Guided
 
-Help me design a workflow to match a bunch of CVs with a job offer
+Help me design a method to match a bunch of CVs with a job offer

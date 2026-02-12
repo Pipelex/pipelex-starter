@@ -55,7 +55,7 @@ questions = { type = "list", item_type = "concept", item_concept_ref = "cv_and_o
 [pipe.cv_job_match]
 type = "PipeSequence"
 description = """
-Main pipeline that processes CV and job offer PDFs, analyzes their match, and generates targeted interview questions. This is the entry point for the CV-job matching workflow.
+Main pipeline that processes CV and job offer PDFs, analyzes their match, and generates targeted interview questions. This is the entry point for the CV-job matching method.
 """
 inputs = { cv_pdf = "Document", job_offer_pdf = "Document" }
 output = "InterviewSheet"
