@@ -5,7 +5,7 @@ description = "Replace this with your project description"
 # authors = [{ name = "Your Name", email = "your.email@example.com" }]
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.15"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -16,15 +16,11 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-dependencies = [
-    "pipelex[anthropic,bedrock,docling,fal,gcp-storage,google,google-genai,huggingface,mistralai,s3]",
-]
+dependencies = ["pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]"]
 
 [tool.uv.sources]
-# pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "pre-release/v0.18.0b2" }
-# pipelex = { git = "https://github.com/Pipelex/pipelex.git", rev = "feature/Chicago" }
-pipelex = { git = "https://github.com/Pipelex/pipelex.git", rev = "e7ff99bec4678c685c9e9cc2a7c914755d8d8633" }
-# pipelex = { path = "../pipelex", editable = true }
+pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "pre-release/v0.18.0b3" }
+
 
 [tool.setuptools]
 packages = ["my_project"]
