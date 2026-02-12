@@ -157,7 +157,7 @@ erd: export-requirements-dev
 
 validate: env
 	$(call PRINT_TITLE,"Running setup sequence")
-	$(VENV_PIPELEX) validate all
+	$(VENV_PIPELEX) validate --all
 
 ##############################################################################################
 ############################      Cleaning                        ############################

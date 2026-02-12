@@ -8,6 +8,9 @@
 # Support: https://go.pipelex.com/discord
 # =========================================================================================
 
+# Note: The internal backend (software-only models) is always available regardless of
+# which routing profile you select. See the documentation for details.
+
 # Which profile to use (change this to switch routing)
 active = "all_pipelex_gateway"
 
@@ -144,13 +147,3 @@ description = "Example routing profile using specific models"
 
 "grok-3" = "pipelex_gateway"
 "grok-3-mini" = "xai"
-
-# =========================================================================================
-# Custom Profiles
-# =========================================================================================
-[profiles.demo]
-description = "Demo routing profile using patterns"
-default = "pipelex_gateway"
-
-[profiles.demo.routes]
-"*-sdxl" = "fal"
