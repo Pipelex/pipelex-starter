@@ -1,4 +1,31 @@
 {
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#2a0808",
+        "activityBar.foreground": "#e08080",
+        "editor.background": "#1a0505",
+        "sideBar.background": "#2a0808",
+        "sideBar.foreground": "#e08080",
+        "titleBar.activeBackground": "#2a0808",
+        "titleBar.activeForeground": "#e08080",
+        "statusBar.background": "#2a0808",
+        "statusBar.foreground": "#e08080",
+        "tab.activeBackground": "#4a1010",
+        "tab.activeForeground": "#ffb0b0",
+        "tab.inactiveBackground": "#2a0808",
+        "tab.inactiveForeground": "#b05050",
+        "editorGroupHeader.tabsBackground": "#2a0808",
+        "panel.background": "#1a0505",
+        "panelTitle.activeForeground": "#e08080",
+        "focusBorder": "#c03030",
+        "selection.background": "#701010",
+        "list.activeSelectionBackground": "#701010",
+        "list.activeSelectionForeground": "#ffb0b0",
+        "list.hoverBackground": "#4a1010",
+        "list.inactiveSelectionBackground": "#4a1010",
+        "scrollbarSlider.background": "#60101080",
+        "scrollbarSlider.hoverBackground": "#701010",
+        "scrollbarSlider.activeBackground": "#801818"
+    },
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff"
     },
@@ -22,5 +49,13 @@
     "djlint.showInstallError": false,
     "files.associations": {
         "*.mthds": "mthds"
+    },
+    "[toml]": {
+        "editor.defaultFormatter": "Pipelex.pipelex",
+        "editor.formatOnSave": true
+    },
+    "[mthds]": {
+        "editor.defaultFormatter": "Pipelex.pipelex",
+        "editor.formatOnSave": true
     }
 }

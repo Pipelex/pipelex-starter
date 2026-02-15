@@ -133,6 +133,12 @@ lock: env
 	@uv lock && \
 	echo "uv lock without update";
 
+plxt: env ## Rebuild and reinstall plxt CLI from local vscode-pipelex source
+	$(call PRINT_TITLE,"Reinstalling plxt from source")
+	@. $(VIRTUAL_ENV)/bin/activate && \
+	uv sync --all-extras --reinstall-package plxt && \
+	echo "Reinstalled plxt in ${VIRTUAL_ENV}";
+
 update: env
 	$(call PRINT_TITLE,"Updating all dependencies")
 	@uv pip compile --upgrade pyproject.toml -o requirements.lock && \

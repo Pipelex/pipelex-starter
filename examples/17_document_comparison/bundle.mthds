@@ -1,25 +1,25 @@
-domain = "document_comparison"
+domain      = "document_comparison"
 description = "Extract and compare two PDF documents, producing a structured comparison report"
-main_pipe = "compare_documents"
+main_pipe   = "compare_documents"
 
 [concept.DocumentAnalysis]
 description = "Structured analysis of a document's key content"
 
 [concept.DocumentAnalysis.structure]
-title = { type = "text", description = "Document title or identifier", required = true }
+title      = { type = "text", description = "Document title or identifier", required = true }
 key_points = { type = "text", description = "Main points and arguments", required = true }
-structure = { type = "text", description = "Document structure and organization", required = true }
-tone = { type = "text", description = "Writing tone and style" }
+structure  = { type = "text", description = "Document structure and organization", required = true }
+tone       = { type = "text", description = "Writing tone and style" }
 
 [concept.ComparisonReport]
 description = "Detailed comparison between two documents"
 
 [concept.ComparisonReport.structure]
-similarities = { type = "text", description = "Key similarities between the documents", required = true }
-differences = { type = "text", description = "Key differences between the documents", required = true }
-unique_to_first = { type = "text", description = "Points unique to the first document", required = true }
+similarities     = { type = "text", description = "Key similarities between the documents", required = true }
+differences      = { type = "text", description = "Key differences between the documents", required = true }
+unique_to_first  = { type = "text", description = "Points unique to the first document", required = true }
 unique_to_second = { type = "text", description = "Points unique to the second document", required = true }
-recommendation = { type = "text", description = "Overall assessment and recommendation", required = true }
+recommendation   = { type = "text", description = "Overall assessment and recommendation", required = true }
 
 [pipe.compare_documents]
 type = "PipeSequence"
@@ -27,10 +27,10 @@ description = "Main pipeline: extract both documents in parallel, analyze them, 
 inputs = { doc_a = "Document", doc_b = "Document" }
 output = "Html"
 steps = [
-    { pipe = "extract_both", result = "extracted" },
-    { pipe = "analyze_both", result = "analyzed" },
-    { pipe = "compare_analyses", result = "comparison" },
-    { pipe = "render_comparison_report", result = "report_html" },
+  { pipe = "extract_both", result = "extracted" },
+  { pipe = "analyze_both", result = "analyzed" },
+  { pipe = "compare_analyses", result = "comparison" },
+  { pipe = "render_comparison_report", result = "report_html" },
 ]
 
 [pipe.extract_both]
@@ -39,24 +39,24 @@ description = "Extract both documents concurrently"
 inputs = { doc_a = "Document", doc_b = "Document" }
 output = "Anything"
 parallels = [
-    { pipe = "extract_doc_a", result = "pages_a" },
-    { pipe = "extract_doc_b", result = "pages_b" },
+  { pipe = "extract_doc_a", result = "pages_a" },
+  { pipe = "extract_doc_b", result = "pages_b" },
 ]
 add_each_output = true
 
 [pipe.extract_doc_a]
-type = "PipeExtract"
+type        = "PipeExtract"
 description = "Extract pages from the first document"
-inputs = { doc_a = "Document" }
-output = "Page[]"
-model = "@default-text-from-pdf"
+inputs      = { doc_a = "Document" }
+output      = "Page[]"
+model       = "@default-text-from-pdf"
 
 [pipe.extract_doc_b]
-type = "PipeExtract"
+type        = "PipeExtract"
 description = "Extract pages from the second document"
-inputs = { doc_b = "Document" }
-output = "Page[]"
-model = "@default-text-from-pdf"
+inputs      = { doc_b = "Document" }
+output      = "Page[]"
+model       = "@default-text-from-pdf"
 
 [pipe.analyze_both]
 type = "PipeParallel"
@@ -64,8 +64,8 @@ description = "Analyze both documents concurrently"
 inputs = { pages_a = "Page", pages_b = "Page" }
 output = "Anything"
 parallels = [
-    { pipe = "analyze_doc_a", result = "analysis_a" },
-    { pipe = "analyze_doc_b", result = "analysis_b" },
+  { pipe = "analyze_doc_a", result = "analysis_a" },
+  { pipe = "analyze_doc_b", result = "analysis_b" },
 ]
 add_each_output = true
 
@@ -115,10 +115,10 @@ Identify similarities, differences, unique points in each, and provide a recomme
 """
 
 [pipe.render_comparison_report]
-type = "PipeCompose"
+type        = "PipeCompose"
 description = "Render the comparison report as a styled HTML page"
-inputs = { analysis_a = "DocumentAnalysis", analysis_b = "DocumentAnalysis", comparison = "ComparisonReport" }
-output = "Html"
+inputs      = { analysis_a = "DocumentAnalysis", analysis_b = "DocumentAnalysis", comparison = "ComparisonReport" }
+output      = "Html"
 
 [pipe.render_comparison_report.template]
 category = "html"
