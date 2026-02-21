@@ -1,3 +1,5 @@
+import runpy
+
 import pytest
 
 
@@ -5,4 +7,4 @@ import pytest
 @pytest.mark.inference
 class TestMyProject:
     def test_hello_world(self):
-        import my_project.hello_world  # noqa: F401
+        runpy.run_path("my_project/hello_world.py", run_name="__main__")

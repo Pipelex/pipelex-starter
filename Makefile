@@ -77,6 +77,8 @@ make ti                       - Shorthand -> test-inference
 make check                    - Shorthand -> format lint mypy
 make c                        - Shorthand -> check
 make cc                       - Shorthand -> cleanderived check
+make agent-check              - Shorthand -> fix-unused-imports format lint pyright mypy (for AI agents)
+make agent-test               - Run unit tests, silent on success, output on failure (for AI agents)
 make li                       - Shorthand -> lock install
 make check-unused-imports     - Check for unused imports without fixing
 make fix-unused-imports       - Fix unused imports with ruff
@@ -93,7 +95,7 @@ export HELP
 	test t test-quiet tq test-with-prints tp test-inference ti \
 	codex-tests gha-tests \
 	run-all-tests run-manual-trigger-gha-tests run-gha_disabled-tests \
-	validate v check c cc \
+	validate v check c cc agent-check agent-test \
 	merge-check-ruff-lint merge-check-ruff-format merge-check-mypy merge-check-pyright \
 	li check-unused-imports fix-unused-imports check-uv check-TODOs
 
@@ -284,6 +286,16 @@ test-inference: env
 ti: test-inference
 	@echo "> done: ti = test-inference"
 
+agent-test: env
+	@echo "• Running unit tests..."
+	@tmpfile=$$(mktemp); \
+	$(VENV_PYTEST) -m $(USUAL_PYTEST_MARKERS) -o log_level=WARNING --tb=short -q > "$$tmpfile" 2>&1; \
+	exit_code=$$?; \
+	if [ $$exit_code -ne 0 ]; then grep -vE '\[\s*[0-9]+%\]\s*$$' "$$tmpfile"; fi; \
+	rm -f "$$tmpfile"; \
+	if [ $$exit_code -eq 0 ]; then echo "• All tests passed."; fi; \
+	exit $$exit_code
+
 ############################################################################################
 ############################               Linting              ############################
 ############################################################################################
@@ -342,6 +354,9 @@ cc: cleanderived c
 
 check: cleanderived check-unused-imports c
 	@echo "> done: check"
+
+agent-check: fix-unused-imports format lint pyright mypy
+	@echo "> done: agent-check"
 
 v: validate
 	@echo "> done: v = validate"
