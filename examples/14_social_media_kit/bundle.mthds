@@ -33,7 +33,7 @@ type = "PipeParallel"
 description = "Generate all social media posts and hero image concurrently"
 inputs = { announcement = "Text" }
 output = "Anything"
-parallels = [
+branches = [
     { pipe = "write_twitter_post", result = "twitter_post" },
     { pipe = "write_linkedin_post", result = "linkedin_post" },
     { pipe = "write_instagram_caption", result = "instagram_caption" },

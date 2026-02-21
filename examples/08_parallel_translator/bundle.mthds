@@ -16,7 +16,7 @@ Main orchestrator pipe that translates source text into French, Spanish, and Jap
 """
 inputs = { source_text = "Text" }
 output = "Anything"
-parallels = [
+branches = [
     { pipe = "translate_to_french", result = "french_translation" },
     { pipe = "translate_to_spanish", result = "spanish_translation" },
     { pipe = "translate_to_japanese", result = "japanese_translation" },

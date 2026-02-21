@@ -20,8 +20,8 @@ dependencies = ["pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]"]
 
 [tool.uv.sources]
 # pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "pre-release/v0.18.0b3" }
-pipelex = { path = "../_epic-mthds-4", editable = true }
-plxt = { path = "../vscode-pipelex", editable = false }
+pipelex = { path = "../_epic-mthds-1", editable = true }
+# plxt = { path = "../vscode-pipelex", editable = false }
 
 
 [tool.setuptools]
@@ -37,7 +37,6 @@ dev = [
   "pytest-sugar>=1.0.0",
   "pytest_asyncio>=0.24.0",
   "ruff>=0.6.8",
-  "plxt",
   "types-aioboto3[bedrock,bedrock-runtime]>=13.4.0",
   "types-aiofiles>=24.1.0.20240626",
   "types-markdown>=3.6.0.20240316",

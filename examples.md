@@ -1,6 +1,8 @@
 
 pipelex build pipe "Imagine a cute animal mascot for a startup based on its elevator pitch and some brand guidelines" --output-dir test_graph
 
+Structured and reusable Methods for AI Agents
+
 pipelex build pipe "Imagine a cute animal mascot for a startup based on its elevator pitch \
     and some brand guidelines, propose 2 different ideas, and for each, 3 style variants in the image generation prompt, \
         at the end we want the rendered image" -o mascot
@@ -40,6 +42,12 @@ pipelex build pipe "Take a document, extract its content, review the text to det
 
 pipelex build pipe "Take a scanned page, extract its content, review the text to determine the extraction quality (confidence percentage between 0 and 100) and if it's below 98, pass it to a Vision model, along with the text, to complete/perfect it, otherwise, if it's above 98, return it as is"
 
+### Marketing
+
+Imagine a cute animal mascot for a startup based on its elevator pitch and some brand guidelines
+
+We want to design social post banners (like Open Graph banners) for our new website. It will start from a brief about the website. Then I want you to think about 3 use cases for banners. For each use case, you will generate 3 creative ideas. Then, for each, you will render them with two different image generators
+
 ### Fintech
 
 A method that I will use every month to analyse and validate the expense reports of my employees. As an input there are expense report files and receipts, and the set of validation rules for my company. I have around 15 expenses report every month.
@@ -49,6 +57,8 @@ Take image files from receipts and extract the information in order to build an 
 A Pipelex method to extract a company expense policy PDF like @demo_files/policies.pdf using a document extraction model and structure it so that we can later use it to validate expense reports
 
 ## HR
+
+Take a CV and Job offer, analyze if they match and generate 5 questions for the interview
 
 ### Directive
 

@@ -1,0 +1,239 @@
+domain = "rfp_analysis"
+description = "Analyze Requests for Proposals in sustainability and green innovation: extract key information, produce a Go/No-Go recommendation, and draft a response strategy"
+main_pipe = "analyze_innovation_rfp"
+
+# ──────────────────────────────────────────────
+# Concepts
+# ──────────────────────────────────────────────
+
+[concept.RfpAnalysis]
+description = "Structured breakdown of a Request for Proposals document"
+
+[concept.RfpAnalysis.structure]
+title = { type = "text", description = "Title of the RFP", required = true }
+issuing_organization = { type = "text", description = "Organization that issued the RFP", required = true }
+submission_deadline = { type = "text", description = "Submission deadline date and time", required = true }
+budget_range = "Budget range or maximum funding available"
+eligibility_criteria = { type = "text", description = "Who can apply - eligibility requirements", required = true }
+innovation_topics = { type = "text", description = "Key innovation topics and thematic areas covered", required = true }
+evaluation_criteria = { type = "text", description = "How proposals will be evaluated and scored", required = true }
+key_requirements = { type = "text", description = "Main deliverables and requirements expected from applicants", required = true }
+
+[concept.GoNoGoRecommendation]
+description = "Scored recommendation on whether to pursue an RFP"
+
+[concept.GoNoGoRecommendation.structure]
+overall_score = { type = "number", description = "Overall score from 0 to 10", required = true }
+green_innovation_fit = { type = "text", description = "Assessment of how well the RFP aligns with sustainability and green innovation", required = true }
+strategic_alignment = { type = "text", description = "How the RFP aligns with typical green innovation strategy", required = true }
+feasibility_assessment = { type = "text", description = "Assessment of feasibility to deliver on the RFP requirements", required = true }
+risk_factors = { type = "text", description = "Key risks and challenges identified", required = true }
+recommendation = { type = "text", description = "Final recommendation", required = true, choices = [
+    "GO",
+    "NO-GO",
+    "CONDITIONAL",
+] }
+rationale = { type = "text", description = "Detailed rationale for the recommendation", required = true }
+
+[concept.ResponseStrategy]
+description = "Draft response strategy and outline for pursuing an RFP"
+refines = "Text"
+
+[concept.ResponseBrief]
+description = "Complete analysis brief combining RFP analysis, Go/No-Go recommendation, and response strategy"
+refines = "Text"
+
+# ──────────────────────────────────────────────
+# Pipes
+# ──────────────────────────────────────────────
+
+[pipe.analyze_innovation_rfp]
+type = "PipeSequence"
+description = "Analyze an innovation RFP: extract content, produce structured analysis, Go/No-Go recommendation, and response strategy"
+inputs = { rfp_doc = "Document" }
+output = "ResponseBrief"
+steps = [
+    { pipe = "extract_rfp", result = "pages" },
+    { pipe = "analyze_rfp", result = "rfp_analysis" },
+    { pipe = "evaluate_rfp", result = "go_no_go" },
+    { pipe = "draft_strategy", result = "response_strategy" },
+    { pipe = "compose_brief", result = "response_brief" },
+]
+
+[pipe.extract_rfp]
+type = "PipeExtract"
+description = "Extract text and images from the RFP PDF document"
+inputs = { rfp_doc = "Document" }
+output = "Page[]"
+model = "@default-extract-document"
+
+[pipe.analyze_rfp]
+type = "PipeLLM"
+description = "Analyze the RFP to extract key structured information"
+inputs = { pages = "Page[]" }
+output = "RfpAnalysis"
+model = "$retrieval"
+prompt = """
+You are an expert analyst specialized in Requests for Proposals (RFPs) in the field of sustainability and green innovation.
+
+Analyze the following RFP document thoroughly and extract all key information.
+
+## RFP Document
+
+@pages
+
+## Instructions
+
+Extract the following information from the RFP:
+- **Title**: The exact title of the RFP
+- **Issuing Organization**: Who published this RFP
+- **Submission Deadline**: When proposals must be submitted (include date and time if available)
+- **Budget Range**: Any mentioned funding amounts, budget caps, or financial envelopes
+- **Eligibility Criteria**: Who can apply (organization types, geographic restrictions, consortium requirements, etc.)
+- **Innovation Topics**: The specific innovation themes, research areas, and sustainability topics covered
+- **Evaluation Criteria**: How proposals will be scored and evaluated (weighting if available)
+- **Key Requirements**: Main deliverables, milestones, and requirements expected from applicants
+
+Be precise and cite specific sections or page references when possible. If information is not explicitly stated, note it as "Not specified in document".
+"""
+
+[pipe.evaluate_rfp]
+type = "PipeLLM"
+description = "Evaluate the RFP and produce a scored Go/No-Go recommendation"
+inputs = { pages = "Page[]", rfp_analysis = "RfpAnalysis" }
+output = "GoNoGoRecommendation"
+model = "$engineering-structured"
+prompt = """
+You are a strategic advisor specialized in evaluating Requests for Proposals in sustainability and green innovation.
+
+Based on the RFP document and its structured analysis, produce a Go/No-Go recommendation.
+
+## RFP Document
+
+@pages
+
+## Structured Analysis
+
+- Title: $rfp_analysis.title
+- Issuing Organization: $rfp_analysis.issuing_organization
+- Deadline: $rfp_analysis.submission_deadline
+- Budget: $rfp_analysis.budget_range
+- Eligibility: $rfp_analysis.eligibility_criteria
+- Innovation Topics: $rfp_analysis.innovation_topics
+- Evaluation Criteria: $rfp_analysis.evaluation_criteria
+- Key Requirements: $rfp_analysis.key_requirements
+
+## Evaluation Instructions
+
+Score and assess the RFP on these dimensions:
+1. **Green Innovation Fit** (0-10): How well does this RFP align with sustainability, circular economy, clean tech, or green innovation goals?
+2. **Strategic Alignment** (0-10): Does this RFP match the typical strategic priorities of a green innovation organization?
+3. **Feasibility Assessment**: Can the requirements realistically be met? Consider timeline, budget adequacy, and technical complexity.
+4. **Risk Factors**: Identify key risks (competitive landscape, tight deadlines, unclear requirements, budget constraints, etc.)
+
+Provide an **overall_score** (0-10) and a final **recommendation**: GO, NO-GO, or CONDITIONAL.
+
+Include a detailed **rationale** explaining your recommendation.
+"""
+
+[pipe.draft_strategy]
+type = "PipeLLM"
+description = "Draft a response strategy and outline for pursuing the RFP"
+inputs = { pages = "Page[]", rfp_analysis = "RfpAnalysis", go_no_go = "GoNoGoRecommendation" }
+output = "ResponseStrategy"
+model = "$writing-creative"
+prompt = """
+You are an expert proposal strategist specialized in sustainability and green innovation funding.
+
+Based on the RFP analysis and Go/No-Go recommendation, draft a response strategy.
+
+## RFP Analysis
+
+- Title: $rfp_analysis.title
+- Innovation Topics: $rfp_analysis.innovation_topics
+- Evaluation Criteria: $rfp_analysis.evaluation_criteria
+- Key Requirements: $rfp_analysis.key_requirements
+- Budget: $rfp_analysis.budget_range
+- Deadline: $rfp_analysis.submission_deadline
+
+## Go/No-Go Assessment
+
+- Recommendation: $go_no_go.recommendation (Score: $go_no_go.overall_score/10)
+- Green Innovation Fit: $go_no_go.green_innovation_fit
+- Strategic Alignment: $go_no_go.strategic_alignment
+- Feasibility: $go_no_go.feasibility_assessment
+- Risks: $go_no_go.risk_factors
+
+## Full RFP Document
+
+@pages
+
+## Instructions
+
+Draft a comprehensive response strategy that includes:
+
+1. **Executive Positioning**: How to position the proposal to maximize scoring against evaluation criteria
+2. **Key Themes**: 3-5 themes to emphasize that align with the RFP innovation topics and sustainability goals
+3. **Proposed Structure**: Recommended outline for the proposal document
+4. **Differentiators**: What unique value propositions to highlight
+5. **Risk Mitigation**: How to address identified risks in the proposal
+6. **Resource Plan**: High-level estimation of team composition and effort needed
+7. **Timeline**: Key milestones leading up to the submission deadline
+
+Write in a clear, actionable style. This strategy will guide the proposal writing team.
+"""
+
+[pipe.compose_brief]
+type = "PipeCompose"
+description = "Assemble the final response brief from all analysis components"
+inputs = { rfp_analysis = "RfpAnalysis", go_no_go = "GoNoGoRecommendation", response_strategy = "ResponseStrategy" }
+output = "ResponseBrief"
+template = """
+# RFP Analysis Brief
+
+## 1. RFP Overview
+
+- **Title**: $rfp_analysis.title
+- **Issuing Organization**: $rfp_analysis.issuing_organization
+- **Submission Deadline**: $rfp_analysis.submission_deadline
+- **Budget Range**: $rfp_analysis.budget_range
+
+### Eligibility Criteria
+$rfp_analysis.eligibility_criteria
+
+### Innovation Topics
+$rfp_analysis.innovation_topics
+
+### Evaluation Criteria
+$rfp_analysis.evaluation_criteria
+
+### Key Requirements
+$rfp_analysis.key_requirements
+
+---
+
+## 2. Go/No-Go Recommendation
+
+**Decision: $go_no_go.recommendation** (Score: $go_no_go.overall_score/10)
+
+### Green Innovation Fit
+$go_no_go.green_innovation_fit
+
+### Strategic Alignment
+$go_no_go.strategic_alignment
+
+### Feasibility Assessment
+$go_no_go.feasibility_assessment
+
+### Risk Factors
+$go_no_go.risk_factors
+
+### Rationale
+$go_no_go.rationale
+
+---
+
+## 3. Response Strategy
+
+$response_strategy
+"""

@@ -36,9 +36,9 @@ steps = [
 [pipe.extract_both]
 type = "PipeParallel"
 description = "Extract both documents concurrently"
-inputs = { doc_a = "Document", doc_b = "Document" }
+inputs = { doc_a = "Document", doc_b = "native.Document" }
 output = "Anything"
-parallels = [
+branches = [
   { pipe = "extract_doc_a", result = "pages_a" },
   { pipe = "extract_doc_b", result = "pages_b" },
 ]
@@ -63,7 +63,7 @@ type = "PipeParallel"
 description = "Analyze both documents concurrently"
 inputs = { pages_a = "Page", pages_b = "Page" }
 output = "Anything"
-parallels = [
+branches = [
   { pipe = "analyze_doc_a", result = "analysis_a" },
   { pipe = "analyze_doc_b", result = "analysis_b" },
 ]

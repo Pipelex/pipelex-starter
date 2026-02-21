@@ -1319,6 +1319,20 @@ wheels = [
 ]
 
 [[package]]
+name = "mthds"
+version = "0.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "backports-strenum", marker = "python_full_version < '3.11'" },
+    { name = "httpx" },
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b4/1c/207fed4b05c8dbcfe6f6c0802b0c59cdc683466f02f95625475248e1ff20/mthds-0.0.2.tar.gz", hash = "sha256:273aaec6e8332f462f772c1bd58cf5baaea4a69224de2fa024b08ebe7ed005f1", size = 60229, upload-time = "2026-02-19T13:38:28.094Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6c/52/c831b1c6bb0a2b7ecaf21de099132eb4c1a1277569ad7ae214da86dd5583/mthds-0.0.2-py3-none-any.whl", hash = "sha256:168210f289f67cc1fd831ddc4bb46f2d65de6c48b5932406bc31459be94f312e", size = 11818, upload-time = "2026-02-19T13:38:26.447Z" },
+]
+
+[[package]]
 name = "multidict"
 version = "6.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1468,7 +1482,6 @@ dependencies = [
 dev = [
     { name = "boto3-stubs" },
     { name = "mypy" },
-    { name = "plxt" },
     { name = "pyright" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
@@ -1486,8 +1499,7 @@ dev = [
 requires-dist = [
     { name = "boto3-stubs", marker = "extra == 'dev'", specifier = ">=1.35.24" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11.2" },
-    { name = "pipelex", extras = ["mistralai", "anthropic", "google", "google-genai", "bedrock", "fal"], editable = "../_epic-mthds-4" },
-    { name = "plxt", marker = "extra == 'dev'", directory = "../vscode-pipelex" },
+    { name = "pipelex", extras = ["mistralai", "anthropic", "google", "google-genai", "bedrock", "fal"], editable = "../_epic-mthds-1" },
     { name = "pyright", marker = "extra == 'dev'", specifier = ">=1.1.405" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.1" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
@@ -1968,7 +1980,7 @@ wheels = [
 [[package]]
 name = "pipelex"
 version = "0.18.0b3"
-source = { editable = "../_epic-mthds-4" }
+source = { editable = "../_epic-mthds-1" }
 dependencies = [
     { name = "aiofiles" },
     { name = "backports-strenum", marker = "python_full_version < '3.11'" },
@@ -1979,6 +1991,7 @@ dependencies = [
     { name = "json2html" },
     { name = "kajson" },
     { name = "markdown" },
+    { name = "mthds" },
     { name = "networkx", version = "3.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "networkx", version = "3.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "openai" },
@@ -1995,6 +2008,7 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "pyyaml" },
     { name = "rich" },
+    { name = "semantic-version" },
     { name = "shortuuid" },
     { name = "tomli" },
     { name = "tomlkit" },
@@ -2055,6 +2069,7 @@ requires-dist = [
     { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.6.14" },
     { name = "mkdocs-meta-manager", marker = "extra == 'docs'", specifier = ">=1.1.0" },
     { name = "moto", extras = ["s3"], marker = "extra == 'dev'", specifier = ">=5.0.0" },
+    { name = "mthds", specifier = ">=0.0.2" },
     { name = "mypy", marker = "extra == 'dev'", specifier = "==1.19.1" },
     { name = "networkx", specifier = ">=3.4.2" },
     { name = "openai", specifier = ">=1.108.1" },
@@ -2063,6 +2078,7 @@ requires-dist = [
     { name = "opentelemetry-sdk" },
     { name = "opentelemetry-semantic-conventions" },
     { name = "pillow", specifier = ">=11.2.1" },
+    { name = "pipelex-tools", marker = "extra == 'dev'", specifier = ">=0.1.1" },
     { name = "polyfactory", specifier = ">=2.21.0" },
     { name = "portkey-ai", specifier = ">=2.1.0" },
     { name = "posthog", specifier = ">=6.7.0" },
@@ -2080,6 +2096,7 @@ requires-dist = [
     { name = "pyyaml", specifier = ">=6.0.2" },
     { name = "rich", specifier = ">=13.8.1" },
     { name = "ruff", marker = "extra == 'dev'", specifier = "==0.14.13" },
+    { name = "semantic-version", specifier = ">=2.10.0" },
     { name = "shortuuid", specifier = ">=1.0.13" },
     { name = "tomli", specifier = ">=2.3.0" },
     { name = "tomlkit", specifier = ">=0.13.2" },
@@ -2110,10 +2127,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/f9/e2/3e91f31a7d2b083fe
 wheels = [
     { url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746", size = 20538, upload-time = "2025-05-15T12:30:06.134Z" },
 ]
-
-[[package]]
-name = "plxt"
-source = { directory = "../vscode-pipelex" }
 
 [[package]]
 name = "polyfactory"
@@ -2726,6 +2739,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/62/74/8d69dcb7a9efe8baa2046891735e5dfe433ad558ae23d9e3c14c633d1d58/s3transfer-0.14.0.tar.gz", hash = "sha256:eff12264e7c8b4985074ccce27a3b38a485bb7f7422cc8046fee9be4983e4125", size = 151547, upload-time = "2025-09-09T19:23:31.089Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/48/f0/ae7ca09223a81a1d890b2557186ea015f6e0502e9b8cb8e1813f1d8cfa4e/s3transfer-0.14.0-py3-none-any.whl", hash = "sha256:ea3b790c7077558ed1f02a3072fb3cb992bbbd253392f4b6e9e8976941c7d456", size = 85712, upload-time = "2025-09-09T19:23:30.041Z" },
+]
+
+[[package]]
+name = "semantic-version"
+version = "2.10.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/7d/31/f2289ce78b9b473d582568c234e104d2a342fd658cc288a7553d83bb8595/semantic_version-2.10.0.tar.gz", hash = "sha256:bdabb6d336998cbb378d4b9db3a4b56a1e3235701dc05ea2690d9a997ed5041c", size = 52289, upload-time = "2022-05-26T13:35:23.454Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6a/23/8146aad7d88f4fcb3a6218f41a60f6c2d4e3a72de72da1825dc7c8f7877c/semantic_version-2.10.0-py2.py3-none-any.whl", hash = "sha256:de78a3b8e0feda74cabc54aab2da702113e33ac9d9eb9d2389bcf1f58b7d9177", size = 15552, upload-time = "2022-05-26T13:35:21.206Z" },
 ]
 
 [[package]]

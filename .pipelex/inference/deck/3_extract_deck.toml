@@ -26,6 +26,7 @@ choice_default = "@default-extract-document"
 ####################################################################################################
 
 [extract.aliases]
+azure-best-ocr = "azure-document-intelligence"
 default-premium = "azure-document-intelligence"
 default-extract-document = "azure-document-intelligence"
 default-extract-image = "mistral-document-ai-2505"

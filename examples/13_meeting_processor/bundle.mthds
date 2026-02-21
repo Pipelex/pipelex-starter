@@ -43,7 +43,7 @@ type = "PipeParallel"
 description = "Run all three extraction tasks concurrently on the meeting notes"
 inputs = { notes = "Text" }
 output = "Anything"
-parallels = [
+branches = [
     { pipe = "extract_decisions", result = "decisions" },
     { pipe = "extract_action_items", result = "action_items" },
     { pipe = "extract_key_topics", result = "key_topics" },
