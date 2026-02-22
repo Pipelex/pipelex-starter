@@ -1,14 +1,14 @@
-domain = "motivational_quote_generation"
+domain      = "motivational_quote_generation"
 description = "Generating inspiring motivational quotes with fictional attribution based on a given topic."
-main_pipe = "generate_motivational_quote"
+main_pipe   = "generate_motivational_quote"
 
 [concept.MotivationalQuote]
 description = "A motivational quote with its attribution and thematic classification."
 
 [concept.MotivationalQuote.structure]
-quote_text = { type = "text", description = "The inspiring motivational quote text", required = true }
+quote_text    = { type = "text", description = "The inspiring motivational quote text", required = true }
 attributed_to = { type = "text", description = "The name of the fictional person to whom the quote is attributed", required = true }
-theme = { type = "text", description = "The core theme or subject matter of the quote", required = true }
+theme         = { type = "text", description = "The core theme or subject matter of the quote", required = true }
 
 [pipe.generate_motivational_quote]
 type = "PipeLLM"

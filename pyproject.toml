@@ -23,6 +23,8 @@ dependencies = ["pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]"]
 pipelex = { path = "../_epic-mthds-1", editable = true }
 # plxt = { path = "../vscode-pipelex", editable = false }
 
+pipelex-tools = { path = "/Users/lchoquel/repos/PipelexLab/vscode-pipelex" }
+
 
 [tool.setuptools]
 packages = ["my_project"]

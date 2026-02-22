@@ -2000,6 +2000,7 @@ dependencies = [
     { name = "opentelemetry-sdk" },
     { name = "opentelemetry-semantic-conventions" },
     { name = "pillow" },
+    { name = "pipelex-tools" },
     { name = "polyfactory" },
     { name = "portkey-ai" },
     { name = "posthog" },
@@ -2078,7 +2079,7 @@ requires-dist = [
     { name = "opentelemetry-sdk" },
     { name = "opentelemetry-semantic-conventions" },
     { name = "pillow", specifier = ">=11.2.1" },
-    { name = "pipelex-tools", marker = "extra == 'dev'", specifier = ">=0.1.1" },
+    { name = "pipelex-tools", directory = "../vscode-pipelex" },
     { name = "polyfactory", specifier = ">=2.21.0" },
     { name = "portkey-ai", specifier = ">=2.1.0" },
     { name = "posthog", specifier = ">=6.7.0" },
@@ -2109,6 +2110,10 @@ requires-dist = [
     { name = "typing-extensions", specifier = ">=4.13.2" },
 ]
 provides-extras = ["anthropic", "bedrock", "docling", "fal", "gcp-storage", "google", "google-genai", "huggingface", "mistralai", "s3", "docs", "dev"]
+
+[[package]]
+name = "pipelex-tools"
+source = { directory = "../vscode-pipelex" }
 
 [[package]]
 name = "platformdirs"

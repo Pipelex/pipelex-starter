@@ -60,6 +60,8 @@ A Pipelex method to extract a company expense policy PDF like @demo_files/polici
 
 Take a CV and Job offer, analyze if they match and generate 5 questions for the interview
 
+Analyze a Job offer to build a scorecard, then batch process CVs to score them, if a CV fits, generate 5 questions for the interview, otherwise draft a rejection email
+
 ### Directive
 
 Analyze a Job offer to build a scorecard, then batch process CVs to score them, if a CV fits, generate 5 questions for the interview, otherwise draft a rejection email. Test with the files in the examples/hr directory.
