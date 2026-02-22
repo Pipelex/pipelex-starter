@@ -20,8 +20,7 @@ dependencies = ["pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]"]
 
 [tool.uv.sources]
 # pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "pre-release/v0.18.0b3" }
-pipelex = { path = "../_epic-mthds-1", editable = true }
-# pipelex = { git = "https://github.com/Pipelex/pipelex.git", rev = "ba658a74dadb5889dbbec61f20ba7810d96e5d20" }
+pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "feature/Chicago" }
 
 
 [tool.setuptools]
