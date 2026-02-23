@@ -1,12 +1,12 @@
-domain = "multilingual_translation"
+domain      = "multilingual_translation"
 description = "Translating text into multiple languages simultaneously using parallel execution"
-main_pipe = "translate_to_all_languages"
+main_pipe   = "translate_to_all_languages"
 
 [concept.Translation]
 description = "A translation of text into a specific language."
 
 [concept.Translation.structure]
-language = { type = "text", description = "The target language of the translation", required = true }
+language        = { type = "text", description = "The target language of the translation", required = true }
 translated_text = { type = "text", description = "The translated content in the target language", required = true }
 
 [pipe.translate_to_all_languages]
@@ -17,9 +17,9 @@ Main orchestrator pipe that translates source text into French, Spanish, and Jap
 inputs = { source_text = "Text" }
 output = "Anything"
 branches = [
-    { pipe = "translate_to_french", result = "french_translation" },
-    { pipe = "translate_to_spanish", result = "spanish_translation" },
-    { pipe = "translate_to_japanese", result = "japanese_translation" },
+  { pipe = "translate_to_french", result = "french_translation" },
+  { pipe = "translate_to_spanish", result = "spanish_translation" },
+  { pipe = "translate_to_japanese", result = "japanese_translation" },
 ]
 add_each_output = true
 

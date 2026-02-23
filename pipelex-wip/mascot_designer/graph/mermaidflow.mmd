@@ -1,0 +1,39 @@
+flowchart LR
+
+    %% Pipe and stuff nodes within controller subgraphs
+    subgraph sg_n_a1f5d7691d["design_mascot"]
+        n_19ce6efd5f["craft_mascot_prompt"]
+        s_128cee761a(["mascot_prompt<br/>ImgGenPrompt"]):::stuff
+        n_1f113180b5["generate_mascot"]
+        s_2dc4d54bfd(["mascot_image<br/>Image"]):::stuff
+        n_441ebb3765["imagine_mascot"]
+        s_9d7ffcc22c(["mascot_brief<br/>MascotBrief"]):::stuff
+        n_0de95e0538["rate_mascot"]
+        s_5d1df0a129(["mascot_rating<br/>MascotRating"]):::stuff
+    end
+
+    %% Pipeline input stuff nodes (no producer)
+    s_8c1fa1becf(["brand_guidelines<br/>Text"]):::stuff
+    s_60899b6f2a(["elevator_pitch<br/>Text"]):::stuff
+
+    %% Data flow edges: producer -> stuff -> consumer
+    n_441ebb3765 --> s_9d7ffcc22c
+    n_1f113180b5 --> s_2dc4d54bfd
+    n_19ce6efd5f --> s_128cee761a
+    n_0de95e0538 --> s_5d1df0a129
+    s_9d7ffcc22c --> n_19ce6efd5f
+    s_9d7ffcc22c --> n_0de95e0538
+    s_2dc4d54bfd --> n_0de95e0538
+    s_128cee761a --> n_1f113180b5
+    s_8c1fa1becf --> n_441ebb3765
+    s_8c1fa1becf --> n_0de95e0538
+    s_60899b6f2a --> n_441ebb3765
+    s_60899b6f2a --> n_0de95e0538
+
+    %% Style definitions
+    classDef failed fill:#ffcccc,stroke:#cc0000
+    classDef stuff fill:#fff3e6,stroke:#cc6600,stroke-width:2px
+    classDef controller fill:#e6f3ff,stroke:#0066cc
+
+    %% Subgraph depth-based coloring
+    style sg_n_a1f5d7691d fill:#e6f3ff

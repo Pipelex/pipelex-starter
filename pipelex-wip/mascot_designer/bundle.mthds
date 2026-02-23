@@ -1,0 +1,128 @@
+domain      = "mascot_design"
+description = "Imagine a cute animal mascot for a startup based on its elevator pitch and brand guidelines"
+main_pipe   = "design_mascot"
+
+[concept.MascotBrief]
+description = "A creative brief describing a startup mascot concept"
+
+[concept.MascotBrief.structure]
+animal        = { type = "text", description = "The animal species chosen as mascot", required = true }
+personality   = { type = "text", description = "Key personality traits of the mascot", required = true }
+visual_style  = { type = "text", description = "Art style and visual approach for the mascot", required = true }
+color_palette = { type = "text", description = "Colors to use, aligned with brand guidelines", required = true }
+rationale     = "Why this animal and style fit the startup brand"
+
+[concept.MascotRating]
+description = "A rating and analysis of a generated mascot image"
+
+[concept.MascotRating.structure]
+score           = { type = "number", description = "Overall quality score from 1 to 10", required = true }
+brand_alignment = { type = "text", description = "How well the mascot aligns with the brand guidelines and elevator pitch", required = true }
+cuteness_factor = { type = "text", description = "Assessment of the mascot's cuteness and appeal", required = true }
+strengths       = { type = "text", description = "What works well about this mascot design", required = true }
+improvements    = "Suggestions for improving the mascot design"
+
+[pipe.design_mascot]
+type = "PipeSequence"
+description = "Design a cute animal mascot from a startup elevator pitch and brand guidelines"
+inputs = { elevator_pitch = "Text", brand_guidelines = "Text" }
+output = "MascotRating"
+steps = [
+  { pipe = "imagine_mascot", result = "mascot_brief" },
+  { pipe = "craft_mascot_prompt", result = "mascot_prompt" },
+  { pipe = "generate_mascot", result = "mascot_image" },
+  { pipe = "rate_mascot", result = "mascot_rating" },
+]
+
+[pipe.imagine_mascot]
+type = "PipeLLM"
+description = "Analyze the startup elevator pitch and brand guidelines to imagine a cute animal mascot concept"
+inputs = { elevator_pitch = "Text", brand_guidelines = "Text" }
+output = "MascotBrief"
+model = "$writing-creative"
+prompt = """
+You are a playful brand designer who specializes in creating adorable animal mascots for startups.
+
+A startup has asked you to imagine a cute animal mascot for their brand. Here is their elevator pitch:
+
+@elevator_pitch
+
+And here are their brand guidelines:
+
+@brand_guidelines
+
+Design a mascot concept by choosing a cute animal that embodies the startup's mission and personality. Consider:
+- What animal best represents their values and energy?
+- What personality traits should the mascot convey?
+- What visual style will make it memorable and lovable?
+- How should the brand colors be incorporated?
+
+Be creative and specific. The mascot should be distinctive, endearing, and immediately associated with what the startup does.
+"""
+
+[pipe.craft_mascot_prompt]
+type = "PipeLLM"
+description = "Craft a detailed image generation prompt from the mascot brief"
+inputs = { mascot_brief = "MascotBrief" }
+output = "ImgGenPrompt"
+model = "$img-gen-prompting"
+prompt = """
+You are an expert at writing image generation prompts that produce adorable, professional mascot illustrations.
+
+Based on the following mascot concept brief, write a single detailed image generation prompt:
+
+@mascot_brief
+
+The prompt must describe:
+- The animal ($mascot_brief.animal) in a cute, stylized illustration style
+- The personality ($mascot_brief.personality) expressed through pose and expression
+- The visual style ($mascot_brief.visual_style)
+- The color palette ($mascot_brief.color_palette)
+- Clean white or transparent background, suitable for a logo/mascot
+- Professional quality, vector-art inspired, friendly and approachable
+
+Write ONLY the image generation prompt, nothing else. Make it vivid and specific.
+"""
+
+[pipe.generate_mascot]
+type         = "PipeImgGen"
+description  = "Generate the mascot image from the crafted prompt"
+inputs       = { mascot_prompt = "ImgGenPrompt" }
+output       = "Image"
+model        = "$gen-image"
+prompt       = "$mascot_prompt"
+aspect_ratio = "square"
+
+[pipe.rate_mascot]
+type = "PipeLLM"
+description = "Analyze the generated mascot image and rate it against the original brief"
+inputs = { mascot_image = "Image", mascot_brief = "MascotBrief", elevator_pitch = "Text", brand_guidelines = "Text" }
+output = "MascotRating"
+model = "$vision"
+prompt = """
+You are a brand design critic evaluating a mascot illustration for a startup.
+
+Here is the generated mascot image:
+$mascot_image
+
+The original mascot concept brief was:
+
+@mascot_brief
+
+The startup elevator pitch:
+
+@elevator_pitch
+
+The brand guidelines:
+
+@brand_guidelines
+
+Analyze the mascot image and rate it on a scale of 1 to 10. Consider:
+- Does the animal match the concept brief?
+- Does the visual style align with the brand guidelines?
+- Is the mascot cute, memorable, and appealing?
+- Does it convey the right personality for this startup?
+- Are the brand colors well represented?
+
+Be honest and constructive in your assessment.
+"""

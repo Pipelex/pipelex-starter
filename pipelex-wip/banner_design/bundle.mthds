@@ -1,6 +1,6 @@
-domain = "banner_design"
+domain      = "banner_design"
 description = "From a website brief, design social post banners: brainstorm 3 use cases, generate 3 creative ideas per use case, and render each idea with two different AI image generators (Nano Banana Pro and GPT-Image 1.5)"
-main_pipe = "design_banners"
+main_pipe   = "design_banners"
 
 # ──────────────────────────────────────────────
 # Concepts
@@ -8,42 +8,42 @@ main_pipe = "design_banners"
 
 [concept.Brief]
 description = "The website brief describing the brand, purpose, and audience"
-refines = "Text"
+refines     = "Text"
 
 [concept.UseCase]
 description = "A banner use case such as product launch or blog post sharing"
 
 [concept.UseCase.structure]
-title = {type = "text", description = "Short name for the use case", required = true}
-description = {type = "text", description = "What the banner communicates in this use case", required = true}
-target_audience = {type = "text", description = "Who will see this banner", required = true}
+title           = { type = "text", description = "Short name for the use case", required = true }
+description     = { type = "text", description = "What the banner communicates in this use case", required = true }
+target_audience = { type = "text", description = "Who will see this banner", required = true }
 
 [concept.CreativeIdea]
 description = "A creative visual concept for a social post banner"
 
 [concept.CreativeIdea.structure]
-title = {type = "text", description = "Short name for the creative idea", required = true}
-visual_description = {type = "text", description = "Detailed description of the visual concept", required = true}
-color_palette = {type = "text", description = "Suggested colors and tones", required = true}
-mood = {type = "text", description = "Emotional tone and atmosphere", required = true}
-key_elements = {type = "text", description = "Main visual elements to include in the banner", required = true}
+title              = { type = "text", description = "Short name for the creative idea", required = true }
+visual_description = { type = "text", description = "Detailed description of the visual concept", required = true }
+color_palette      = { type = "text", description = "Suggested colors and tones", required = true }
+mood               = { type = "text", description = "Emotional tone and atmosphere", required = true }
+key_elements       = { type = "text", description = "Main visual elements to include in the banner", required = true }
 
 [concept.BannerRendering]
 description = "One creative idea rendered by both image generators"
 
 [concept.BannerRendering.structure]
-idea_title = {type = "text", description = "Name of the creative idea", required = true}
-visual_description = {type = "text", description = "The visual concept that was rendered", required = true}
-nano_banana_image = {type = "concept", description = "Image rendered by Nano Banana Pro", required = true, concept_ref = "native.Image"}
-gpt_image = {type = "concept", description = "Image rendered by GPT-Image 1.5", required = true, concept_ref = "native.Image"}
+idea_title         = { type = "text", description = "Name of the creative idea", required = true }
+visual_description = { type = "text", description = "The visual concept that was rendered", required = true }
+nano_banana_image  = { type = "concept", description = "Image rendered by Nano Banana Pro", required = true, concept_ref = "native.Image" }
+gpt_image          = { type = "concept", description = "Image rendered by GPT-Image 1.5", required = true, concept_ref = "native.Image" }
 
 [concept.UseCaseResult]
 description = "All banner renderings for one use case"
 
 [concept.UseCaseResult.structure]
-use_case_title = {type = "text", description = "Title of the use case", required = true}
-use_case_description = {type = "text", description = "Description of the use case", required = true}
-banner_renderings = {type = "list", description = "The 3 creative idea renderings for this use case", required = true, item_type = "concept", item_concept_ref = "banner_design.BannerRendering"}
+use_case_title       = { type = "text", description = "Title of the use case", required = true }
+use_case_description = { type = "text", description = "Description of the use case", required = true }
+banner_renderings    = { type = "list", description = "The 3 creative idea renderings for this use case", required = true, item_type = "concept", item_concept_ref = "banner_design.BannerRendering" }
 
 # ──────────────────────────────────────────────
 # Main pipe
@@ -52,11 +52,11 @@ banner_renderings = {type = "list", description = "The 3 creative idea rendering
 [pipe.design_banners]
 type = "PipeSequence"
 description = "Main workflow: from a website brief, design social post banners across multiple use cases"
-inputs = {brief = "Brief"}
+inputs = { brief = "Brief" }
 output = "UseCaseResult[]"
 steps = [
-    {pipe = "brainstorm_use_cases", result = "use_cases"},
-    {pipe = "process_use_cases", result = "use_case_results"},
+  { pipe = "brainstorm_use_cases", result = "use_cases" },
+  { pipe = "process_use_cases", result = "use_case_results" },
 ]
 
 # ──────────────────────────────────────────────
@@ -66,7 +66,7 @@ steps = [
 [pipe.brainstorm_use_cases]
 type = "PipeLLM"
 description = "Brainstorm 3 distinct use cases for social post banners based on the website brief"
-inputs = {brief = "Brief"}
+inputs = { brief = "Brief" }
 output = "UseCase[3]"
 model = "$writing-creative"
 prompt = """
@@ -83,23 +83,23 @@ Website brief:
 # ──────────────────────────────────────────────
 
 [pipe.process_use_cases]
-type = "PipeBatch"
-description = "Process each use case to generate creative ideas and render banners"
-inputs = {use_cases = "UseCase[]", brief = "Brief"}
-output = "UseCaseResult[]"
+type             = "PipeBatch"
+description      = "Process each use case to generate creative ideas and render banners"
+inputs           = { use_cases = "UseCase[]", brief = "Brief" }
+output           = "UseCaseResult[]"
 branch_pipe_code = "process_single_use_case"
-input_list_name = "use_cases"
-input_item_name = "use_case"
+input_list_name  = "use_cases"
+input_item_name  = "use_case"
 
 [pipe.process_single_use_case]
 type = "PipeSequence"
 description = "For one use case, generate creative ideas and render all banners"
-inputs = {use_case = "UseCase", brief = "Brief"}
+inputs = { use_case = "UseCase", brief = "Brief" }
 output = "UseCaseResult"
 steps = [
-    {pipe = "generate_ideas", result = "creative_ideas"},
-    {pipe = "render_ideas", result = "banner_renderings"},
-    {pipe = "compose_use_case_result", result = "use_case_result"},
+  { pipe = "generate_ideas", result = "creative_ideas" },
+  { pipe = "render_ideas", result = "banner_renderings" },
+  { pipe = "compose_use_case_result", result = "use_case_result" },
 ]
 
 # ──────────────────────────────────────────────
@@ -109,7 +109,7 @@ steps = [
 [pipe.generate_ideas]
 type = "PipeLLM"
 description = "Generate 3 creative visual ideas for a banner based on the use case and website brief"
-inputs = {use_case = "UseCase", brief = "Brief"}
+inputs = { use_case = "UseCase", brief = "Brief" }
 output = "CreativeIdea[3]"
 model = "$writing-creative"
 prompt = """
@@ -131,24 +131,24 @@ Banner use case:
 # ──────────────────────────────────────────────
 
 [pipe.render_ideas]
-type = "PipeBatch"
-description = "Render each creative idea with both image generators"
-inputs = {creative_ideas = "CreativeIdea[]", brief = "Brief"}
-output = "BannerRendering[]"
+type             = "PipeBatch"
+description      = "Render each creative idea with both image generators"
+inputs           = { creative_ideas = "CreativeIdea[]", brief = "Brief" }
+output           = "BannerRendering[]"
 branch_pipe_code = "render_single_idea"
-input_list_name = "creative_ideas"
-input_item_name = "idea"
+input_list_name  = "creative_ideas"
+input_item_name  = "idea"
 
 [pipe.render_single_idea]
 type = "PipeSequence"
 description = "Craft an image generation prompt and render one idea with both generators"
-inputs = {idea = "CreativeIdea", brief = "Brief"}
+inputs = { idea = "CreativeIdea", brief = "Brief" }
 output = "BannerRendering"
 steps = [
-    {pipe = "craft_prompt", result = "img_prompt"},
-    {pipe = "render_nano_banana", result = "nano_banana_image"},
-    {pipe = "render_gpt_image", result = "gpt_image"},
-    {pipe = "compose_rendering", result = "banner_rendering"},
+  { pipe = "craft_prompt", result = "img_prompt" },
+  { pipe = "render_nano_banana", result = "nano_banana_image" },
+  { pipe = "render_gpt_image", result = "gpt_image" },
+  { pipe = "compose_rendering", result = "banner_rendering" },
 ]
 
 # ──────────────────────────────────────────────
@@ -158,7 +158,7 @@ steps = [
 [pipe.craft_prompt]
 type = "PipeLLM"
 description = "Craft a detailed image generation prompt for a banner idea"
-inputs = {idea = "CreativeIdea", brief = "Brief"}
+inputs = { idea = "CreativeIdea", brief = "Brief" }
 output = "ImgGenPrompt"
 model = "$img-gen-prompting"
 prompt = """
@@ -184,44 +184,44 @@ Write a single, detailed image generation prompt that captures this creative vis
 # ──────────────────────────────────────────────
 
 [pipe.render_nano_banana]
-type = "PipeImgGen"
+type        = "PipeImgGen"
 description = "Render the banner using Nano Banana Pro"
-inputs = {img_prompt = "ImgGenPrompt"}
-output = "Image"
-model = "@best-gemini"
-prompt = "$img_prompt"
+inputs      = { img_prompt = "ImgGenPrompt" }
+output      = "Image"
+model       = "@best-gemini"
+prompt      = "$img_prompt"
 
 [pipe.render_gpt_image]
-type = "PipeImgGen"
+type        = "PipeImgGen"
 description = "Render the banner using GPT-Image 1.5"
-inputs = {img_prompt = "ImgGenPrompt"}
-output = "Image"
-model = "@best-gpt"
-prompt = "$img_prompt"
+inputs      = { img_prompt = "ImgGenPrompt" }
+output      = "Image"
+model       = "@best-gpt"
+prompt      = "$img_prompt"
 
 # ──────────────────────────────────────────────
 # Compose: assemble structured outputs
 # ──────────────────────────────────────────────
 
 [pipe.compose_rendering]
-type = "PipeCompose"
+type        = "PipeCompose"
 description = "Assemble a BannerRendering from the creative idea and both rendered images"
-inputs = {idea = "CreativeIdea", nano_banana_image = "Image", gpt_image = "Image"}
-output = "BannerRendering"
+inputs      = { idea = "CreativeIdea", nano_banana_image = "Image", gpt_image = "Image" }
+output      = "BannerRendering"
 
 [pipe.compose_rendering.construct]
-idea_title = {from = "idea.title"}
-visual_description = {from = "idea.visual_description"}
-nano_banana_image = {from = "nano_banana_image"}
-gpt_image = {from = "gpt_image"}
+idea_title         = { from = "idea.title" }
+visual_description = { from = "idea.visual_description" }
+nano_banana_image  = { from = "nano_banana_image" }
+gpt_image          = { from = "gpt_image" }
 
 [pipe.compose_use_case_result]
-type = "PipeCompose"
+type        = "PipeCompose"
 description = "Assemble a UseCaseResult from the use case info and banner renderings"
-inputs = {use_case = "UseCase", banner_renderings = "BannerRendering[]"}
-output = "UseCaseResult"
+inputs      = { use_case = "UseCase", banner_renderings = "BannerRendering[]" }
+output      = "UseCaseResult"
 
 [pipe.compose_use_case_result.construct]
-use_case_title = {from = "use_case.title"}
-use_case_description = {from = "use_case.description"}
-banner_renderings = {from = "banner_renderings"}
+use_case_title       = { from = "use_case.title" }
+use_case_description = { from = "use_case.description" }
+banner_renderings    = { from = "banner_renderings" }

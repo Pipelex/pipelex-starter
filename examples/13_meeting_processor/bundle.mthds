@@ -1,30 +1,30 @@
-domain = "meeting_notes_processing"
+domain      = "meeting_notes_processing"
 description = "Extracting decisions, action items, and key topics from meeting notes into structured summaries."
-main_pipe = "process_meeting_notes"
+main_pipe   = "process_meeting_notes"
 
 [concept.Decision]
 description = "A statement or conclusion reached during a meeting that affects future direction or actions."
-refines = "Text"
+refines     = "Text"
 
 [concept.ActionItem]
 description = "A task assigned to a specific person during a meeting."
 
 [concept.ActionItem.structure]
-owner = { type = "text", description = "The person responsible for completing the task", required = true }
-task = { type = "text", description = "Description of what needs to be done", required = true }
+owner    = { type = "text", description = "The person responsible for completing the task", required = true }
+task     = { type = "text", description = "Description of what needs to be done", required = true }
 deadline = { type = "text", description = "When the task should be completed" }
 
 [concept.KeyTopics]
 description = "The main subjects or themes discussed during a meeting."
-refines = "Text"
+refines     = "Text"
 
 [concept.MeetingSummary]
 description = "A structured compilation of all important elements extracted from meeting notes."
 
 [concept.MeetingSummary.structure]
-decisions = { type = "text", description = "All decisions made during the meeting", required = true }
+decisions    = { type = "text", description = "All decisions made during the meeting", required = true }
 action_items = { type = "list", item_type = "concept", item_concept_ref = "ActionItem", description = "List of tasks assigned with owners and deadlines", required = true }
-key_topics = { type = "text", description = "Main subjects discussed in the meeting", required = true }
+key_topics   = { type = "text", description = "Main subjects discussed in the meeting", required = true }
 
 [pipe.process_meeting_notes]
 type = "PipeSequence"
@@ -34,8 +34,8 @@ Main pipeline that processes meeting notes by extracting decisions, action items
 inputs = { notes = "Text" }
 output = "MeetingSummary"
 steps = [
-    { pipe = "extract_meeting_components", result = "extracted_components" },
-    { pipe = "assemble_meeting_summary", result = "meeting_summary" },
+  { pipe = "extract_meeting_components", result = "extracted_components" },
+  { pipe = "assemble_meeting_summary", result = "meeting_summary" },
 ]
 
 [pipe.extract_meeting_components]
@@ -44,9 +44,9 @@ description = "Run all three extraction tasks concurrently on the meeting notes"
 inputs = { notes = "Text" }
 output = "Anything"
 branches = [
-    { pipe = "extract_decisions", result = "decisions" },
-    { pipe = "extract_action_items", result = "action_items" },
-    { pipe = "extract_key_topics", result = "key_topics" },
+  { pipe = "extract_decisions", result = "decisions" },
+  { pipe = "extract_action_items", result = "action_items" },
+  { pipe = "extract_key_topics", result = "key_topics" },
 ]
 add_each_output = true
 
@@ -94,12 +94,12 @@ Identify and extract the key topics discussed in the following meeting notes. Be
 """
 
 [pipe.assemble_meeting_summary]
-type = "PipeCompose"
+type        = "PipeCompose"
 description = "Assemble the extracted components into a unified MeetingSummary structure"
-inputs = { decisions = "Decision", action_items = "ActionItem[]", key_topics = "KeyTopics" }
-output = "MeetingSummary"
+inputs      = { decisions = "Decision", action_items = "ActionItem[]", key_topics = "KeyTopics" }
+output      = "MeetingSummary"
 
 [pipe.assemble_meeting_summary.construct]
-decisions = { from = "decisions" }
+decisions    = { from = "decisions" }
 action_items = { from = "action_items" }
-key_topics = { from = "key_topics" }
+key_topics   = { from = "key_topics" }

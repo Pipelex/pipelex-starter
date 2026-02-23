@@ -1,56 +1,56 @@
-domain = "cv_and_offer"
+domain      = "cv_and_offer"
 description = "Analyzing CV and job offer compatibility and generating interview questions"
-main_pipe = "cv_job_match"
+main_pipe   = "cv_job_match"
 
 [concept.CVAnalysis]
 description = "Structured analysis of a candidate's curriculum vitae highlighting their professional profile."
 
 [concept.CVAnalysis.structure]
-skills = { type = "text", description = "List of technical and soft skills possessed by the candidate", required = true }
+skills              = { type = "text", description = "List of technical and soft skills possessed by the candidate", required = true }
 years_of_experience = { type = "number", description = "Total years of professional experience", required = true }
-education = { type = "text", description = "Educational background including degrees and institutions", required = true }
-previous_roles = { type = "text", description = "List of previous job titles and companies", required = true }
-key_achievements = "Notable accomplishments and contributions from past positions"
+education           = { type = "text", description = "Educational background including degrees and institutions", required = true }
+previous_roles      = { type = "text", description = "List of previous job titles and companies", required = true }
+key_achievements    = "Notable accomplishments and contributions from past positions"
 
 [concept.JobRequirements]
 description = "Structured analysis of a job offer detailing what the employer is seeking."
 
 [concept.JobRequirements.structure]
-required_skills = { type = "text", description = "Skills that are mandatory for the position", required = true }
+required_skills  = { type = "text", description = "Skills that are mandatory for the position", required = true }
 preferred_skills = "Skills that are desirable but not mandatory"
 responsibilities = { type = "text", description = "Main duties and tasks of the role", required = true }
-qualifications = "Required educational or professional qualifications"
+qualifications   = "Required educational or professional qualifications"
 experience_level = { type = "text", description = "Expected level of experience for the role", required = true }
 
 [concept.MatchAnalysis]
 description = "Evaluation of how well a candidate aligns with job requirements."
 
 [concept.MatchAnalysis.structure]
-overall_match_score = { type = "number", description = "Percentage or rating indicating overall fit between candidate and position", required = true }
-matching_skills = { type = "text", description = "Skills the candidate has that match the job requirements", required = true }
-missing_skills = "Required skills the candidate appears to lack"
+overall_match_score  = { type = "number", description = "Percentage or rating indicating overall fit between candidate and position", required = true }
+matching_skills      = { type = "text", description = "Skills the candidate has that match the job requirements", required = true }
+missing_skills       = "Required skills the candidate appears to lack"
 experience_alignment = { type = "text", description = "Assessment of how the candidate's experience level matches expectations", required = true }
-areas_of_concern = "Potential red flags or weaknesses identified"
-areas_to_explore = { type = "text", description = "Topics that warrant further investigation during interview", required = true }
+areas_of_concern     = "Potential red flags or weaknesses identified"
+areas_to_explore     = { type = "text", description = "Topics that warrant further investigation during interview", required = true }
 
 [concept.InterviewQuestion]
 description = "A targeted question designed for a job interview with its underlying purpose."
 
 [concept.InterviewQuestion.structure]
 question_text = { type = "text", description = "The interview question to ask the candidate", required = true }
-purpose = { type = "text", description = "The reason for asking this question and what it aims to assess", required = true }
+purpose       = { type = "text", description = "The reason for asking this question and what it aims to assess", required = true }
 
 [concept.InterviewSheet]
 description = "A comprehensive interview preparation document combining match analysis with targeted interview questions."
 
 [concept.InterviewSheet.structure]
-overall_match_score = { type = "number", description = "Percentage or rating indicating overall fit between candidate and position", required = true }
-matching_skills = { type = "text", description = "Skills the candidate has that match the job requirements", required = true }
-missing_skills = { type = "text", description = "Required skills the candidate appears to lack", required = true }
+overall_match_score  = { type = "number", description = "Percentage or rating indicating overall fit between candidate and position", required = true }
+matching_skills      = { type = "text", description = "Skills the candidate has that match the job requirements", required = true }
+missing_skills       = { type = "text", description = "Required skills the candidate appears to lack", required = true }
 experience_alignment = { type = "text", description = "Assessment of how the candidate's experience level matches expectations", required = true }
-areas_of_concern = { type = "text", description = "Potential red flags or weaknesses identified", required = true }
-areas_to_explore = { type = "text", description = "Topics that warrant further investigation during interview", required = true }
-questions = { type = "list", item_type = "concept", item_concept_ref = "cv_and_offer.InterviewQuestion", description = "List of interview questions with their purposes", required = true }
+areas_of_concern     = { type = "text", description = "Potential red flags or weaknesses identified", required = true }
+areas_to_explore     = { type = "text", description = "Topics that warrant further investigation during interview", required = true }
+questions            = { type = "list", item_type = "concept", item_concept_ref = "cv_and_offer.InterviewQuestion", description = "List of interview questions with their purposes", required = true }
 
 [pipe.cv_job_match]
 type = "PipeSequence"
@@ -60,11 +60,11 @@ Main pipeline that processes CV and job offer PDFs, analyzes their match, and ge
 inputs = { cv_pdf = "Document", job_offer_pdf = "Document" }
 output = "InterviewSheet"
 steps = [
-    { pipe = "extract_documents", result = "extracted_documents" },
-    { pipe = "analyze_documents", result = "analyzed_documents" },
-    { pipe = "evaluate_match", result = "match_analysis" },
-    { pipe = "generate_interview_questions", result = "interview_questions" },
-    { pipe = "compose_interview_sheet", result = "interview_sheet" },
+  { pipe = "extract_documents", result = "extracted_documents" },
+  { pipe = "analyze_documents", result = "analyzed_documents" },
+  { pipe = "evaluate_match", result = "match_analysis" },
+  { pipe = "generate_interview_questions", result = "interview_questions" },
+  { pipe = "compose_interview_sheet", result = "interview_sheet" },
 ]
 
 [pipe.extract_documents]
@@ -73,22 +73,22 @@ description = "Extracts text content from both the CV and job offer PDFs concurr
 inputs = { cv_pdf = "Document", job_offer_pdf = "Document" }
 output = "Page[]"
 branches = [
-    { pipe = "extract_cv", result = "cv_pages" },
-    { pipe = "extract_job_offer", result = "job_offer_pages" },
+  { pipe = "extract_cv", result = "cv_pages" },
+  { pipe = "extract_job_offer", result = "job_offer_pages" },
 ]
 add_each_output = true
 
 [pipe.extract_cv]
-type = "PipeExtract"
+type        = "PipeExtract"
 description = "Extracts text content from the CV PDF document"
-inputs = { cv_pdf = "Document" }
-output = "Page[]"
+inputs      = { cv_pdf = "Document" }
+output      = "Page[]"
 
 [pipe.extract_job_offer]
-type = "PipeExtract"
+type        = "PipeExtract"
 description = "Extracts text content from the job offer PDF document"
-inputs = { job_offer_pdf = "Document" }
-output = "Page[]"
+inputs      = { job_offer_pdf = "Document" }
+output      = "Page[]"
 
 [pipe.analyze_documents]
 type = "PipeParallel"
@@ -96,8 +96,8 @@ description = "Analyzes both the CV and job offer documents concurrently to extr
 inputs = { cv_pages = "Page", job_offer_pages = "Page" }
 output = "Text"
 branches = [
-    { pipe = "analyze_cv", result = "cv_analysis" },
-    { pipe = "analyze_job_offer", result = "job_requirements" },
+  { pipe = "analyze_cv", result = "cv_analysis" },
+  { pipe = "analyze_job_offer", result = "job_requirements" },
 ]
 add_each_output = true
 
@@ -194,10 +194,10 @@ inputs = { match_analysis = "MatchAnalysis", interview_questions = "InterviewQue
 output = "InterviewSheet"
 
 [pipe.compose_interview_sheet.construct]
-overall_match_score = { from = "match_analysis.overall_match_score" }
-matching_skills = { from = "match_analysis.matching_skills" }
-missing_skills = { from = "match_analysis.missing_skills" }
+overall_match_score  = { from = "match_analysis.overall_match_score" }
+matching_skills      = { from = "match_analysis.matching_skills" }
+missing_skills       = { from = "match_analysis.missing_skills" }
 experience_alignment = { from = "match_analysis.experience_alignment" }
-areas_of_concern = { from = "match_analysis.areas_of_concern" }
-areas_to_explore = { from = "match_analysis.areas_to_explore" }
-questions = { from = "interview_questions" }
+areas_of_concern     = { from = "match_analysis.areas_of_concern" }
+areas_to_explore     = { from = "match_analysis.areas_to_explore" }
+questions            = { from = "interview_questions" }

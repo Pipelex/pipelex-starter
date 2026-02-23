@@ -1,10 +1,10 @@
-domain = "pdf_extraction"
+domain      = "pdf_extraction"
 description = "Extract all pages from a PDF document"
-main_pipe = "extract_pages"
+main_pipe   = "extract_pages"
 
 [pipe.extract_pages]
-type = "PipeExtract"
+type        = "PipeExtract"
 description = "Extract all pages of text content from a PDF document"
-inputs = { document = "Document" }
-output = "Page[]"
-model = "@default-text-from-pdf"
+inputs      = { document = "Document" }
+output      = "Page[]"
+model       = "@default-text-from-pdf"

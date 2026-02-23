@@ -1,6 +1,6 @@
-domain = "haiku_composition"
+domain      = "haiku_composition"
 description = "Writing traditional haiku poems following the 5-7-5 syllable pattern based on given themes."
-main_pipe = "compose_haiku"
+main_pipe   = "compose_haiku"
 
 [concept.Haiku]
 description = """

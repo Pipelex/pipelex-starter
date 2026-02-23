@@ -1,22 +1,22 @@
-domain = "customer_feedback_response"
+domain      = "customer_feedback_response"
 description = "Classifying customer feedback sentiment and routing to appropriate response templates."
-main_pipe = "classify_and_respond"
+main_pipe   = "classify_and_respond"
 
 [concept.CustomerFeedback]
 description = "Customer feedback or review submitted by a customer about a product, service, or experience."
-refines = "Text"
+refines     = "Text"
 
 [concept.SentimentAnalysis]
 description = "Analysis of emotional tone and key information extracted from customer feedback."
 
 [concept.SentimentAnalysis.structure]
-sentiment = { type = "text", description = "The overall emotional tone detected in the feedback", required = true }
-confidence = { type = "number", description = "Confidence score of the sentiment classification", required = true }
+sentiment   = { type = "text", description = "The overall emotional tone detected in the feedback", required = true }
+confidence  = { type = "number", description = "Confidence score of the sentiment classification", required = true }
 key_phrases = { type = "text", description = "Important phrases or topics identified in the feedback", required = true }
 
 [concept.Response]
 description = "A response message to be sent to a customer acknowledging their feedback."
-refines = "Text"
+refines     = "Text"
 
 [pipe.classify_and_respond]
 type = "PipeSequence"
@@ -26,8 +26,8 @@ Main pipeline that analyzes customer feedback sentiment and routes to the approp
 inputs = { customer_feedback = "CustomerFeedback" }
 output = "Response"
 steps = [
-    { pipe = "analyze_sentiment", result = "sentiment_analysis" },
-    { pipe = "route_response", result = "response" },
+  { pipe = "analyze_sentiment", result = "sentiment_analysis" },
+  { pipe = "route_response", result = "response" },
 ]
 
 [pipe.analyze_sentiment]
@@ -48,13 +48,13 @@ Analyze the following customer feedback to determine its sentiment and extract k
 """
 
 [pipe.route_response]
-type = "PipeCondition"
-description = "Routes to the appropriate response template based on the detected sentiment value from the analysis."
-inputs = { customer_feedback = "CustomerFeedback", sentiment_analysis = "SentimentAnalysis" }
-output = "Response"
+type                = "PipeCondition"
+description         = "Routes to the appropriate response template based on the detected sentiment value from the analysis."
+inputs              = { customer_feedback = "CustomerFeedback", sentiment_analysis = "SentimentAnalysis" }
+output              = "Response"
 expression_template = "{{ sentiment_analysis.sentiment }}"
-outcomes = { positive = "respond_positive", negative = "respond_negative", neutral = "respond_neutral" }
-default_outcome = "fail"
+outcomes            = { positive = "respond_positive", negative = "respond_negative", neutral = "respond_neutral" }
+default_outcome     = "fail"
 
 [pipe.respond_negative]
 type = "PipeCompose"

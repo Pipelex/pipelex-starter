@@ -1,10 +1,10 @@
-domain = "image_captioning"
+domain      = "image_captioning"
 description = "Generating descriptive captions for images using vision-language models."
-main_pipe = "caption_images_batch"
+main_pipe   = "caption_images_batch"
 
 [concept.Caption]
 description = "A descriptive text explaining what is shown in an image."
-refines = "Text"
+refines     = "Text"
 
 [pipe.caption_images_batch]
 type = "PipeBatch"

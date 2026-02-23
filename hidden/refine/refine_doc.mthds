@@ -1,6 +1,6 @@
-domain = "document_extraction_refinement"
+domain      = "document_extraction_refinement"
 description = "Extracting document content and refining it based on quality assessment using vision models"
-main_pipe = "process_document"
+main_pipe   = "process_document"
 
 [concept.ExtractionQuality]
 description = "A structured assessment of how well text was extracted from a document page."
@@ -10,7 +10,7 @@ confidence = { type = "integer", description = "Percentage score indicating the 
 
 [concept.RefinedText]
 description = "The final corrected and completed text content extracted from a page."
-refines = "Text"
+refines     = "Text"
 
 [pipe.process_document]
 type = "PipeSequence"
@@ -20,25 +20,25 @@ Main pipeline entry point that takes a document, extracts its pages, and process
 inputs = { document = "Document" }
 output = "RefinedText[]"
 steps = [
-    { pipe = "extract_pages", result = "pages" },
-    { pipe = "process_all_pages", result = "processed_pages" },
+  { pipe = "extract_pages", result = "pages" },
+  { pipe = "process_all_pages", result = "processed_pages" },
 ]
 
 [pipe.extract_pages]
-type = "PipeExtract"
+type        = "PipeExtract"
 description = "Extract content from the document into individual pages"
-inputs = { document = "Document" }
-output = "Page[]"
-model = "@default-text-from-pdf"
+inputs      = { document = "Document" }
+output      = "Page[]"
+model       = "@default-text-from-pdf"
 
 [pipe.process_all_pages]
-type = "PipeBatch"
-description = "Process each page through quality evaluation and conditional refinement"
-inputs = { pages = "Page[]" }
-output = "RefinedText[]"
+type             = "PipeBatch"
+description      = "Process each page through quality evaluation and conditional refinement"
+inputs           = { pages = "Page[]" }
+output           = "RefinedText[]"
 branch_pipe_code = "process_single_page"
-input_list_name = "pages"
-input_item_name = "page"
+input_list_name  = "pages"
+input_item_name  = "page"
 
 [pipe.process_single_page]
 type = "PipeSequence"
@@ -46,8 +46,8 @@ description = "Evaluate extraction quality for a single page and refine if neede
 inputs = { page = "Page" }
 output = "RefinedText"
 steps = [
-    { pipe = "evaluate_extraction_quality", result = "extraction_quality" },
-    { pipe = "check_quality_threshold", result = "refined_text" },
+  { pipe = "evaluate_extraction_quality", result = "extraction_quality" },
+  { pipe = "check_quality_threshold", result = "refined_text" },
 ]
 
 [pipe.evaluate_extraction_quality]
@@ -77,13 +77,13 @@ Provide your assessment as a structured response.
 """
 
 [pipe.check_quality_threshold]
-type = "PipeCondition"
-description = "Route to vision refinement if confidence is below 98, otherwise pass through the text as-is"
-inputs = { page = "Page", extraction_quality = "ExtractionQuality" }
-output = "RefinedText"
+type                = "PipeCondition"
+description         = "Route to vision refinement if confidence is below 98, otherwise pass through the text as-is"
+inputs              = { page = "Page", extraction_quality = "ExtractionQuality" }
+output              = "RefinedText"
 expression_template = "{{ 'low_confidence' if extraction_quality.confidence < 98 else 'high_confidence' }}"
-outcomes = { low_confidence = "refine_with_vision", high_confidence = "passthrough_text" }
-default_outcome = "refine_with_vision"
+outcomes            = { low_confidence = "refine_with_vision", high_confidence = "passthrough_text" }
+default_outcome     = "refine_with_vision"
 
 [pipe.passthrough_text]
 type = "PipeLLM"

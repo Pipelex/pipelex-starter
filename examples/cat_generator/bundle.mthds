@@ -1,6 +1,6 @@
-domain = "cat_generator"
+gdomain     = "cat_generator"
 description = "Generates unique cat images with varied breeds, poses, settings, and artistic styles"
-main_pipe = "generate_cat_image"
+main_pipe   = "generate_cat_image"
 
 [concept.CatPrompt]
 description = """
@@ -15,8 +15,8 @@ Main pipeline that creates unique cat images - first generates a creative prompt
 """
 output = "Image"
 steps = [
-    { pipe = "imagine_cat", result = "cat_prompt" },
-    { pipe = "render_cat", result = "cat_image" },
+  { pipe = "imagine_cat", result = "cat_prompt" },
+  { pipe = "render_cat", result = "cat_image" },
 ]
 
 [pipe.imagine_cat]
@@ -40,10 +40,10 @@ Be concise but vivid. Focus on visual details that work well for image generatio
 """
 
 [pipe.render_cat]
-type = "PipeImgGen"
-description = "Generates the cat image based on the creative prompt"
-inputs = { cat_prompt = "CatPrompt" }
-output = "Image"
-prompt = "$cat_prompt"
-model = "@default-small"
+type         = "PipeImgGen"
+description  = "Generates the cat image based on the creative prompt"
+inputs       = { cat_prompt = "CatPrompt" }
+output       = "Image"
+prompt       = "$cat_prompt"
+model        = "@default-small"
 aspect_ratio = "square"

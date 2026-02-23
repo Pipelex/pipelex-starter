@@ -1,6 +1,6 @@
-domain = "expense_auditor"
+domain      = "expense_auditor"
 description = "Extract an expense report PDF, classify line items, flag policy violations, and produce an audit report"
-main_pipe = "audit_expense_report"
+main_pipe   = "audit_expense_report"
 
 [concept.ExpenseItem]
 description = "A single line item from an expense report"
@@ -8,21 +8,32 @@ description = "A single line item from an expense report"
 [concept.ExpenseItem.structure]
 description = { type = "text", description = "Description of the expense", required = true }
 amount = { type = "number", description = "Amount in dollars", required = true }
-category = { type = "text", description = "Expense category", choices = ["travel", "meals", "supplies", "lodging", "entertainment", "other"], required = true }
+category = { type = "text", description = "Expense category", choices = [
+  "travel",
+  "meals",
+  "supplies",
+  "lodging",
+  "entertainment",
+  "other",
+], required = true }
 date = { type = "text", description = "Date of the expense", required = true }
 
 [concept.AuditResult]
 description = "Audit assessment of a single expense item"
 
 [concept.AuditResult.structure]
-status = { type = "text", description = "Audit status", choices = ["approved", "flagged", "rejected"], required = true }
+status = { type = "text", description = "Audit status", choices = [
+  "approved",
+  "flagged",
+  "rejected",
+], required = true }
 reason = { type = "text", description = "Reason for the audit decision", required = true }
 amount = { type = "number", description = "Original expense amount", required = true }
 category = { type = "text", description = "Original expense category", required = true }
 
 [concept.AuditReport]
 description = "Complete audit report summarizing all expense items"
-refines = "Text"
+refines     = "Text"
 
 [pipe.audit_expense_report]
 type = "PipeSequence"
@@ -30,18 +41,18 @@ description = "Main pipeline: extract expense report, parse items, audit each on
 inputs = { document = "Document" }
 output = "AuditReport"
 steps = [
-    { pipe = "extract_document", result = "pages" },
-    { pipe = "parse_expenses", result = "expense_items" },
-    { pipe = "audit_item", batch_over = "expense_items", batch_as = "expense_item", result = "audit_results" },
-    { pipe = "compose_audit_report", result = "audit_report" },
+  { pipe = "extract_document", result = "pages" },
+  { pipe = "parse_expenses", result = "expense_items" },
+  { pipe = "audit_item", batch_over = "expense_items", batch_as = "expense_item", result = "audit_results" },
+  { pipe = "compose_audit_report", result = "audit_report" },
 ]
 
 [pipe.extract_document]
-type = "PipeExtract"
+type        = "PipeExtract"
 description = "Extract all pages from the expense report PDF"
-inputs = { document = "Document" }
-output = "Page[]"
-model = "@default-text-from-pdf"
+inputs      = { document = "Document" }
+output      = "Page[]"
+model       = "@default-text-from-pdf"
 
 [pipe.parse_expenses]
 type = "PipeLLM"

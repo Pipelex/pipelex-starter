@@ -1,6 +1,6 @@
-domain = "rfp_analysis"
+domain      = "rfp_analysis"
 description = "Analyze Requests for Proposals in sustainability and green innovation: extract key information, produce a Go/No-Go recommendation, and draft a response strategy"
-main_pipe = "analyze_innovation_rfp"
+main_pipe   = "analyze_innovation_rfp"
 
 # ──────────────────────────────────────────────
 # Concepts
@@ -10,14 +10,14 @@ main_pipe = "analyze_innovation_rfp"
 description = "Structured breakdown of a Request for Proposals document"
 
 [concept.RfpAnalysis.structure]
-title = { type = "text", description = "Title of the RFP", required = true }
+title                = { type = "text", description = "Title of the RFP", required = true }
 issuing_organization = { type = "text", description = "Organization that issued the RFP", required = true }
-submission_deadline = { type = "text", description = "Submission deadline date and time", required = true }
-budget_range = "Budget range or maximum funding available"
+submission_deadline  = { type = "text", description = "Submission deadline date and time", required = true }
+budget_range         = "Budget range or maximum funding available"
 eligibility_criteria = { type = "text", description = "Who can apply - eligibility requirements", required = true }
-innovation_topics = { type = "text", description = "Key innovation topics and thematic areas covered", required = true }
-evaluation_criteria = { type = "text", description = "How proposals will be evaluated and scored", required = true }
-key_requirements = { type = "text", description = "Main deliverables and requirements expected from applicants", required = true }
+innovation_topics    = { type = "text", description = "Key innovation topics and thematic areas covered", required = true }
+evaluation_criteria  = { type = "text", description = "How proposals will be evaluated and scored", required = true }
+key_requirements     = { type = "text", description = "Main deliverables and requirements expected from applicants", required = true }
 
 [concept.GoNoGoRecommendation]
 description = "Scored recommendation on whether to pursue an RFP"
@@ -29,19 +29,19 @@ strategic_alignment = { type = "text", description = "How the RFP aligns with ty
 feasibility_assessment = { type = "text", description = "Assessment of feasibility to deliver on the RFP requirements", required = true }
 risk_factors = { type = "text", description = "Key risks and challenges identified", required = true }
 recommendation = { type = "text", description = "Final recommendation", required = true, choices = [
-    "GO",
-    "NO-GO",
-    "CONDITIONAL",
+  "GO",
+  "NO-GO",
+  "CONDITIONAL",
 ] }
 rationale = { type = "text", description = "Detailed rationale for the recommendation", required = true }
 
 [concept.ResponseStrategy]
 description = "Draft response strategy and outline for pursuing an RFP"
-refines = "Text"
+refines     = "Text"
 
 [concept.ResponseBrief]
 description = "Complete analysis brief combining RFP analysis, Go/No-Go recommendation, and response strategy"
-refines = "Text"
+refines     = "Text"
 
 # ──────────────────────────────────────────────
 # Pipes
@@ -53,19 +53,19 @@ description = "Analyze an innovation RFP: extract content, produce structured an
 inputs = { rfp_doc = "Document" }
 output = "ResponseBrief"
 steps = [
-    { pipe = "extract_rfp", result = "pages" },
-    { pipe = "analyze_rfp", result = "rfp_analysis" },
-    { pipe = "evaluate_rfp", result = "go_no_go" },
-    { pipe = "draft_strategy", result = "response_strategy" },
-    { pipe = "compose_brief", result = "response_brief" },
+  { pipe = "extract_rfp", result = "pages" },
+  { pipe = "analyze_rfp", result = "rfp_analysis" },
+  { pipe = "evaluate_rfp", result = "go_no_go" },
+  { pipe = "draft_strategy", result = "response_strategy" },
+  { pipe = "compose_brief", result = "response_brief" },
 ]
 
 [pipe.extract_rfp]
-type = "PipeExtract"
+type        = "PipeExtract"
 description = "Extract text and images from the RFP PDF document"
-inputs = { rfp_doc = "Document" }
-output = "Page[]"
-model = "@default-extract-document"
+inputs      = { rfp_doc = "Document" }
+output      = "Page[]"
+model       = "@default-extract-document"
 
 [pipe.analyze_rfp]
 type = "PipeLLM"

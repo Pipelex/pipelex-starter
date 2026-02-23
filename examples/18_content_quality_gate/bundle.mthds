@@ -1,31 +1,36 @@
-domain = "content_quality_gate"
+domain      = "content_quality_gate"
 description = "Draft a blog post, evaluate its quality, and conditionally revise or publish based on the score"
-main_pipe = "create_quality_blog_post"
+main_pipe   = "create_quality_blog_post"
 
 [concept.BlogBrief]
 description = "Brief describing the desired blog post"
 
 [concept.BlogBrief.structure]
 topic = { type = "text", description = "The main topic of the blog post", required = true }
-audience = { type = "text", description = "Target audience for the post", choices = ["developers", "business leaders", "general public", "students"], required = true }
+audience = { type = "text", description = "Target audience for the post", choices = [
+  "developers",
+  "business leaders",
+  "general public",
+  "students",
+], required = true }
 word_count_target = { type = "integer", description = "Target word count for the post", required = true }
 seo_keywords = { type = "text", description = "SEO keywords to incorporate", required = true }
 
 [concept.BlogDraft]
 description = "A draft blog post ready for quality evaluation"
-refines = "Text"
+refines     = "Text"
 
 [concept.QualityEvaluation]
 description = "Quality assessment of a blog post draft"
 
 [concept.QualityEvaluation.structure]
-score = { type = "integer", description = "Quality score from 0 to 100", required = true }
-feedback = { type = "text", description = "Detailed feedback on areas for improvement", required = true }
+score     = { type = "integer", description = "Quality score from 0 to 100", required = true }
+feedback  = { type = "text", description = "Detailed feedback on areas for improvement", required = true }
 strengths = { type = "text", description = "What the draft does well" }
 
 [concept.FinalPost]
 description = "The finalized blog post content"
-refines = "Text"
+refines     = "Text"
 
 [pipe.create_quality_blog_post]
 type = "PipeSequence"
@@ -33,9 +38,9 @@ description = "Main pipeline that drafts a blog post, evaluates quality, and con
 inputs = { brief = "BlogBrief" }
 output = "FinalPost"
 steps = [
-    { pipe = "draft_blog_post", result = "draft" },
-    { pipe = "evaluate_quality", result = "evaluation" },
-    { pipe = "quality_gate", result = "final_post" },
+  { pipe = "draft_blog_post", result = "draft" },
+  { pipe = "evaluate_quality", result = "evaluation" },
+  { pipe = "quality_gate", result = "final_post" },
 ]
 
 [pipe.draft_blog_post]
@@ -85,13 +90,13 @@ Score the draft from 0 to 100 based on:
 """
 
 [pipe.quality_gate]
-type = "PipeCondition"
-description = "Route based on quality score: finalize if score >= 80, revise if below"
-inputs = { brief = "BlogBrief", draft = "BlogDraft", evaluation = "QualityEvaluation" }
-output = "FinalPost"
+type                = "PipeCondition"
+description         = "Route based on quality score: finalize if score >= 80, revise if below"
+inputs              = { brief = "BlogBrief", draft = "BlogDraft", evaluation = "QualityEvaluation" }
+output              = "FinalPost"
 expression_template = "{{ 'pass' if evaluation.score >= 80 else 'needs_revision' }}"
-outcomes = { pass = "finalize_post", needs_revision = "revise_post" }
-default_outcome = "revise_post"
+outcomes            = { pass = "finalize_post", needs_revision = "revise_post" }
+default_outcome     = "revise_post"
 
 [pipe.finalize_post]
 type = "PipeLLM"

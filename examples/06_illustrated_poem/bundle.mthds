@@ -1,10 +1,10 @@
-domain = "illustrated_poetry"
+domain      = "illustrated_poetry"
 description = "Creating short poems from themes and generating matching illustrations"
-main_pipe = "create_illustrated_poem"
+main_pipe   = "create_illustrated_poem"
 
 [concept.Poem]
 description = "A short literary composition expressing emotions or ideas through verse and imagery."
-refines = "Text"
+refines     = "Text"
 
 [pipe.create_illustrated_poem]
 type = "PipeSequence"
@@ -14,9 +14,9 @@ Main pipeline that orchestrates the creation of a short poem from a theme and ge
 inputs = { theme = "Text" }
 output = "Image"
 steps = [
-    { pipe = "write_poem", result = "poem" },
-    { pipe = "write_image_prompt", result = "image_prompt" },
-    { pipe = "generate_illustration", result = "illustration" },
+  { pipe = "write_poem", result = "poem" },
+  { pipe = "write_image_prompt", result = "image_prompt" },
+  { pipe = "generate_illustration", result = "illustration" },
 ]
 
 [pipe.write_poem]

@@ -1,15 +1,15 @@
-domain = "email_composition"
+domain      = "email_composition"
 description = "Composing professional emails from structured inputs using templates."
-main_pipe = "compose_email"
+main_pipe   = "compose_email"
 
 [concept.EmailRequest]
 description = "A structured request containing all the information needed to compose a professional email."
 
 [concept.EmailRequest.structure]
 recipient_name = { type = "text", description = "The name of the person receiving the email", required = true }
-subject = { type = "text", description = "The subject line of the email", required = true }
-body_points = { type = "text", description = "Key points to include in the body of the email", required = true }
-tone = { type = "text", description = "The tone of the email", required = true, default_value = "formal" }
+subject        = { type = "text", description = "The subject line of the email", required = true }
+body_points    = { type = "text", description = "Key points to include in the body of the email", required = true }
+tone           = { type = "text", description = "The tone of the email", required = true, default_value = "formal" }
 
 [pipe.compose_email]
 type = "PipeCompose"

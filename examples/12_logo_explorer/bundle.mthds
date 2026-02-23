@@ -1,7 +1,7 @@
-domain = "brand_logo_generation"
-description = "Generating logo design concepts and images from brand briefs."
+domain        = "brand_logo_generation"
+description   = "Generating logo design concepts and images from brand briefs."
 system_prompt = "None"
-main_pipe = "generate_logos_from_brief"
+main_pipe     = "generate_logos_from_brief"
 
 [concept.BrandBrief]
 description = """
@@ -12,18 +12,18 @@ A brand brief containing essential information about a company's identity and de
 company_name = { type = "text", description = "The name of the company for which the logo is being designed", required = true }
 industry = { type = "text", description = "The industry or sector in which the company operates", required = true }
 style_preference = { type = "text", description = "The preferred visual style for the logo design", choices = [
-    "minimalist",
-    "bold",
-    "playful",
-    "elegant",
+  "minimalist",
+  "bold",
+  "playful",
+  "elegant",
 ], required = true }
 
 [concept.LogoConcept]
 description = "A creative logo design concept with a name, description, and image generation prompt."
 
 [concept.LogoConcept.structure]
-name = { type = "text", description = "A short, memorable name for the logo concept", required = true }
-description = { type = "text", description = "A detailed explanation of the logo concept and its design rationale", required = true }
+name          = { type = "text", description = "A short, memorable name for the logo concept", required = true }
+description   = { type = "text", description = "A detailed explanation of the logo concept and its design rationale", required = true }
 visual_prompt = { type = "text", description = "A detailed prompt for generating the logo image", required = true }
 
 [pipe.generate_logos_from_brief]
@@ -34,8 +34,8 @@ Main pipeline that takes a brand brief, generates 3 logo concepts with matching 
 inputs = { brand_brief = "BrandBrief", visual_prompt = "Text" }
 output = "Image"
 steps = [
-    { pipe = "generate_logo_concepts", result = "logo_concepts" },
-    { pipe = "render_logo_image", result = "logo_images" },
+  { pipe = "generate_logo_concepts", result = "logo_concepts" },
+  { pipe = "render_logo_image", result = "logo_images" },
 ]
 
 [pipe.generate_logo_concepts]
@@ -58,9 +58,9 @@ For each concept, provide a memorable name, a detailed description explaining th
 """
 
 [pipe.render_logo_image]
-type = "PipeImgGen"
+type        = "PipeImgGen"
 description = "Generates a square logo image from the visual prompt of a single logo concept."
-inputs = { visual_prompt = "Text" }
-output = "Image"
-prompt = "$visual_prompt"
-model = "$gen-image-high-quality"
+inputs      = { visual_prompt = "Text" }
+output      = "Image"
+prompt      = "$visual_prompt"
+model       = "$gen-image-high-quality"

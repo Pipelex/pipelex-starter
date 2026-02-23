@@ -1,10 +1,10 @@
-domain = "pdf_executive_summary"
+domain      = "pdf_executive_summary"
 description = "Extracting PDF documents, summarizing pages, and composing HTML executive summaries"
-main_pipe = "extract_summarize_compose"
+main_pipe   = "extract_summarize_compose"
 
 [concept.PageSummary]
 description = "A concise summary capturing the key points from a single page of a document"
-refines = "Text"
+refines     = "Text"
 
 [pipe.extract_summarize_compose]
 type = "PipeSequence"
@@ -12,17 +12,17 @@ description = "Main pipeline that extracts pages from a PDF, summarizes each pag
 inputs = { document = "Document" }
 output = "Html"
 steps = [
-    { pipe = "extract_pages", result = "pages" },
-    { pipe = "summarize_page", batch_over = "pages", batch_as = "page", result = "page_summaries" },
-    { pipe = "compose_executive_summary", result = "executive_summary_html" },
+  { pipe = "extract_pages", result = "pages" },
+  { pipe = "summarize_page", batch_over = "pages", batch_as = "page", result = "page_summaries" },
+  { pipe = "compose_executive_summary", result = "executive_summary_html" },
 ]
 
 [pipe.extract_pages]
-type = "PipeExtract"
+type        = "PipeExtract"
 description = "Extracts all pages from the input PDF document"
-inputs = { document = "Document" }
-output = "Page[]"
-model = "@default-text-from-pdf"
+inputs      = { document = "Document" }
+output      = "Page[]"
+model       = "@default-text-from-pdf"
 
 [pipe.summarize_page]
 type = "PipeLLM"
@@ -40,10 +40,10 @@ Summarize the following page content into a concise summary capturing the key po
 """
 
 [pipe.compose_executive_summary]
-type = "PipeCompose"
+type        = "PipeCompose"
 description = "Renders all page summaries into a styled HTML executive summary report with section headings and a table of contents"
-inputs = { page_summaries = "PageSummary[]" }
-output = "Html"
+inputs      = { page_summaries = "PageSummary[]" }
+output      = "Html"
 
 [pipe.compose_executive_summary.template]
 category = "html"

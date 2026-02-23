@@ -1,20 +1,20 @@
-domain = "product_catalog"
+domain      = "product_catalog"
 description = "From product descriptions, generate cards with AI images and build a complete HTML catalog"
-main_pipe = "build_product_catalog"
+main_pipe   = "build_product_catalog"
 
 [concept.ProductCard]
 description = "A structured product card with marketing content"
 
 [concept.ProductCard.structure]
-name = { type = "text", description = "Product name", required = true }
-tagline = { type = "text", description = "Short marketing tagline", required = true }
-description = { type = "text", description = "Detailed product description", required = true }
-key_features = { type = "text", description = "Key features and benefits", required = true }
+name            = { type = "text", description = "Product name", required = true }
+tagline         = { type = "text", description = "Short marketing tagline", required = true }
+description     = { type = "text", description = "Detailed product description", required = true }
+key_features    = { type = "text", description = "Key features and benefits", required = true }
 target_audience = { type = "text", description = "Target audience for this product" }
 
 [concept.ProductPrompt]
 description = "An image generation prompt for a product photo"
-refines = "Text"
+refines     = "Text"
 
 [pipe.build_product_catalog]
 type = "PipeSequence"
@@ -22,9 +22,9 @@ description = "Main pipeline: batch-process products to create cards with images
 inputs = { products = "Text[]" }
 output = "Html"
 steps = [
-    { pipe = "create_product_card", batch_over = "products", batch_as = "product", result = "product_cards" },
-    { pipe = "create_product_image", batch_over = "product_cards", batch_as = "product_card", result = "product_images" },
-    { pipe = "compose_catalog", result = "catalog_html" },
+  { pipe = "create_product_card", batch_over = "products", batch_as = "product", result = "product_cards" },
+  { pipe = "create_product_image", batch_over = "product_cards", batch_as = "product_card", result = "product_images" },
+  { pipe = "compose_catalog", result = "catalog_html" },
 ]
 
 [pipe.create_product_card]
@@ -48,8 +48,8 @@ description = "Generate a product image by first writing a prompt then rendering
 inputs = { product_card = "ProductCard" }
 output = "Image"
 steps = [
-    { pipe = "write_product_prompt", result = "product_prompt" },
-    { pipe = "render_product_image", result = "product_image" },
+  { pipe = "write_product_prompt", result = "product_prompt" },
+  { pipe = "render_product_image", result = "product_image" },
 ]
 
 [pipe.write_product_prompt]
@@ -67,19 +67,19 @@ The image should be a clean, professional product shot with good lighting on a s
 """
 
 [pipe.render_product_image]
-type = "PipeImgGen"
-description = "Render the product image"
-inputs = { product_prompt = "ProductPrompt" }
-output = "Image"
-prompt = "$product_prompt"
-model = "@default-small"
+type         = "PipeImgGen"
+description  = "Render the product image"
+inputs       = { product_prompt = "ProductPrompt" }
+output       = "Image"
+prompt       = "$product_prompt"
+model        = "@default-small"
 aspect_ratio = "square"
 
 [pipe.compose_catalog]
-type = "PipeCompose"
+type        = "PipeCompose"
 description = "Compose all product cards and images into a styled HTML catalog"
-inputs = { product_cards = "ProductCard[]", product_images = "Image[]" }
-output = "Html"
+inputs      = { product_cards = "ProductCard[]", product_images = "Image[]" }
+output      = "Html"
 
 [pipe.compose_catalog.template]
 category = "html"

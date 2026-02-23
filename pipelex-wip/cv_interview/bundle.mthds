@@ -1,6 +1,6 @@
-domain = "cv_interview"
+domain      = "cv_interview"
 description = "Analyze a CV against a job offer to evaluate match and generate 5 targeted interview questions"
-main_pipe = "cv_interview_prep"
+main_pipe   = "cv_interview_prep"
 
 # ── Concepts ──────────────────────────────────────────────────────────
 
@@ -8,45 +8,55 @@ main_pipe = "cv_interview_prep"
 description = "Evaluation of how well a candidate profile aligns with a job offer"
 
 [concept.MatchAnalysis.structure]
-match_score = {type = "integer", description = "Overall match score from 0 to 100", required = true}
-strengths = {type = "text", description = "Key strengths of the candidate relative to the job requirements", required = true}
-gaps = {type = "text", description = "Areas where the candidate falls short of the job requirements", required = true}
-overall_assessment = {type = "text", description = "Summary assessment of the candidate-job fit", required = true}
-recommendation = {type = "text", description = "Overall recommendation category", required = true, choices = ["strong_match", "good_match", "partial_match", "weak_match"]}
+match_score = { type = "integer", description = "Overall match score from 0 to 100", required = true }
+strengths = { type = "text", description = "Key strengths of the candidate relative to the job requirements", required = true }
+gaps = { type = "text", description = "Areas where the candidate falls short of the job requirements", required = true }
+overall_assessment = { type = "text", description = "Summary assessment of the candidate-job fit", required = true }
+recommendation = { type = "text", description = "Overall recommendation category", required = true, choices = [
+  "strong_match",
+  "good_match",
+  "partial_match",
+  "weak_match",
+] }
 
 [concept.InterviewQuestion]
 description = "A targeted interview question with its rationale and focus area"
 
 [concept.InterviewQuestion.structure]
-question = {type = "text", description = "The interview question to ask the candidate", required = true}
-rationale = {type = "text", description = "Why this question is relevant given the candidate profile and job requirements", required = true}
-target_area = {type = "text", description = "The skill or competency area this question aims to evaluate", required = true}
+question    = { type = "text", description = "The interview question to ask the candidate", required = true }
+rationale   = { type = "text", description = "Why this question is relevant given the candidate profile and job requirements", required = true }
+target_area = { type = "text", description = "The skill or competency area this question aims to evaluate", required = true }
 
 [concept.InterviewPrep]
 description = "Complete interview preparation kit with match analysis and targeted questions"
 
 [concept.InterviewPrep.structure]
-candidate_summary = {type = "text", description = "Brief summary of the candidate profile", required = true}
-match_score = {type = "integer", description = "Overall match score from 0 to 100", required = true}
-overall_assessment = {type = "text", description = "Summary of how well the candidate fits the role", required = true}
-strengths = {type = "text", description = "Key candidate strengths for this role", required = true}
-gaps = {type = "text", description = "Areas where the candidate may fall short", required = true}
-recommendation = {type = "text", description = "Overall recommendation category", required = true, choices = ["strong_match", "good_match", "partial_match", "weak_match"]}
-questions = {type = "list", item_type = "concept", item_concept_ref = "cv_interview.InterviewQuestion", description = "Five targeted interview questions based on the analysis"}
+candidate_summary = { type = "text", description = "Brief summary of the candidate profile", required = true }
+match_score = { type = "integer", description = "Overall match score from 0 to 100", required = true }
+overall_assessment = { type = "text", description = "Summary of how well the candidate fits the role", required = true }
+strengths = { type = "text", description = "Key candidate strengths for this role", required = true }
+gaps = { type = "text", description = "Areas where the candidate may fall short", required = true }
+recommendation = { type = "text", description = "Overall recommendation category", required = true, choices = [
+  "strong_match",
+  "good_match",
+  "partial_match",
+  "weak_match",
+] }
+questions = { type = "list", item_type = "concept", item_concept_ref = "cv_interview.InterviewQuestion", description = "Five targeted interview questions based on the analysis" }
 
 # ── Pipes ─────────────────────────────────────────────────────────────
 
 [pipe.extract_cv]
-type = "PipeExtract"
+type        = "PipeExtract"
 description = "Extract text content from the CV document"
-inputs = {cv = "Document"}
-output = "Page[]"
-model = "@default-extract-document"
+inputs      = { cv = "Document" }
+output      = "Page[]"
+model       = "@default-extract-document"
 
 [pipe.analyze_match]
 type = "PipeLLM"
 description = "Analyze how well the candidate CV matches the job offer requirements"
-inputs = {cv_pages = "Page[]", job_offer = "Text"}
+inputs = { cv_pages = "Page[]", job_offer = "Text" }
 output = "MatchAnalysis"
 model = "$writing-factual"
 prompt = """
@@ -79,7 +89,7 @@ Provide:
 [pipe.generate_questions]
 type = "PipeLLM"
 description = "Generate 5 targeted interview questions based on the match analysis and job requirements"
-inputs = {match_analysis = "MatchAnalysis", job_offer = "Text"}
+inputs = { match_analysis = "MatchAnalysis", job_offer = "Text" }
 output = "InterviewPrep"
 model = "$writing-factual"
 prompt = """
@@ -116,10 +126,10 @@ Also provide a candidate summary, the match score, overall assessment, strengths
 [pipe.cv_interview_prep]
 type = "PipeSequence"
 description = "Analyze a CV against a job offer and generate targeted interview questions"
-inputs = {cv = "Document", job_offer = "Text"}
+inputs = { cv = "Document", job_offer = "Text" }
 output = "InterviewPrep"
 steps = [
-    {pipe = "extract_cv", result = "cv_pages"},
-    {pipe = "analyze_match", result = "match_analysis"},
-    {pipe = "generate_questions", result = "interview_prep"},
+  { pipe = "extract_cv", result = "cv_pages" },
+  { pipe = "analyze_match", result = "match_analysis" },
+  { pipe = "generate_questions", result = "interview_prep" },
 ]

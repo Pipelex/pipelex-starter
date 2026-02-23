@@ -1,15 +1,15 @@
-domain = "product_name_generation"
-description = "Generating creative product name suggestions from product descriptions."
+domain        = "product_name_generation"
+description   = "Generating creative product name suggestions from product descriptions."
 system_prompt = "None"
-main_pipe = "generate_product_names"
+main_pipe     = "generate_product_names"
 
 [concept.ProductDescription]
 description = "A description of a product including its features, purpose, and characteristics."
-refines = "Text"
+refines     = "Text"
 
 [concept.ProductName]
 description = "A creative, marketable name for a product."
-refines = "Text"
+refines     = "Text"
 
 [pipe.generate_product_names]
 type = "PipeLLM"

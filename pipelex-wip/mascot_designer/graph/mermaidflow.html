@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline: Design Mascot</title>
+<script nonce="PIPELEX_CSP_NONCE" src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js" integrity="sha384-rbtjAdnIQE/aQJGEgXrVUlMibdfTSa4PQju4HDhN3sR2PmaKFzhEafuePsl9H/9I" crossorigin="anonymous"></script>
+<!-- DOMPurify for HTML sanitization (XSS prevention) -->
+<script nonce="PIPELEX_CSP_NONCE" src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js" integrity="sha384-eEu5CTj3qGvu9PdJuS+YlkNi7d2XxQROAFYOr59zgObtlcux1ae1Il3u7jvdCSWu" crossorigin="anonymous"></script>
+    <style nonce="PIPELEX_CSP_NONCE">
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--bg-color, #f5f5f5);
+    transition: background-color 0.3s;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+h1 {
+    color: var(--text-color, #333);
+    margin: 0;
+    transition: color 0.3s;
+}
+.theme-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.theme-selector label {
+    font-size: 14px;
+    color: var(--label-color, #666);
+    transition: color 0.3s;
+}
+.theme-selector select {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color, #ccc);
+    background: var(--select-bg, white);
+    color: var(--text-color, #333);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.theme-selector select:hover {
+    border-color: var(--border-hover, #999);
+}
+.mermaid-container {
+    background-color: var(--container-bg, white);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
+.mermaid {
+    display: flex;
+    justify-content: center;
+}
+.hint {
+    color: var(--label-color, #666);
+    font-size: 14px;
+    margin-top: 16px;
+    text-align: center;
+    transition: color 0.3s;
+}
+
+/* Define CSS variables for the modal context (used by shared styles) */
+.data-modal {
+    --color-surface-hover: #333;
+    --color-text-muted: #888;
+    --color-text: #d4d4d4;
+    --color-accent: #3b82f6;
+    --color-border: #444;
+    --color-bg: #1e1e1e;
+    --color-success-bg: rgba(16, 185, 129, 0.2);
+    --color-success: #10b981;
+    --radius-sm: 4px;
+    --radius-md: 4px;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 20px;
+    border-radius: 12px;
+    width: 80vw;
+    max-width: 1200px;
+    max-height: 80vh;
+    overflow: auto;
+    z-index: 1000;
+    display: none;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 13px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    min-width: 600px;
+}
+.data-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #444;
+}
+.data-modal-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.data-modal-title-primary {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+}
+.data-modal-title-secondary {
+    font-size: 11px;
+    font-weight: 400;
+    color: #666;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+.data-modal-close {
+    cursor: pointer;
+    color: #888;
+    font-size: 24px;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+.data-modal-close:hover {
+    background: #333;
+    color: #fff;
+}
+
+/* Include shared format toolbar and tabs styling */
+/* ============================================================
+   Shared Format Toolbar & Tabs Styling
+   Uses CSS variables with fallbacks for both implementations
+   ============================================================ */
+
+.format-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 8px;
+}
+
+.format-tabs {
+    display: flex;
+    gap: 4px;
+}
+
+.format-tab {
+    padding: 6px 12px;
+    border-radius: var(--radius-sm, 4px);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--color-surface-hover, #333);
+    color: var(--color-text-muted, #888);
+    border: none;
+    transition: all 0.2s;
+}
+
+.format-tab:hover {
+    background: var(--color-border, #444);
+    color: var(--color-text, #ccc);
+}
+
+.format-tab.active {
+    background: var(--color-accent, #3b82f6);
+    color: #fff;
+}
+
+.format-tab:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.format-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm, 4px);
+    cursor: pointer;
+    font-size: 14px;
+    background: var(--color-surface-hover, #333);
+    color: var(--color-text-muted, #888);
+    border: none;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: var(--color-border, #444);
+    color: var(--color-text, #fff);
+}
+
+.action-btn.copied {
+    background: var(--color-success-bg, rgba(16, 185, 129, 0.2));
+    color: var(--color-success, #10b981);
+}
+
+.action-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+/* Modal content area */
+.data-modal-content {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.5;
+}
+.data-modal-content.text-content {
+    line-height: 1;
+    white-space: pre;
+    word-wrap: normal;
+    overflow-x: auto;
+    padding-right: 20px;
+}
+.data-modal-content.html-content {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 4px;
+}
+.data-modal-content.html-content table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.data-modal-content.html-content th,
+.data-modal-content.html-content td {
+    border: 1px solid #444;
+    padding: 8px 12px;
+    text-align: left;
+}
+.data-modal-content.html-content th {
+    background: #252a30;
+    color: #e0e0e0;
+    font-weight: 600;
+}
+.data-modal-content.html-content tr:hover {
+    background: #2a2530;
+}
+.data-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+.clickable-stuff {
+    cursor: pointer !important;
+}
+.clickable-stuff:hover {
+    filter: brightness(1.1);
+}
+.data-modal-content.pdf-content {
+    min-height: 500px;
+}
+.data-modal-content.pdf-content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    min-height: 500px;
+}
+.data-modal-content.image-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+}
+.data-modal-content.image-content img {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+}    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Pipeline: Design Mascot</h1>
+    <div class="theme-selector">
+        <label for="theme-select">Theme:</label>
+        <select id="theme-select">
+            <option value="default">Default</option>
+            <option value="dark">Dark</option>
+            <option value="forest">Forest</option>
+            <option value="neutral">Neutral</option>
+            <option value="base">Base</option>
+        </select>
+    </div>
+</div>
+<div class="mermaid-container">
+    <div class="mermaid" id="mermaid-diagram"></div>
+</div>
+<p class="hint">Click on data nodes (rounded pills) to view their full content</p>
+<div class="data-modal-overlay" id="modal-overlay"></div>
+<div class="data-modal" id="data-modal">
+    <div class="data-modal-header">
+        <span class="data-modal-title" id="modal-title">Data Content</span>
+        <span class="data-modal-close" onclick="hideModal()">&times;</span>
+    </div>
+    <div class="format-toolbar">
+        <div class="format-tabs" id="format-tabs">
+            <button class="format-tab active" data-format="html" id="tab-html">HTML</button>
+            <button class="format-tab" data-format="json" id="tab-json">JSON</button>
+            <button class="format-tab" data-format="text" id="tab-text">Pretty</button>
+        </div>
+        <div class="format-actions">
+            <button class="action-btn" id="open-external-btn" onclick="openExternal()" title="Open in new window" style="display: none;">
+                <svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+            </button>
+            <button class="action-btn" id="copy-btn" onclick="copyContent()" title="Copy">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            </button>
+            <button class="action-btn" id="download-btn" onclick="downloadContent()" title="Download">
+                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            </button>
+        </div>
+    </div>
+    <div class="data-modal-content" id="modal-content"></div>
+</div>
+    <script nonce="PIPELEX_CSP_NONCE">
+// Embedded stuff data from graph (all formats)
+const stuffDataJson = {"s_5d1df0a129": {"score": 8.5, "brand_alignment": "Excellent brand alignment overall. The mascot is clearly a beaver, matching the concept brief perfectly \u2014 no octopus in sight, fully compliant with brand guidelines. The \"P\" logo on the cap directly ties to the Pipelex brand. The rolled-up blueprint tucked near the tail nicely represents the .mthds files concept from the elevator pitch. The thumbs-up pose with the mint green checkmark is one of the three requested poses (testable/reliable), directly reinforcing the \"works every time\" promise. The beaver's tail features faint circuit-like etched lines, which aligns with the brief's suggestion of evoking command-line or circuitry motifs. The hard hat (rendered here as a baseball cap) carries the pipeline/brand icon. The overall message of reliability, builder culture, and structured workflows comes through clearly. The only minor gap is that the brief specified a hard hat rather than a baseball cap, and the pipeline/flow icon on the hat is replaced with a \"P\" \u2014 though this is arguably a reasonable brand adaptation.", "cuteness_factor": "Very high cuteness factor. The chibi/kawaii proportions are well-executed: the large, expressive dark eyes with subtle highlights, the compact rounded body, the proud little buck-toothed grin, and the rosy cheek marks all contribute to an immediately endearing character. Pipey looks approachable, friendly, and has that \"playful confidence\" the brief called for. The slight goofiness comes through in the cheerful expression and the oversized head-to-body ratio. It's on par with the best tech mascots like Golang's gopher in terms of instant likability. The character would work well as stickers, emojis, and social media avatars \u2014 it has that \"I want to put this on my laptop\" appeal.", "strengths": "1) **Spot-on color palette**: The warm amber/orange fur (#F5A623 range), the deep teal cap (#0D7377 range), the cream belly (#FFF8F0), the dark charcoal outlines (#2D2D2D), and the mint green checkmark (#A8E6CF) are all faithfully represented. The palette feels cohesive and vibrant. 2) **Clean vector style**: The modern flat illustration with soft rounded shapes and gentle gradients is exactly what was requested. The design is clean enough to scale from favicon to banner without losing legibility. 3) **Personality nailed**: Pipey radiates methodical cheerfulness \u2014 the thumbs-up with checkmark says \"I've got this handled\" perfectly. The buck teeth add character without being cartoonishly overdone. 4) **Symbolic accessories**: The rolled blueprint and the circuit-etched tail are smart visual metaphors for declarative methods and technical infrastructure. 5) **Distinctiveness**: This mascot occupies a unique space in the tech mascot landscape \u2014 it's clearly differentiated from existing mascots while fitting comfortably in that ecosystem. 6) **The \"P\" branding on the cap** is a nice touch that ties the character directly to Pipelex without being heavy-handed.", "improvements": "1) **Hard hat vs. baseball cap**: The brief specifically called for a miniature hard hat with a pipeline/flow icon, but the illustration shows a baseball cap with a \"P\" logo. Switching to a slightly crooked hard hat would better convey the \"builder\" identity and add the playful goofiness mentioned in the brief (the crooked hat detail). 2) **Tail could be more stylized**: While the tail has some circuit-like etchings, it could lean further into resembling a terminal cursor or tab/file icon as specified. The current tail reads mostly as a natural beaver tail with some decorative lines. 3) **Blueprint could be more prominent**: The rolled blueprint is somewhat hidden behind/beside the tail. Tucking it more visibly under one arm (as the brief suggests) would make the \"declarative methods\" symbolism clearer at smaller sizes. 4) **Missing clipboard option**: The brief mentioned a clipboard or blueprint scroll \u2014 having a tiny clipboard in the non-thumbs-up hand could reinforce the \"methodical planner\" personality. 5) **Additional poses needed**: This is one pose (thumbs-up/reliable), but the brief calls for three poses total \u2014 building/stacking blocks and running energetically are still needed for a complete mascot system. 6) **Outline weight**: The outlines could be slightly more consistent in weight \u2014 some areas (like the tail details) feel a bit heavier than others, which could cause issues at very small sizes. 7) **Consider adding a subtle tool belt or utility accessory** to further emphasize the builder/craftsman identity without cluttering the design."}, "s_60899b6f2a": {"text": "Executable AI Methods \u2014 The runtime for Methods. Define reusable AI methods in .mthds files \u2014 declarative, testable, and versionable. Pipelex runs them from CLI, API, or MCP so your automation works every time."}, "s_8c1fa1becf": {"text": "Guideline: no octopus."}, "s_9d7ffcc22c": {"animal": "Beaver", "personality": "Methodical, reliable, industrious, and cheerfully precise. The mascot \u2014 nicknamed \"Pipey\" \u2014 is a little builder who loves organizing things into neat, reusable structures. They're the friend who always has a plan, follows it step-by-step, and gets it right every single time. Pipey is calm under pressure, endlessly dependable, and has a playful confidence that says \"I've got this handled.\" They carry a tiny clipboard or blueprint scroll, symbolizing declarative methods and structured workflows. Despite being all about precision, Pipey has a warm, approachable goofiness \u2014 maybe a slightly crooked hard hat or a proud little grin after completing a pipeline.", "visual_style": "Modern flat illustration with soft rounded shapes and gentle gradients, giving Pipey a friendly, approachable tech-mascot feel (think Golang's gopher or Rust's Ferris the crab, but cuter). Clean vector lines with minimal detail to ensure scalability from tiny favicons to large banners. Pipey is depicted in a slightly chibi/kawaii proportion \u2014 large expressive eyes, a compact rounded body, and a big flat beaver tail subtly stylized to resemble a terminal cursor or a tab/file icon. Accessories include a small rolled-up blueprint (representing .mthds files) tucked under one arm and a miniature hard hat with a pipeline/flow icon on it. The tail can feature faint etched lines evoking circuitry or a command-line prompt. Multiple poses should be designed: one building/stacking blocks (methods), one running energetically (runtime), and one giving a thumbs-up with a checkmark (testable/reliable).", "color_palette": "Primary: a rich, trustworthy deep teal (#0D7377) for Pipey's hard hat and accessories, conveying technical reliability. Secondary: warm amber/orange (#F5A623) for Pipey's fur, giving a natural, friendly beaver tone while adding energy and visibility. Accent: soft cream/off-white (#FFF8F0) for the belly and face highlights, keeping things light and approachable. Dark charcoal (#2D2D2D) for outlines and text elements, grounding the palette with a developer-tool sensibility. A subtle mint green (#A8E6CF) can be used for success states and checkmarks, reinforcing the \"works every time\" promise.", "rationale": "The beaver is the perfect mascot for Pipelex because it is nature's ultimate builder of pipelines \u2014 beavers literally construct intricate, reliable systems (dams and waterways) using methodical, repeatable techniques. This directly mirrors Pipelex's core mission: defining reusable, declarative AI methods that run reliably every time. The beaver's industrious reputation maps to the product's emphasis on automation and dependability, while its collaborative dam-building echoes the composability of .mthds files and pipelines. The word \"pipe\" in Pipelex finds a delightful visual pun in the beaver's water pipelines/channels. Unlike an octopus (which is excluded per brand guidelines), the beaver is warm, grounded, and associated with craftsmanship rather than complexity. It's a beloved, recognizable animal that hasn't been overused in the tech mascot space, giving Pipelex a distinctive and memorable brand character. The beaver also subtly nods to open-source and builder culture \u2014 it's an animal that creates infrastructure for entire ecosystems, just as Pipelex provides the runtime infrastructure for AI methods."}, "s_128cee761a": {"text": "A cute chibi-style beaver mascot named Pipey, standing upright in a proud three-quarter pose giving a confident thumbs-up with one paw while tucking a small rolled-up blueprint scroll under the other arm. The beaver has kawaii proportions \u2014 an oversized round head with large, sparkling expressive eyes, a compact rounded body, tiny paws, and two adorable prominent front teeth visible in a cheerful, proud little grin. Pipey wears a miniature hard hat in rich deep teal (#0D7377) sitting slightly crooked on the head, featuring a small pipeline-flow icon embossed on the front. The beaver's fur is warm amber-orange (#F5A623) with soft gradients, a cream off-white (#FFF8F0) belly patch and muzzle highlights. The large flat beaver tail is subtly stylized to resemble a terminal cursor or file-tab icon, with faint etched circuit-line patterns and a command-line prompt symbol delicately engraved into it. A small floating mint-green (#A8E6CF) checkmark hovers beside Pipey's raised thumb. The rolled blueprint under the arm is tied with a tiny teal ribbon. Modern flat vector illustration style with clean dark charcoal (#2D2D2D) outlines, soft rounded shapes, gentle gradients, and minimal detail for scalability \u2014 inspired by the Golang gopher and Rust's Ferris but cuter and warmer. The character radiates methodical confidence, dependable friendliness, and playful industriousness. Clean pure white background, professional mascot illustration quality, centered composition with ample negative space, suitable for use as a tech brand logo and favicon at any scale."}, "s_2dc4d54bfd": {"url": "pipelex-storage://anonymous/4b4aeedb-bb8d-4652-9394-dd5fca58b95a/58018067a667bdf8.png", "public_url": null, "source_prompt": "A cute chibi-style beaver mascot named Pipey, standing upright in a proud three-quarter pose giving a confident thumbs-up with one paw while tucking a small rolled-up blueprint scroll under the other arm. The beaver has kawaii proportions \u2014 an oversized round head with large, sparkling expressive eyes, a compact rounded body, tiny paws, and two adorable prominent front teeth visible in a cheerful, proud little grin. Pipey wears a miniature hard hat in rich deep teal (#0D7377) sitting slightly crooked on the head, featuring a small pipeline-flow icon embossed on the front. The beaver's fur is warm amber-orange (#F5A623) with soft gradients, a cream off-white (#FFF8F0) belly patch and muzzle highlights. The large flat beaver tail is subtly stylized to resemble a terminal cursor or file-tab icon, with faint etched circuit-line patterns and a command-line prompt symbol delicately engraved into it. A small floating mint-green (#A8E6CF) checkmark hovers beside Pipey's raised thumb. The rolled blueprint under the arm is tied with a tiny teal ribbon. Modern flat vector illustration style with clean dark charcoal (#2D2D2D) outlines, soft rounded shapes, gentle gradients, and minimal detail for scalability \u2014 inspired by the Golang gopher and Rust's Ferris but cuter and warmer. The character radiates methodical confidence, dependable friendliness, and playful industriousness. Clean pure white background, professional mascot illustration quality, centered composition with ample negative space, suitable for use as a tech brand logo and favicon at any scale.", "source_negative_prompt": null, "caption": null, "mime_type": "image/png", "size": {"width": 512, "height": 512}, "filename": null}};
+const stuffDataText = {"s_5d1df0a129": " Attribute       \u2503 Value                                                        \n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n score           \u2502 8.5                                                          \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n brand_alignment \u2502 Excellent brand alignment overall. The mascot is clearly a   \n                 \u2502 beaver, matching the concept brief perfectly \u2014 no octopus in \n                 \u2502 sight, fully compliant with brand guidelines. The \"P\" logo   \n                 \u2502 on the cap directly ties to the Pipelex brand. The rolled-up \n                 \u2502 blueprint tucked near the tail nicely represents the .mthds  \n                 \u2502 files concept from the elevator pitch. The thumbs-up pose    \n                 \u2502 with the mint green checkmark is one of the three requested  \n                 \u2502 poses (testable/reliable), directly reinforcing the \"works   \n                 \u2502 every time\" promise. The beaver's tail features faint        \n                 \u2502 circuit-like etched lines, which aligns with the brief's     \n                 \u2502 suggestion of evoking command-line or circuitry motifs. The  \n                 \u2502 hard hat (rendered here as a baseball cap) carries the       \n                 \u2502 pipeline/brand icon. The overall message of reliability,     \n                 \u2502 builder culture, and structured workflows comes through      \n                 \u2502 clearly. The only minor gap is that the brief specified a    \n                 \u2502 hard hat rather than a baseball cap, and the pipeline/flow   \n                 \u2502 icon on the hat is replaced with a \"P\" \u2014 though this is      \n                 \u2502 arguably a reasonable brand adaptation.                      \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n cuteness_factor \u2502 Very high cuteness factor. The chibi/kawaii proportions are  \n                 \u2502 well-executed: the large, expressive dark eyes with subtle   \n                 \u2502 highlights, the compact rounded body, the proud little       \n                 \u2502 buck-toothed grin, and the rosy cheek marks all contribute   \n                 \u2502 to an immediately endearing character. Pipey looks           \n                 \u2502 approachable, friendly, and has that \"playful confidence\"    \n                 \u2502 the brief called for. The slight goofiness comes through in  \n                 \u2502 the cheerful expression and the oversized head-to-body       \n                 \u2502 ratio. It's on par with the best tech mascots like Golang's  \n                 \u2502 gopher in terms of instant likability. The character would   \n                 \u2502 work well as stickers, emojis, and social media avatars \u2014 it \n                 \u2502 has that \"I want to put this on my laptop\" appeal.           \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n strengths       \u2502 1) **Spot-on color palette**: The warm amber/orange fur      \n                 \u2502 (#F5A623 range), the deep teal cap (#0D7377 range), the      \n                 \u2502 cream belly (#FFF8F0), the dark charcoal outlines (#2D2D2D), \n                 \u2502 and the mint green checkmark (#A8E6CF) are all faithfully    \n                 \u2502 represented. The palette feels cohesive and vibrant. 2)      \n                 \u2502 **Clean vector style**: The modern flat illustration with    \n                 \u2502 soft rounded shapes and gentle gradients is exactly what was \n                 \u2502 requested. The design is clean enough to scale from favicon  \n                 \u2502 to banner without losing legibility. 3) **Personality        \n                 \u2502 nailed**: Pipey radiates methodical cheerfulness \u2014 the       \n                 \u2502 thumbs-up with checkmark says \"I've got this handled\"        \n                 \u2502 perfectly. The buck teeth add character without being        \n                 \u2502 cartoonishly overdone. 4) **Symbolic accessories**: The      \n                 \u2502 rolled blueprint and the circuit-etched tail are smart       \n                 \u2502 visual metaphors for declarative methods and technical       \n                 \u2502 infrastructure. 5) **Distinctiveness**: This mascot occupies \n                 \u2502 a unique space in the tech mascot landscape \u2014 it's clearly   \n                 \u2502 differentiated from existing mascots while fitting           \n                 \u2502 comfortably in that ecosystem. 6) **The \"P\" branding on the  \n                 \u2502 cap** is a nice touch that ties the character directly to    \n                 \u2502 Pipelex without being heavy-handed.                          \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n improvements    \u2502 1) **Hard hat vs. baseball cap**: The brief specifically     \n                 \u2502 called for a miniature hard hat with a pipeline/flow icon,   \n                 \u2502 but the illustration shows a baseball cap with a \"P\" logo.   \n                 \u2502 Switching to a slightly crooked hard hat would better convey \n                 \u2502 the \"builder\" identity and add the playful goofiness         \n                 \u2502 mentioned in the brief (the crooked hat detail). 2) **Tail   \n                 \u2502 could be more stylized**: While the tail has some            \n                 \u2502 circuit-like etchings, it could lean further into resembling \n                 \u2502 a terminal cursor or tab/file icon as specified. The current \n                 \u2502 tail reads mostly as a natural beaver tail with some         \n                 \u2502 decorative lines. 3) **Blueprint could be more prominent**:  \n                 \u2502 The rolled blueprint is somewhat hidden behind/beside the    \n                 \u2502 tail. Tucking it more visibly under one arm (as the brief    \n                 \u2502 suggests) would make the \"declarative methods\" symbolism     \n                 \u2502 clearer at smaller sizes. 4) **Missing clipboard option**:   \n                 \u2502 The brief mentioned a clipboard or blueprint scroll \u2014 having \n                 \u2502 a tiny clipboard in the non-thumbs-up hand could reinforce   \n                 \u2502 the \"methodical planner\" personality. 5) **Additional poses  \n                 \u2502 needed**: This is one pose (thumbs-up/reliable), but the     \n                 \u2502 brief calls for three poses total \u2014 building/stacking blocks \n                 \u2502 and running energetically are still needed for a complete    \n                 \u2502 mascot system. 6) **Outline weight**: The outlines could be  \n                 \u2502 slightly more consistent in weight \u2014 some areas (like the    \n                 \u2502 tail details) feel a bit heavier than others, which could    \n                 \u2502 cause issues at very small sizes. 7) **Consider adding a     \n                 \u2502 subtle tool belt or utility accessory** to further emphasize \n                 \u2502 the builder/craftsman identity without cluttering the        \n                 \u2502 design.                                                      \n", "s_60899b6f2a": "Executable AI Methods \u2014 The runtime for Methods. Define reusable AI methods in .mthds files \u2014       \ndeclarative, testable, and versionable. Pipelex runs them from CLI, API, or MCP so your automation  \nworks every time.                                                                                   \n", "s_8c1fa1becf": "Guideline: no octopus.                                                                              \n", "s_9d7ffcc22c": " Attribute     \u2503 Value                                                          \n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2547\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n animal        \u2502 Beaver                                                         \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n personality   \u2502 Methodical, reliable, industrious, and cheerfully precise. The \n               \u2502 mascot \u2014 nicknamed \"Pipey\" \u2014 is a little builder who loves     \n               \u2502 organizing things into neat, reusable structures. They're the  \n               \u2502 friend who always has a plan, follows it step-by-step, and     \n               \u2502 gets it right every single time. Pipey is calm under pressure, \n               \u2502 endlessly dependable, and has a playful confidence that says   \n               \u2502 \"I've got this handled.\" They carry a tiny clipboard or        \n               \u2502 blueprint scroll, symbolizing declarative methods and          \n               \u2502 structured workflows. Despite being all about precision, Pipey \n               \u2502 has a warm, approachable goofiness \u2014 maybe a slightly crooked  \n               \u2502 hard hat or a proud little grin after completing a pipeline.   \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n visual_style  \u2502 Modern flat illustration with soft rounded shapes and gentle   \n               \u2502 gradients, giving Pipey a friendly, approachable tech-mascot   \n               \u2502 feel (think Golang's gopher or Rust's Ferris the crab, but     \n               \u2502 cuter). Clean vector lines with minimal detail to ensure       \n               \u2502 scalability from tiny favicons to large banners. Pipey is      \n               \u2502 depicted in a slightly chibi/kawaii proportion \u2014 large         \n               \u2502 expressive eyes, a compact rounded body, and a big flat beaver \n               \u2502 tail subtly stylized to resemble a terminal cursor or a        \n               \u2502 tab/file icon. Accessories include a small rolled-up blueprint \n               \u2502 (representing .mthds files) tucked under one arm and a         \n               \u2502 miniature hard hat with a pipeline/flow icon on it. The tail   \n               \u2502 can feature faint etched lines evoking circuitry or a          \n               \u2502 command-line prompt. Multiple poses should be designed: one    \n               \u2502 building/stacking blocks (methods), one running energetically  \n               \u2502 (runtime), and one giving a thumbs-up with a checkmark         \n               \u2502 (testable/reliable).                                           \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n color_palette \u2502 Primary: a rich, trustworthy deep teal (#0D7377) for Pipey's   \n               \u2502 hard hat and accessories, conveying technical reliability.     \n               \u2502 Secondary: warm amber/orange (#F5A623) for Pipey's fur, giving \n               \u2502 a natural, friendly beaver tone while adding energy and        \n               \u2502 visibility. Accent: soft cream/off-white (#FFF8F0) for the     \n               \u2502 belly and face highlights, keeping things light and            \n               \u2502 approachable. Dark charcoal (#2D2D2D) for outlines and text    \n               \u2502 elements, grounding the palette with a developer-tool          \n               \u2502 sensibility. A subtle mint green (#A8E6CF) can be used for     \n               \u2502 success states and checkmarks, reinforcing the \"works every    \n               \u2502 time\" promise.                                                 \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n rationale     \u2502 The beaver is the perfect mascot for Pipelex because it is     \n               \u2502 nature's ultimate builder of pipelines \u2014 beavers literally     \n               \u2502 construct intricate, reliable systems (dams and waterways)     \n               \u2502 using methodical, repeatable techniques. This directly mirrors \n               \u2502 Pipelex's core mission: defining reusable, declarative AI      \n               \u2502 methods that run reliably every time. The beaver's industrious \n               \u2502 reputation maps to the product's emphasis on automation and    \n               \u2502 dependability, while its collaborative dam-building echoes the \n               \u2502 composability of .mthds files and pipelines. The word \"pipe\"   \n               \u2502 in Pipelex finds a delightful visual pun in the beaver's water \n               \u2502 pipelines/channels. Unlike an octopus (which is excluded per   \n               \u2502 brand guidelines), the beaver is warm, grounded, and           \n               \u2502 associated with craftsmanship rather than complexity. It's a   \n               \u2502 beloved, recognizable animal that hasn't been overused in the  \n               \u2502 tech mascot space, giving Pipelex a distinctive and memorable  \n               \u2502 brand character. The beaver also subtly nods to open-source    \n               \u2502 and builder culture \u2014 it's an animal that creates              \n               \u2502 infrastructure for entire ecosystems, just as Pipelex provides \n               \u2502 the runtime infrastructure for AI methods.                     \n", "s_128cee761a": "A cute chibi-style beaver mascot named Pipey, standing upright in a proud three-quarter pose giving \na confident thumbs-up with one paw while tucking a small rolled-up blueprint scroll under the other \narm. The beaver has kawaii proportions \u2014 an oversized round head with large, sparkling expressive   \neyes, a compact rounded body, tiny paws, and two adorable prominent front teeth visible in a        \ncheerful, proud little grin. Pipey wears a miniature hard hat in rich deep teal (#0D7377) sitting   \nslightly crooked on the head, featuring a small pipeline-flow icon embossed on the front. The       \nbeaver's fur is warm amber-orange (#F5A623) with soft gradients, a cream off-white (#FFF8F0) belly  \npatch and muzzle highlights. The large flat beaver tail is subtly stylized to resemble a terminal   \ncursor or file-tab icon, with faint etched circuit-line patterns and a command-line prompt symbol   \ndelicately engraved into it. A small floating mint-green (#A8E6CF) checkmark hovers beside Pipey's  \nraised thumb. The rolled blueprint under the arm is tied with a tiny teal ribbon. Modern flat vector\nillustration style with clean dark charcoal (#2D2D2D) outlines, soft rounded shapes, gentle         \ngradients, and minimal detail for scalability \u2014 inspired by the Golang gopher and Rust's Ferris but \ncuter and warmer. The character radiates methodical confidence, dependable friendliness, and playful\nindustriousness. Clean pure white background, professional mascot illustration quality, centered    \ncomposition with ample negative space, suitable for use as a tech brand logo and favicon at any     \nscale.                                                                                              \n", "s_2dc4d54bfd": "Image:\nURL: pipelex-storage://anonymous/4b4aeedb-bb8d-4652-9394-dd5fca58b95a/58018067a667bdf8.png          \nSize: 512x512\nMIME Type: image/png\n\nSource Prompt:\nA cute chibi-style beaver mascot named Pipey, standing upright in a proud three-quarter pose giving \na confident thumbs-up with one paw while tucking a small rolled-up blueprint scroll under the other \narm. The beaver has kawaii proportions \u2014 an oversized round head with large, sparkling expressive \neyes, a compact rounded body, tiny paws, and two adorable prominent front teeth visible in a \ncheerful, proud little grin. Pipey wears a miniature hard hat in rich deep teal (#0D7377) sitting \nslightly crooked on the head, featuring a small pipeline-flow icon embossed on the front. The \nbeaver's fur is warm amber-orange (#F5A623) with soft gradients, a cream off-white (#FFF8F0) belly \npatch and muzzle highlights. The large flat beaver tail is subtly stylized to resemble a terminal \ncursor or file-tab icon, with faint etched circuit-line patterns and a command-line prompt symbol \ndelicately engraved into it. A small floating mint-green (#A8E6CF) checkmark hovers beside Pipey's \nraised thumb. The rolled blueprint under the arm is tied with a tiny teal ribbon. Modern flat vector\nillustration style with clean dark charcoal (#2D2D2D) outlines, soft rounded shapes, gentle \ngradients, and minimal detail for scalability \u2014 inspired by the Golang gopher and Rust's Ferris but \ncuter and warmer. The character radiates methodical confidence, dependable friendliness, and playful\nindustriousness. Clean pure white background, professional mascot illustration quality, centered \ncomposition with ample negative space, suitable for use as a tech brand logo and favicon at any \nscale.\n"};
+const stuffDataHtml = {"s_5d1df0a129": "<table><tr><th>score</th><td>8.5</td></tr><tr><th>brand_alignment</th><td>Excellent brand alignment overall. The mascot is clearly a beaver, matching the concept brief perfectly \u2014 no octopus in sight, fully compliant with brand guidelines. The &quot;P&quot; logo on the cap directly ties to the Pipelex brand. The rolled-up blueprint tucked near the tail nicely represents the .mthds files concept from the elevator pitch. The thumbs-up pose with the mint green checkmark is one of the three requested poses (testable/reliable), directly reinforcing the &quot;works every time&quot; promise. The beaver&#x27;s tail features faint circuit-like etched lines, which aligns with the brief&#x27;s suggestion of evoking command-line or circuitry motifs. The hard hat (rendered here as a baseball cap) carries the pipeline/brand icon. The overall message of reliability, builder culture, and structured workflows comes through clearly. The only minor gap is that the brief specified a hard hat rather than a baseball cap, and the pipeline/flow icon on the hat is replaced with a &quot;P&quot; \u2014 though this is arguably a reasonable brand adaptation.</td></tr><tr><th>cuteness_factor</th><td>Very high cuteness factor. The chibi/kawaii proportions are well-executed: the large, expressive dark eyes with subtle highlights, the compact rounded body, the proud little buck-toothed grin, and the rosy cheek marks all contribute to an immediately endearing character. Pipey looks approachable, friendly, and has that &quot;playful confidence&quot; the brief called for. The slight goofiness comes through in the cheerful expression and the oversized head-to-body ratio. It&#x27;s on par with the best tech mascots like Golang&#x27;s gopher in terms of instant likability. The character would work well as stickers, emojis, and social media avatars \u2014 it has that &quot;I want to put this on my laptop&quot; appeal.</td></tr><tr><th>strengths</th><td>1) **Spot-on color palette**: The warm amber/orange fur (#F5A623 range), the deep teal cap (#0D7377 range), the cream belly (#FFF8F0), the dark charcoal outlines (#2D2D2D), and the mint green checkmark (#A8E6CF) are all faithfully represented. The palette feels cohesive and vibrant. 2) **Clean vector style**: The modern flat illustration with soft rounded shapes and gentle gradients is exactly what was requested. The design is clean enough to scale from favicon to banner without losing legibility. 3) **Personality nailed**: Pipey radiates methodical cheerfulness \u2014 the thumbs-up with checkmark says &quot;I&#x27;ve got this handled&quot; perfectly. The buck teeth add character without being cartoonishly overdone. 4) **Symbolic accessories**: The rolled blueprint and the circuit-etched tail are smart visual metaphors for declarative methods and technical infrastructure. 5) **Distinctiveness**: This mascot occupies a unique space in the tech mascot landscape \u2014 it&#x27;s clearly differentiated from existing mascots while fitting comfortably in that ecosystem. 6) **The &quot;P&quot; branding on the cap** is a nice touch that ties the character directly to Pipelex without being heavy-handed.</td></tr><tr><th>improvements</th><td>1) **Hard hat vs. baseball cap**: The brief specifically called for a miniature hard hat with a pipeline/flow icon, but the illustration shows a baseball cap with a &quot;P&quot; logo. Switching to a slightly crooked hard hat would better convey the &quot;builder&quot; identity and add the playful goofiness mentioned in the brief (the crooked hat detail). 2) **Tail could be more stylized**: While the tail has some circuit-like etchings, it could lean further into resembling a terminal cursor or tab/file icon as specified. The current tail reads mostly as a natural beaver tail with some decorative lines. 3) **Blueprint could be more prominent**: The rolled blueprint is somewhat hidden behind/beside the tail. Tucking it more visibly under one arm (as the brief suggests) would make the &quot;declarative methods&quot; symbolism clearer at smaller sizes. 4) **Missing clipboard option**: The brief mentioned a clipboard or blueprint scroll \u2014 having a tiny clipboard in the non-thumbs-up hand could reinforce the &quot;methodical planner&quot; personality. 5) **Additional poses needed**: This is one pose (thumbs-up/reliable), but the brief calls for three poses total \u2014 building/stacking blocks and running energetically are still needed for a complete mascot system. 6) **Outline weight**: The outlines could be slightly more consistent in weight \u2014 some areas (like the tail details) feel a bit heavier than others, which could cause issues at very small sizes. 7) **Consider adding a subtle tool belt or utility accessory** to further emphasize the builder/craftsman identity without cluttering the design.</td></tr></table>", "s_60899b6f2a": "Executable AI Methods \u2014 The runtime for Methods. Define reusable AI methods in .mthds files \u2014 declarative, testable, and versionable. Pipelex runs them from CLI, API, or MCP so your automation works every time.", "s_8c1fa1becf": "Guideline: no octopus.", "s_9d7ffcc22c": "<table><tr><th>animal</th><td>Beaver</td></tr><tr><th>personality</th><td>Methodical, reliable, industrious, and cheerfully precise. The mascot \u2014 nicknamed &quot;Pipey&quot; \u2014 is a little builder who loves organizing things into neat, reusable structures. They&#x27;re the friend who always has a plan, follows it step-by-step, and gets it right every single time. Pipey is calm under pressure, endlessly dependable, and has a playful confidence that says &quot;I&#x27;ve got this handled.&quot; They carry a tiny clipboard or blueprint scroll, symbolizing declarative methods and structured workflows. Despite being all about precision, Pipey has a warm, approachable goofiness \u2014 maybe a slightly crooked hard hat or a proud little grin after completing a pipeline.</td></tr><tr><th>visual_style</th><td>Modern flat illustration with soft rounded shapes and gentle gradients, giving Pipey a friendly, approachable tech-mascot feel (think Golang&#x27;s gopher or Rust&#x27;s Ferris the crab, but cuter). Clean vector lines with minimal detail to ensure scalability from tiny favicons to large banners. Pipey is depicted in a slightly chibi/kawaii proportion \u2014 large expressive eyes, a compact rounded body, and a big flat beaver tail subtly stylized to resemble a terminal cursor or a tab/file icon. Accessories include a small rolled-up blueprint (representing .mthds files) tucked under one arm and a miniature hard hat with a pipeline/flow icon on it. The tail can feature faint etched lines evoking circuitry or a command-line prompt. Multiple poses should be designed: one building/stacking blocks (methods), one running energetically (runtime), and one giving a thumbs-up with a checkmark (testable/reliable).</td></tr><tr><th>color_palette</th><td>Primary: a rich, trustworthy deep teal (#0D7377) for Pipey&#x27;s hard hat and accessories, conveying technical reliability. Secondary: warm amber/orange (#F5A623) for Pipey&#x27;s fur, giving a natural, friendly beaver tone while adding energy and visibility. Accent: soft cream/off-white (#FFF8F0) for the belly and face highlights, keeping things light and approachable. Dark charcoal (#2D2D2D) for outlines and text elements, grounding the palette with a developer-tool sensibility. A subtle mint green (#A8E6CF) can be used for success states and checkmarks, reinforcing the &quot;works every time&quot; promise.</td></tr><tr><th>rationale</th><td>The beaver is the perfect mascot for Pipelex because it is nature&#x27;s ultimate builder of pipelines \u2014 beavers literally construct intricate, reliable systems (dams and waterways) using methodical, repeatable techniques. This directly mirrors Pipelex&#x27;s core mission: defining reusable, declarative AI methods that run reliably every time. The beaver&#x27;s industrious reputation maps to the product&#x27;s emphasis on automation and dependability, while its collaborative dam-building echoes the composability of .mthds files and pipelines. The word &quot;pipe&quot; in Pipelex finds a delightful visual pun in the beaver&#x27;s water pipelines/channels. Unlike an octopus (which is excluded per brand guidelines), the beaver is warm, grounded, and associated with craftsmanship rather than complexity. It&#x27;s a beloved, recognizable animal that hasn&#x27;t been overused in the tech mascot space, giving Pipelex a distinctive and memorable brand character. The beaver also subtly nods to open-source and builder culture \u2014 it&#x27;s an animal that creates infrastructure for entire ecosystems, just as Pipelex provides the runtime infrastructure for AI methods.</td></tr></table>", "s_128cee761a": "A cute chibi-style beaver mascot named Pipey, standing upright in a proud three-quarter pose giving a confident thumbs-up with one paw while tucking a small rolled-up blueprint scroll under the other arm. The beaver has kawaii proportions \u2014 an oversized round head with large, sparkling expressive eyes, a compact rounded body, tiny paws, and two adorable prominent front teeth visible in a cheerful, proud little grin. Pipey wears a miniature hard hat in rich deep teal (#0D7377) sitting slightly crooked on the head, featuring a small pipeline-flow icon embossed on the front. The beaver&#x27;s fur is warm amber-orange (#F5A623) with soft gradients, a cream off-white (#FFF8F0) belly patch and muzzle highlights. The large flat beaver tail is subtly stylized to resemble a terminal cursor or file-tab icon, with faint etched circuit-line patterns and a command-line prompt symbol delicately engraved into it. A small floating mint-green (#A8E6CF) checkmark hovers beside Pipey&#x27;s raised thumb. The rolled blueprint under the arm is tied with a tiny teal ribbon. Modern flat vector illustration style with clean dark charcoal (#2D2D2D) outlines, soft rounded shapes, gentle gradients, and minimal detail for scalability \u2014 inspired by the Golang gopher and Rust&#x27;s Ferris but cuter and warmer. The character radiates methodical confidence, dependable friendliness, and playful industriousness. Clean pure white background, professional mascot illustration quality, centered composition with ample negative space, suitable for use as a tech brand logo and favicon at any scale.", "s_2dc4d54bfd": "<img src=\"pipelex-storage://anonymous/4b4aeedb-bb8d-4652-9394-dd5fca58b95a/58018067a667bdf8.png\" class=\"msg-img\">"};
+const stuffMetadata = {"s_5d1df0a129": {"name": "mascot_rating", "concept": "MascotRating"}, "s_60899b6f2a": {"name": "elevator_pitch", "concept": "Text"}, "s_8c1fa1becf": {"name": "brand_guidelines", "concept": "Text"}, "s_9d7ffcc22c": {"name": "mascot_brief", "concept": "MascotBrief"}, "s_128cee761a": {"name": "mascot_prompt", "concept": "ImgGenPrompt"}, "s_2dc4d54bfd": {"name": "mascot_image", "concept": "Image"}};
+const stuffContentType = {"s_2dc4d54bfd": "image/png"};
+const mermaidCode = "flowchart LR\n\n    %% Pipe and stuff nodes within controller subgraphs\n    subgraph sg_n_a1f5d7691d[\"design_mascot\"]\n        n_19ce6efd5f[\"craft_mascot_prompt\"]\n        s_128cee761a([\"mascot_prompt\u003cbr/\u003eImgGenPrompt\"]):::stuff\n        n_1f113180b5[\"generate_mascot\"]\n        s_2dc4d54bfd([\"mascot_image\u003cbr/\u003eImage\"]):::stuff\n        n_441ebb3765[\"imagine_mascot\"]\n        s_9d7ffcc22c([\"mascot_brief\u003cbr/\u003eMascotBrief\"]):::stuff\n        n_0de95e0538[\"rate_mascot\"]\n        s_5d1df0a129([\"mascot_rating\u003cbr/\u003eMascotRating\"]):::stuff\n    end\n\n    %% Pipeline input stuff nodes (no producer)\n    s_8c1fa1becf([\"brand_guidelines\u003cbr/\u003eText\"]):::stuff\n    s_60899b6f2a([\"elevator_pitch\u003cbr/\u003eText\"]):::stuff\n\n    %% Data flow edges: producer -\u003e stuff -\u003e consumer\n    n_441ebb3765 --\u003e s_9d7ffcc22c\n    n_1f113180b5 --\u003e s_2dc4d54bfd\n    n_19ce6efd5f --\u003e s_128cee761a\n    n_0de95e0538 --\u003e s_5d1df0a129\n    s_9d7ffcc22c --\u003e n_19ce6efd5f\n    s_9d7ffcc22c --\u003e n_0de95e0538\n    s_2dc4d54bfd --\u003e n_0de95e0538\n    s_128cee761a --\u003e n_1f113180b5\n    s_8c1fa1becf --\u003e n_441ebb3765\n    s_8c1fa1becf --\u003e n_0de95e0538\n    s_60899b6f2a --\u003e n_441ebb3765\n    s_60899b6f2a --\u003e n_0de95e0538\n\n    %% Style definitions\n    classDef failed fill:#ffcccc,stroke:#cc0000\n    classDef stuff fill:#fff3e6,stroke:#cc6600,stroke-width:2px\n    classDef controller fill:#e6f3ff,stroke:#0066cc\n\n    %% Subgraph depth-based coloring\n    style sg_n_a1f5d7691d fill:#e6f3ff";
+
+// Track current state
+let currentStuffId = null;
+let currentFormat = 'html';
+let currentTheme = "dark";
+
+// Include shared utility functions
+// ============================================================
+// Shared Stuff Display Utilities
+// Used by both mermaidflow and reactflow implementations
+// ============================================================
+
+// XSS-safe HTML escaping
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Make all links in a container open in new windows
+function makeLinksOpenInNewWindow(container) {
+    if (!container) return;
+    const links = container.querySelectorAll('a');
+    links.forEach(link => {
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+    });
+}
+
+// Validate that a URL is safe for display (prevents javascript: and data: URL injection)
+function isSafeDisplayUrl(url) {
+    if (!url || typeof url !== 'string') return false;
+    return url.startsWith('https://') || url.startsWith('http://') || url.startsWith('file://');
+}
+
+// Extract URL from stuff data (handles various data structures)
+// Returns null for invalid/unsafe URLs (javascript:, data:, etc.)
+function extractUrl(jsonData) {
+    if (!jsonData) return null;
+    // Check if data itself is a URL string
+    if (typeof jsonData === 'string') {
+        return isSafeDisplayUrl(jsonData) ? jsonData : null;
+    }
+    // Prefer public_url (pre-signed S3 URL or file:// URI) over url (internal pipelex-storage:// URL)
+    const candidates = [jsonData.public_url, jsonData.src, jsonData.href, jsonData.uri, jsonData.url];
+    for (const candidate of candidates) {
+        if (isSafeDisplayUrl(candidate)) return candidate;
+    }
+    return null;
+}
+
+// Get appropriate tab label based on content type
+function getHtmlTabLabel(contentType) {
+    if (contentType === 'application/pdf') return 'PDF';
+    if (contentType?.startsWith('image/')) return 'Image';
+    return 'HTML';
+}
+// Theme-specific color palettes for custom node styling
+const themePalettes = {
+    default: {
+        page: { bg: '#f8fafc', text: '#1e293b', label: '#64748b', border: '#cbd5e1',
+                borderHover: '#94a3b8', selectBg: 'white', containerBg: 'white' },
+        failed: { fill: '#fee2e2', stroke: '#dc2626' },
+        controller: { fill: '#dbeafe', stroke: '#2563eb' },
+        pipe: { fill: '#dbeafe', stroke: '#2563eb' },
+        stuff: { fill: '#fef3c7', stroke: '#d97706' },
+        subgraph: ['#eff6ff', '#ecfdf5', '#fefce8', '#fdf4ff', '#f0fdfa']
+    },
+    dark: {
+        page: { bg: '#1a1a2e', text: '#e0f7fa', label: '#80deea', border: '#2d4a5a',
+                borderHover: '#00bcd4', selectBg: '#2d4a5a', containerBg: '#16213e' },
+        failed: { fill: '#3a1a1a', stroke: '#ff5252' },
+        controller: { fill: '#1a3a4a', stroke: '#00e5ff' },
+        pipe: { fill: '#1a3a4a', stroke: '#00e5ff' },
+        stuff: { fill: '#2a1a3a', stroke: '#ff4081' },
+        subgraph: ['#1e3a4a', '#1a3a3a', '#2a3a4a', '#1a2a4a', '#2a4a4a']
+    },
+    forest: {
+        page: { bg: '#f0fdf4', text: '#14532d', label: '#166534', border: '#86efac',
+                borderHover: '#4ade80', selectBg: 'white', containerBg: '#fafffe' },
+        failed: { fill: '#fecaca', stroke: '#b91c1c' },
+        controller: { fill: '#dcfce7', stroke: '#16a34a' },
+        pipe: { fill: '#dcfce7', stroke: '#16a34a' },
+        stuff: { fill: '#fef9c3', stroke: '#ca8a04' },
+        subgraph: ['#d1fae5', '#bbf7d0', '#d9f99d', '#fef08a', '#a7f3d0']
+    },
+    neutral: {
+        page: { bg: '#fafafa', text: '#171717', label: '#525252', border: '#d4d4d4',
+                borderHover: '#a3a3a3', selectBg: 'white', containerBg: 'white' },
+        failed: { fill: '#fecaca', stroke: '#991b1b' },
+        controller: { fill: '#e5e5e5', stroke: '#525252' },
+        pipe: { fill: '#e5e5e5', stroke: '#525252' },
+        stuff: { fill: '#fef3c7', stroke: '#92400e' },
+        subgraph: ['#f5f5f5', '#e5e5e5', '#fafaf9', '#f5f5f4', '#fafafa']
+    },
+    base: {
+        page: { bg: '#fff', text: '#18181b', label: '#52525b', border: '#e4e4e7',
+                borderHover: '#a1a1aa', selectBg: 'white', containerBg: '#fafafa' },
+        failed: { fill: '#ffe4e6', stroke: '#e11d48' },
+        controller: { fill: '#e0f2fe', stroke: '#0284c7' },
+        pipe: { fill: '#e0f2fe', stroke: '#0284c7' },
+        stuff: { fill: '#ffedd5', stroke: '#ea580c' },
+        subgraph: ['#f0f9ff', '#f0fdf4', '#fffbeb', '#fdf4ff', '#ecfeff']
+    }
+};
+
+function applyPageTheme(theme) {
+    const palette = themePalettes[theme]?.page || themePalettes.default.page;
+    document.documentElement.style.setProperty('--bg-color', palette.bg);
+    document.documentElement.style.setProperty('--text-color', palette.text);
+    document.documentElement.style.setProperty('--label-color', palette.label);
+    document.documentElement.style.setProperty('--border-color', palette.border);
+    document.documentElement.style.setProperty('--border-hover', palette.borderHover);
+    document.documentElement.style.setProperty('--select-bg', palette.selectBg);
+    document.documentElement.style.setProperty('--container-bg', palette.containerBg);
+}
+
+function applyThemeColors(code, theme) {
+    const palette = themePalettes[theme] || themePalettes.default;
+    let result = code;
+
+    // Replace classDef colors
+    result = result.replace(
+        /classDef\s+failed\s+fill:[^,]+,stroke:[^\s\n]+/g,
+        `classDef failed fill:${palette.failed.fill},stroke:${palette.failed.stroke}`
+    );
+    result = result.replace(
+        /classDef\s+controller\s+fill:[^,]+,stroke:[^\s\n]+/g,
+        `classDef controller fill:${palette.controller.fill},stroke:${palette.controller.stroke}`
+    );
+    result = result.replace(
+        /classDef\s+pipe\s+fill:[^,]+,stroke:[^\s\n]+/g,
+        `classDef pipe fill:${palette.pipe.fill},stroke:${palette.pipe.stroke}`
+    );
+    result = result.replace(
+        /classDef\s+pipe_failed\s+fill:[^,]+,stroke:[^\s\n]+/g,
+        `classDef pipe_failed fill:${palette.failed.fill},stroke:${palette.failed.stroke}`
+    );
+    result = result.replace(
+        /classDef\s+stuff\s+fill:[^,]+,stroke:[^,]+/g,
+        `classDef stuff fill:${palette.stuff.fill},stroke:${palette.stuff.stroke}`
+    );
+
+    // Replace subgraph fill colors (style sg_xxx fill:#xxx)
+    const subgraphColors = palette.subgraph;
+    let colorIndex = 0;
+    result = result.replace(
+        /style\s+(sg_[^\s]+)\s+fill:#[a-fA-F0-9]+/g,
+        (match, subgraphId) => {
+            const color = subgraphColors[colorIndex % subgraphColors.length];
+            colorIndex++;
+            return `style ${subgraphId} fill:${color}`;
+        }
+    );
+
+    return result;
+}
+
+function initMermaid(theme) {
+    mermaid.initialize({
+        startOnLoad: false,
+        theme: theme,
+        flowchart: {
+            useMaxWidth: true,
+            htmlLabels: true,
+            curve: 'basis'
+        }
+    });
+}
+
+function attachClickHandlers() {
+    // Wait for mermaid to render, then attach click handlers
+    setTimeout(() => {
+        const svgContainer = document.querySelector('.mermaid svg');
+        if (!svgContainer) return;
+
+        // Find nodes by their flowchart IDs - use any available data source
+        const allStuffIds = new Set([
+            ...Object.keys(stuffDataJson || {}),
+            ...Object.keys(stuffDataText || {}),
+            ...Object.keys(stuffDataHtml || {})
+        ]);
+
+        for (const stuffId of allStuffIds) {
+            // Mermaid generates IDs like 'flowchart-s_xxx-123'
+            const nodes = svgContainer.querySelectorAll(`[id^="flowchart-${stuffId}"]`);
+            nodes.forEach(node => {
+                node.classList.add('clickable-stuff');
+                node.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showModal(stuffId);
+                });
+            });
+        }
+    }, 500);
+}
+
+async function renderDiagram(theme) {
+    const container = document.getElementById('mermaid-diagram');
+    const themedCode = applyThemeColors(mermaidCode, theme);
+    container.innerHTML = themedCode;
+    container.removeAttribute('data-processed');
+    applyPageTheme(theme);
+    initMermaid(theme);
+    await mermaid.run({ nodes: [container] });
+    attachClickHandlers();
+}
+
+// Set initial theme in dropdown
+document.getElementById('theme-select').value = currentTheme;
+
+// Handle theme change
+document.getElementById('theme-select').addEventListener('change', async (e) => {
+    currentTheme = e.target.value;
+    await renderDiagram(currentTheme);
+});
+
+// Initial render on page load
+renderDiagram(currentTheme);
+
+// Set up format tab handlers
+document.querySelectorAll('.format-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        if (tab.disabled) return;
+        const format = tab.dataset.format;
+        setFormat(format);
+    });
+});
+
+function setFormat(format) {
+    currentFormat = format;
+    // Update tab styling
+    document.querySelectorAll('.format-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`tab-${format}`).classList.add('active');
+    // Re-render content if modal is open
+    if (currentStuffId) {
+        renderContent(currentStuffId, format);
+    }
+}
+
+function renderContent(stuffId, format) {
+    const content = document.getElementById('modal-content');
+    content.classList.remove('html-content', 'text-content', 'pdf-content', 'image-content');
+
+    // Handle PDF content type with embedded viewer
+    const contentType = stuffContentType?.[stuffId];
+    const jsonData = stuffDataJson?.[stuffId];
+
+    if (format === 'html' && contentType === 'application/pdf') {
+        const pdfUrl = extractUrl(jsonData);
+        if (pdfUrl) {
+            content.classList.add('pdf-content');
+            content.innerHTML = '';
+            const embed = document.createElement('embed');
+            embed.src = pdfUrl;
+            embed.type = 'application/pdf';
+            embed.style.cssText = 'width:100%; height:100%; border:none; min-height:500px;';
+            content.appendChild(embed);
+            updateOpenExternalButton(stuffId, contentType, jsonData);
+            return;
+        }
+    }
+
+    // Handle image content type
+    if (format === 'html' && contentType?.startsWith('image/')) {
+        const imageUrl = extractUrl(jsonData);
+        if (imageUrl) {
+            content.classList.add('image-content');
+            content.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.style.cssText = 'max-width:100%; max-height:100%; object-fit:contain;';
+            img.alt = 'Image content';
+            content.appendChild(img);
+            updateOpenExternalButton(stuffId, contentType, jsonData);
+            return;
+        }
+    }
+
+    if (format === 'json') {
+        const data = stuffDataJson?.[stuffId];
+        content.innerHTML = '';
+        content.textContent = data ? JSON.stringify(data, null, 2) : 'No JSON data available';
+    } else if (format === 'text') {
+        const data = stuffDataText?.[stuffId];
+        content.classList.add('text-content');
+        content.innerHTML = '';
+        content.textContent = data || 'No text data available';
+    } else if (format === 'html') {
+        const data = stuffDataHtml?.[stuffId];
+        if (data) {
+            content.classList.add('html-content');
+            content.innerHTML = DOMPurify.sanitize(data);
+            makeLinksOpenInNewWindow(content);
+        } else {
+            content.innerHTML = '';
+            content.textContent = 'No HTML data available';
+        }
+    }
+
+    updateOpenExternalButton(stuffId, contentType, jsonData);
+}
+
+// Update visibility of the "open in new window" button (PDF only)
+function updateOpenExternalButton(stuffId, contentType, jsonData) {
+    const openExternalBtn = document.getElementById('open-external-btn');
+    if (!openExternalBtn) return;
+
+    const url = extractUrl(jsonData);
+    // Only show for PDFs (images are handled by the download button)
+    const shouldShow = contentType === 'application/pdf' && !!url;
+    openExternalBtn.style.display = shouldShow ? '' : 'none';
+}
+
+function updateTabAvailability(stuffId) {
+    const jsonTab = document.getElementById('tab-json');
+    const textTab = document.getElementById('tab-text');
+    const htmlTab = document.getElementById('tab-html');
+
+    jsonTab.disabled = !stuffDataJson?.[stuffId];
+    textTab.disabled = !stuffDataText?.[stuffId];
+
+    // For PDF and image content types, the tab can render from JSON data via extractUrl()
+    const contentType = stuffContentType?.[stuffId];
+    const jsonData = stuffDataJson?.[stuffId];
+    const canRenderFromJson = (contentType === 'application/pdf' || contentType?.startsWith('image/')) && extractUrl(jsonData);
+    htmlTab.disabled = !stuffDataHtml?.[stuffId] && !canRenderFromJson;
+
+    // Update HTML tab label based on content type
+    if (contentType === 'application/pdf') {
+        htmlTab.textContent = 'PDF';
+    } else if (contentType?.startsWith('image/')) {
+        htmlTab.textContent = 'Image';
+    } else {
+        htmlTab.textContent = 'HTML';
+    }
+
+    // Find first available format (HTML -> JSON -> Pretty)
+    if (!htmlTab.disabled) return 'html';
+    if (!jsonTab.disabled) return 'json';
+    if (!textTab.disabled) return 'text';
+    return 'html';
+}
+
+function showModal(stuffId) {
+    currentStuffId = stuffId;
+    const modal = document.getElementById('data-modal');
+    const overlay = document.getElementById('modal-overlay');
+    const title = document.getElementById('modal-title');
+
+    // Build title from metadata (name + concept as primary, ID as secondary)
+    const meta = stuffMetadata?.[stuffId];
+    if (meta && (meta.name || meta.concept)) {
+        const primaryParts = [];
+        if (meta.name) primaryParts.push(escapeHtml(meta.name));
+        if (meta.concept) primaryParts.push(`(${escapeHtml(meta.concept)})`);
+        const primary = `<span class="data-modal-title-primary">${primaryParts.join(' ')}</span>`;
+        const secondary = `<span class="data-modal-title-secondary">${escapeHtml(stuffId)}</span>`;
+        title.innerHTML = primary + secondary;
+    } else {
+        title.innerHTML = `<span class="data-modal-title-primary">${escapeHtml(stuffId)}</span>`;
+    }
+
+    // Update tab availability and select best format
+    const availableFormat = updateTabAvailability(stuffId);
+
+    // If current format is not available, switch to available one
+    const currentTab = document.getElementById(`tab-${currentFormat}`);
+    if (currentTab.disabled) {
+        setFormat(availableFormat);
+    } else {
+        renderContent(stuffId, currentFormat);
+    }
+
+    modal.style.display = 'block';
+    overlay.style.display = 'block';
+}
+
+function hideModal() {
+    document.getElementById('data-modal').style.display = 'none';
+    document.getElementById('modal-overlay').style.display = 'none';
+    currentStuffId = null;
+}
+
+// Get current content based on format
+function getCurrentContent() {
+    if (!currentStuffId) return null;
+
+    if (currentFormat === 'json') {
+        const data = stuffDataJson?.[currentStuffId];
+        if (!data) return null;
+        return { content: JSON.stringify(data, null, 2), ext: 'json', mime: 'application/json' };
+    } else if (currentFormat === 'text') {
+        const data = stuffDataText?.[currentStuffId];
+        if (!data) return null;
+        return { content: data, ext: 'txt', mime: 'text/plain' };
+    } else if (currentFormat === 'html') {
+        const data = stuffDataHtml?.[currentStuffId];
+        if (!data) return null;
+        return { content: data, ext: 'html', mime: 'text/html' };
+    }
+    return null;
+}
+
+// Copy content to clipboard
+function copyContent() {
+    const data = getCurrentContent();
+    if (!data) return;
+
+    navigator.clipboard.writeText(data.content).then(() => {
+        const btn = document.getElementById('copy-btn');
+        const checkIcon = '<svg viewBox="0 0 24 24">' +
+            '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+        const copyIcon = '<svg viewBox="0 0 24 24">' +
+            '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z' +
+            'm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z' +
+            'm0 16H8V7h11v14z"/></svg>';
+        btn.innerHTML = checkIcon;
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.innerHTML = copyIcon;
+            btn.classList.remove('copied');
+        }, 1500);
+    });
+}
+
+// Download content as file
+function downloadContent() {
+    if (!currentStuffId) return;
+
+    // Get name from metadata or use ID
+    const meta = stuffMetadata?.[currentStuffId];
+    const baseName = meta?.name || currentStuffId || 'data';
+    const contentType = stuffContentType?.[currentStuffId];
+    const jsonData = stuffDataJson?.[currentStuffId];
+
+    // For images, download the actual image file directly
+    if (contentType?.startsWith('image/')) {
+        const imageUrl = extractUrl(jsonData);
+        if (imageUrl) {
+            const ext = contentType.split('/')[1] || 'png';
+            const filename = `${baseName.replace(/[^a-zA-Z0-9_-]/g, '_')}.${ext}`;
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            return;
+        }
+    }
+
+    // For PDFs, download the actual PDF file directly
+    if (contentType === 'application/pdf') {
+        const pdfUrl = extractUrl(jsonData);
+        if (pdfUrl) {
+            const filename = `${baseName.replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`;
+            const link = document.createElement('a');
+            link.href = pdfUrl;
+            link.download = filename;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            return;
+        }
+    }
+
+    const data = getCurrentContent();
+    if (!data) return;
+
+    const filename = `${baseName.replace(/[^a-zA-Z0-9_-]/g, '_')}.${data.ext}`;
+    const blob = new Blob([data.content], { type: data.mime });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+// Close modal when clicking overlay
+document.getElementById('modal-overlay').addEventListener('click', hideModal);
+
+// Close modal with Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') hideModal();
+});
+
+// Open external URL for PDF content
+function openExternal() {
+    if (!currentStuffId) return;
+    const contentType = stuffContentType?.[currentStuffId];
+    const jsonData = stuffDataJson?.[currentStuffId];
+
+    if (contentType === 'application/pdf') {
+        const url = extractUrl(jsonData);
+        if (url) {
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+    }
+}
+    </script>
+</body>
+</html>

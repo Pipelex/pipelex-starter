@@ -1,31 +1,35 @@
-domain = "research_assistant"
+domain      = "research_assistant"
 description = "Extract multiple research PDFs, analyze each, classify by relevance, synthesize a literature review"
-main_pipe = "research_literature_review"
+main_pipe   = "research_literature_review"
 
 [concept.PaperAnalysis]
 description = "Structured analysis of a research paper"
 
 [concept.PaperAnalysis.structure]
-title = { type = "text", description = "Paper title", required = true }
-authors = { type = "text", description = "Paper authors" }
-key_findings = { type = "text", description = "Main findings and contributions", required = true }
-methodology = { type = "text", description = "Research methodology used", required = true }
+title           = { type = "text", description = "Paper title", required = true }
+authors         = { type = "text", description = "Paper authors" }
+key_findings    = { type = "text", description = "Main findings and contributions", required = true }
+methodology     = { type = "text", description = "Research methodology used", required = true }
 relevance_score = { type = "integer", description = "Relevance score to research question (0-100)", required = true }
 
 [concept.RelevanceCategory]
 description = "Classification of a paper's relevance level"
 
 [concept.RelevanceCategory.structure]
-level = { type = "text", description = "Relevance level", choices = ["high", "medium", "low"], required = true }
+level = { type = "text", description = "Relevance level", choices = [
+  "high",
+  "medium",
+  "low",
+], required = true }
 justification = { type = "text", description = "Reason for the relevance classification", required = true }
 
 [concept.LiteratureReview]
 description = "A synthesized literature review combining findings from multiple papers"
-refines = "Text"
+refines     = "Text"
 
 [concept.ResearchReport]
 description = "Final structured research report"
-refines = "Text"
+refines     = "Text"
 
 [pipe.research_literature_review]
 type = "PipeSequence"
@@ -33,10 +37,10 @@ description = "Main pipeline: process multiple research PDFs, analyze, classify,
 inputs = { papers = "Document[]", research_question = "Text" }
 output = "ResearchReport"
 steps = [
-    { pipe = "process_paper", batch_over = "papers", batch_as = "paper", result = "analyses" },
-    { pipe = "classify_relevance", batch_over = "analyses", batch_as = "analysis", result = "classifications" },
-    { pipe = "synthesize_review", result = "literature_review" },
-    { pipe = "compose_report", result = "research_report" },
+  { pipe = "process_paper", batch_over = "papers", batch_as = "paper", result = "analyses" },
+  { pipe = "classify_relevance", batch_over = "analyses", batch_as = "analysis", result = "classifications" },
+  { pipe = "synthesize_review", result = "literature_review" },
+  { pipe = "compose_report", result = "research_report" },
 ]
 
 [pipe.process_paper]
@@ -45,16 +49,16 @@ description = "Extract and analyze a single research paper"
 inputs = { paper = "Document", research_question = "Text" }
 output = "PaperAnalysis"
 steps = [
-    { pipe = "extract_paper", result = "pages" },
-    { pipe = "analyze_paper", result = "paper_analysis" },
+  { pipe = "extract_paper", result = "pages" },
+  { pipe = "analyze_paper", result = "paper_analysis" },
 ]
 
 [pipe.extract_paper]
-type = "PipeExtract"
+type        = "PipeExtract"
 description = "Extract pages from a research paper PDF"
-inputs = { paper = "Document" }
-output = "Page[]"
-model = "@default-text-from-pdf"
+inputs      = { paper = "Document" }
+output      = "Page[]"
+model       = "@default-text-from-pdf"
 
 [pipe.analyze_paper]
 type = "PipeLLM"
@@ -72,13 +76,13 @@ Extract the title, authors, key findings, methodology, and rate its relevance to
 """
 
 [pipe.classify_relevance]
-type = "PipeCondition"
-description = "Classify paper relevance based on the analysis score"
-inputs = { analysis = "PaperAnalysis", research_question = "Text" }
-output = "RelevanceCategory"
+type                = "PipeCondition"
+description         = "Classify paper relevance based on the analysis score"
+inputs              = { analysis = "PaperAnalysis", research_question = "Text" }
+output              = "RelevanceCategory"
 expression_template = "{{ 'high' if analysis.relevance_score >= 70 else ('medium' if analysis.relevance_score >= 40 else 'low') }}"
-outcomes = { high = "classify_high", medium = "classify_medium", low = "classify_low" }
-default_outcome = "classify_medium"
+outcomes            = { high = "classify_high", medium = "classify_medium", low = "classify_low" }
+default_outcome     = "classify_medium"
 
 [pipe.classify_high]
 type = "PipeLLM"

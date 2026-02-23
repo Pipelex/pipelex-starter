@@ -1,19 +1,19 @@
-domain = "recipe_card_generation"
-description = "Generating recipes from available ingredients and rendering them as HTML recipe cards."
+domain        = "recipe_card_generation"
+description   = "Generating recipes from available ingredients and rendering them as HTML recipe cards."
 system_prompt = "None"
-main_pipe = "generate_recipe_card"
+main_pipe     = "generate_recipe_card"
 
 [concept.Recipe]
 description = "A structured recipe containing all details needed to prepare a dish."
 
 [concept.Recipe.structure]
-title = { type = "text", description = "The name of the recipe", required = true }
-ingredients = { type = "text", description = "List of ingredients needed for the recipe", required = true }
-instructions = { type = "text", description = "Step-by-step cooking instructions", required = true }
+title             = { type = "text", description = "The name of the recipe", required = true }
+ingredients       = { type = "text", description = "List of ingredients needed for the recipe", required = true }
+instructions      = { type = "text", description = "Step-by-step cooking instructions", required = true }
 prep_time_minutes = { type = "integer", description = "Time required for preparation in minutes", required = true }
 cook_time_minutes = { type = "integer", description = "Time required for cooking in minutes", required = true }
-servings = { type = "integer", description = "Number of servings the recipe yields", required = true }
-difficulty = { type = "text", description = "Difficulty level of the recipe (easy, medium, or hard)", required = true }
+servings          = { type = "integer", description = "Number of servings the recipe yields", required = true }
+difficulty        = { type = "text", description = "Difficulty level of the recipe (easy, medium, or hard)", required = true }
 
 [pipe.generate_recipe_card]
 type = "PipeSequence"
@@ -23,8 +23,8 @@ Main pipeline that generates a recipe from available ingredients and renders it 
 inputs = { available_ingredients = "Text" }
 output = "Html"
 steps = [
-    { pipe = "recipe_generation", result = "recipe" },
-    { pipe = "render_recipe_card", result = "recipe_card_html" },
+  { pipe = "recipe_generation", result = "recipe" },
+  { pipe = "render_recipe_card", result = "recipe_card_html" },
 ]
 
 [pipe.recipe_generation]

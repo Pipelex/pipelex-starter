@@ -19,11 +19,8 @@ classifiers = [
 dependencies = ["pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]"]
 
 [tool.uv.sources]
-# pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "pre-release/v0.18.0b3" }
-pipelex = { path = "../_epic-mthds-1", editable = true }
-# plxt = { path = "../vscode-pipelex", editable = false }
-
-pipelex-tools = { path = "/Users/lchoquel/repos/PipelexLab/vscode-pipelex" }
+# pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "feature/Chicago" }
+pipelex = { git = "https://github.com/Pipelex/pipelex.git", rev = "a5160a5fb9fc4b6e02c7093ca645deaab21f3038" }
 
 
 [tool.setuptools]

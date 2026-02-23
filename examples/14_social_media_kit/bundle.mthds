@@ -1,22 +1,22 @@
-domain = "social_media_kit"
+domain      = "social_media_kit"
 description = "Generate platform-specific social media posts and a hero image from a product announcement"
-main_pipe = "create_social_media_kit"
+main_pipe   = "create_social_media_kit"
 
 [concept.TwitterPost]
 description = "A concise social media post optimized for Twitter/X (max 280 characters)"
-refines = "Text"
+refines     = "Text"
 
 [concept.LinkedInPost]
 description = "A professional social media post optimized for LinkedIn"
-refines = "Text"
+refines     = "Text"
 
 [concept.InstagramCaption]
 description = "An engaging caption with hashtags optimized for Instagram"
-refines = "Text"
+refines     = "Text"
 
 [concept.HeroPrompt]
 description = "A detailed image generation prompt for the hero image"
-refines = "Text"
+refines     = "Text"
 
 [pipe.create_social_media_kit]
 type = "PipeSequence"
@@ -24,8 +24,8 @@ description = "Main pipeline that generates platform-specific social media conte
 inputs = { announcement = "Text" }
 output = "Html"
 steps = [
-    { pipe = "generate_all_content", result = "all_content" },
-    { pipe = "compose_kit_html", result = "kit_html" },
+  { pipe = "generate_all_content", result = "all_content" },
+  { pipe = "compose_kit_html", result = "kit_html" },
 ]
 
 [pipe.generate_all_content]
@@ -34,10 +34,10 @@ description = "Generate all social media posts and hero image concurrently"
 inputs = { announcement = "Text" }
 output = "Anything"
 branches = [
-    { pipe = "write_twitter_post", result = "twitter_post" },
-    { pipe = "write_linkedin_post", result = "linkedin_post" },
-    { pipe = "write_instagram_caption", result = "instagram_caption" },
-    { pipe = "create_hero_image", result = "hero_image" },
+  { pipe = "write_twitter_post", result = "twitter_post" },
+  { pipe = "write_linkedin_post", result = "linkedin_post" },
+  { pipe = "write_instagram_caption", result = "instagram_caption" },
+  { pipe = "create_hero_image", result = "hero_image" },
 ]
 add_each_output = true
 
@@ -86,8 +86,8 @@ description = "Generate a hero image by first creating a prompt then rendering i
 inputs = { announcement = "Text" }
 output = "Image"
 steps = [
-    { pipe = "write_image_prompt", result = "hero_prompt" },
-    { pipe = "render_hero_image", result = "hero_image" },
+  { pipe = "write_image_prompt", result = "hero_prompt" },
+  { pipe = "render_hero_image", result = "hero_image" },
 ]
 
 [pipe.write_image_prompt]
@@ -103,19 +103,19 @@ Create a vivid image generation prompt for a hero image that visually represents
 """
 
 [pipe.render_hero_image]
-type = "PipeImgGen"
-description = "Render the hero image from the prompt"
-inputs = { hero_prompt = "HeroPrompt" }
-output = "Image"
-prompt = "$hero_prompt"
-model = "@default-small"
+type         = "PipeImgGen"
+description  = "Render the hero image from the prompt"
+inputs       = { hero_prompt = "HeroPrompt" }
+output       = "Image"
+prompt       = "$hero_prompt"
+model        = "@default-small"
 aspect_ratio = "landscape_16_9"
 
 [pipe.compose_kit_html]
-type = "PipeCompose"
+type        = "PipeCompose"
 description = "Compose all social media posts and hero image into an HTML toolkit page"
-inputs = { announcement = "Text", twitter_post = "TwitterPost", linkedin_post = "LinkedInPost", instagram_caption = "InstagramCaption", hero_image = "Image" }
-output = "Html"
+inputs      = { announcement = "Text", twitter_post = "TwitterPost", linkedin_post = "LinkedInPost", instagram_caption = "InstagramCaption", hero_image = "Image" }
+output      = "Html"
 
 [pipe.compose_kit_html.template]
 category = "html"

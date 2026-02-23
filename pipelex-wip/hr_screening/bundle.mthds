@@ -1,6 +1,6 @@
-domain = "hr_screening"
+domain      = "hr_screening"
 description = "Analyze a job offer to build a scorecard, batch process CVs to score them, generate interview questions for fitting candidates or draft rejection emails for others"
-main_pipe = "screen_candidates"
+main_pipe   = "screen_candidates"
 
 # ── Concepts ──────────────────────────────────────────────────────────
 
@@ -8,28 +8,28 @@ main_pipe = "screen_candidates"
 description = "A single evaluation criterion for scoring candidates"
 
 [concept.Criterion.structure]
-name = { type = "text", description = "Name of the criterion", required = true }
+name        = { type = "text", description = "Name of the criterion", required = true }
 description = { type = "text", description = "What this criterion evaluates", required = true }
-weight = { type = "number", description = "Importance weight from 1 to 10", required = true }
+weight      = { type = "number", description = "Importance weight from 1 to 10", required = true }
 
 [concept.Scorecard]
 description = "Evaluation scorecard built from a job offer"
 
 [concept.Scorecard.structure]
-job_title = { type = "text", description = "Title of the position", required = true }
-company = { type = "text", description = "Company name" }
-required_skills = { type = "list", item_type = "text", description = "Skills required for the position" }
-preferred_skills = { type = "list", item_type = "text", description = "Nice-to-have skills" }
+job_title                 = { type = "text", description = "Title of the position", required = true }
+company                   = { type = "text", description = "Company name" }
+required_skills           = { type = "list", item_type = "text", description = "Skills required for the position" }
+preferred_skills          = { type = "list", item_type = "text", description = "Nice-to-have skills" }
 required_experience_years = { type = "integer", description = "Minimum years of experience required" }
-criteria = { type = "list", item_type = "concept", item_concept_ref = "hr_screening.Criterion", description = "Evaluation criteria with weights" }
+criteria                  = { type = "list", item_type = "concept", item_concept_ref = "hr_screening.Criterion", description = "Evaluation criteria with weights" }
 
 [concept.CriterionScore]
 description = "Score for a single evaluation criterion"
 
 [concept.CriterionScore.structure]
 criterion_name = { type = "text", description = "Name of the criterion being scored", required = true }
-score = { type = "number", description = "Score from 0 to 10", required = true }
-justification = { type = "text", description = "Explanation for the score", required = true }
+score          = { type = "number", description = "Score from 0 to 10", required = true }
+justification  = { type = "text", description = "Explanation for the score", required = true }
 
 [concept.CvEvaluation]
 description = "Complete evaluation of a candidate CV against the scorecard"
@@ -38,8 +38,8 @@ description = "Complete evaluation of a candidate CV against the scorecard"
 candidate_name = { type = "text", description = "Full name of the candidate", required = true }
 overall_score = { type = "number", description = "Weighted overall score from 0 to 10", required = true }
 fit = { type = "text", description = "Whether the candidate fits the position", required = true, choices = [
-    "yes",
-    "no",
+  "yes",
+  "no",
 ] }
 strengths = { type = "list", item_type = "text", description = "Key strengths of the candidate" }
 weaknesses = { type = "list", item_type = "text", description = "Key weaknesses or gaps" }
@@ -47,11 +47,11 @@ criterion_scores = { type = "list", item_type = "concept", item_concept_ref = "h
 
 [concept.InterviewQuestions]
 description = "Five interview questions tailored to a candidate"
-refines = "Text"
+refines     = "Text"
 
 [concept.RejectionEmail]
 description = "A professional rejection email to a candidate"
-refines = "Text"
+refines     = "Text"
 
 [concept.CvResult]
 description = "Final result for a candidate including either interview questions or rejection email"
@@ -59,8 +59,8 @@ description = "Final result for a candidate including either interview questions
 [concept.CvResult.structure]
 candidate_name = { type = "text", description = "Full name of the candidate", required = true }
 fit = { type = "text", description = "Whether the candidate fits", required = true, choices = [
-    "yes",
-    "no",
+  "yes",
+  "no",
 ] }
 overall_score = { type = "number", description = "Weighted overall score", required = true }
 interview_questions = "5 interview questions if candidate fits, empty otherwise"
@@ -72,17 +72,17 @@ description = "Full HR screening: build scorecard from job offer, then batch-eva
 inputs = { job_offer = "Document", cvs = "Document[]" }
 output = "CvResult[]"
 steps = [
-    { pipe = "extract_job_offer", result = "job_pages" },
-    { pipe = "build_scorecard", result = "scorecard" },
-    { pipe = "evaluate_cv", batch_over = "cvs", batch_as = "cv", result = "results" },
+  { pipe = "extract_job_offer", result = "job_pages" },
+  { pipe = "build_scorecard", result = "scorecard" },
+  { pipe = "evaluate_cv", batch_over = "cvs", batch_as = "cv", result = "results" },
 ]
 
 [pipe.extract_job_offer]
-type = "PipeExtract"
+type        = "PipeExtract"
 description = "Extract text content from the job offer PDF"
-inputs = { job_offer = "Document" }
-output = "Page[]"
-model = "@azure-best-ocr"
+inputs      = { job_offer = "Document" }
+output      = "Page[]"
+model       = "@azure-best-ocr"
 
 [pipe.build_scorecard]
 type = "PipeLLM"
@@ -116,17 +116,17 @@ description = "Extract, score, and route a single CV"
 inputs = { cv = "Document", scorecard = "Scorecard" }
 output = "CvResult"
 steps = [
-    { pipe = "extract_cv", result = "cv_pages" },
-    { pipe = "score_cv", result = "evaluation" },
-    { pipe = "route_by_fit", result = "cv_result" },
+  { pipe = "extract_cv", result = "cv_pages" },
+  { pipe = "score_cv", result = "evaluation" },
+  { pipe = "route_by_fit", result = "cv_result" },
 ]
 
 [pipe.extract_cv]
-type = "PipeExtract"
+type        = "PipeExtract"
 description = "Extract text content from a candidate CV"
-inputs = { cv = "Document" }
-output = "Page[]"
-model = "@default-text-from-pdf"
+inputs      = { cv = "Document" }
+output      = "Page[]"
+model       = "@default-text-from-pdf"
 
 [pipe.score_cv]
 type = "PipeLLM"
@@ -154,16 +154,16 @@ Candidate CV:
 # ── Conditional Routing ───────────────────────────────────────────────
 
 [pipe.route_by_fit]
-type = "PipeCondition"
-description = "Route candidate to interview questions or rejection email based on fit"
-inputs = { evaluation = "CvEvaluation", scorecard = "Scorecard" }
-output = "CvResult"
-expression = "evaluation.fit"
+type            = "PipeCondition"
+description     = "Route candidate to interview questions or rejection email based on fit"
+inputs          = { evaluation = "CvEvaluation", scorecard = "Scorecard" }
+output          = "CvResult"
+expression      = "evaluation.fit"
 default_outcome = "handle_rejection"
 
 [pipe.route_by_fit.outcomes]
 yes = "handle_fit"
-no = "handle_rejection"
+no  = "handle_rejection"
 
 # ── Fit Branch ────────────────────────────────────────────────────────
 
@@ -173,8 +173,8 @@ description = "Generate interview questions and build result for fitting candida
 inputs = { evaluation = "CvEvaluation", scorecard = "Scorecard" }
 output = "CvResult"
 steps = [
-    { pipe = "generate_interview_questions", result = "interview_questions" },
-    { pipe = "compose_fit_result", result = "cv_result" },
+  { pipe = "generate_interview_questions", result = "interview_questions" },
+  { pipe = "compose_fit_result", result = "cv_result" },
 ]
 
 [pipe.generate_interview_questions]
@@ -207,17 +207,17 @@ Scorecard:
 """
 
 [pipe.compose_fit_result]
-type = "PipeCompose"
+type        = "PipeCompose"
 description = "Build CvResult for a fitting candidate with interview questions"
-inputs = { evaluation = "CvEvaluation", interview_questions = "InterviewQuestions" }
-output = "CvResult"
+inputs      = { evaluation = "CvEvaluation", interview_questions = "InterviewQuestions" }
+output      = "CvResult"
 
 [pipe.compose_fit_result.construct]
-candidate_name = { from = "evaluation.candidate_name" }
-fit = { from = "evaluation.fit" }
-overall_score = { from = "evaluation.overall_score" }
+candidate_name      = { from = "evaluation.candidate_name" }
+fit                 = { from = "evaluation.fit" }
+overall_score       = { from = "evaluation.overall_score" }
 interview_questions = { from = "interview_questions" }
-rejection_email = ""
+rejection_email     = ""
 
 # ── Rejection Branch ──────────────────────────────────────────────────
 
@@ -227,8 +227,8 @@ description = "Draft rejection email and build result for non-fitting candidate"
 inputs = { evaluation = "CvEvaluation", scorecard = "Scorecard" }
 output = "CvResult"
 steps = [
-    { pipe = "draft_rejection_email", result = "rejection_email" },
-    { pipe = "compose_rejection_result", result = "cv_result" },
+  { pipe = "draft_rejection_email", result = "rejection_email" },
+  { pipe = "compose_rejection_result", result = "cv_result" },
 ]
 
 [pipe.draft_rejection_email]
@@ -254,14 +254,14 @@ Position: $scorecard.job_title
 """
 
 [pipe.compose_rejection_result]
-type = "PipeCompose"
+type        = "PipeCompose"
 description = "Build CvResult for a rejected candidate with rejection email"
-inputs = { evaluation = "CvEvaluation", rejection_email = "RejectionEmail" }
-output = "CvResult"
+inputs      = { evaluation = "CvEvaluation", rejection_email = "RejectionEmail" }
+output      = "CvResult"
 
 [pipe.compose_rejection_result.construct]
-candidate_name = { from = "evaluation.candidate_name" }
-fit = { from = "evaluation.fit" }
-overall_score = { from = "evaluation.overall_score" }
+candidate_name      = { from = "evaluation.candidate_name" }
+fit                 = { from = "evaluation.fit" }
+overall_score       = { from = "evaluation.overall_score" }
 interview_questions = ""
-rejection_email = { from = "rejection_email" }
+rejection_email     = { from = "rejection_email" }
