@@ -35,4 +35,3 @@ base_llm_deck.toml
 .pipelex/storage
 pipeline_0*/
 .pipelex/storage
-*.json

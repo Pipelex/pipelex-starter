@@ -1,0 +1,16 @@
+{
+  "nodes": {
+    "concept": "native.Text",
+    "content": [
+      {
+        "text": "Left: a stick"
+      },
+      {
+        "text": "Middle: a magic spark"
+      },
+      {
+        "text": "Right: the stick is a magic wand, the spark is magic coming out of it"
+      }
+    ]
+  }
+}

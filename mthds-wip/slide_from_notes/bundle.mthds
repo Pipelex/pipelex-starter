@@ -1,0 +1,78 @@
+domain      = "slide_generation"
+description = "Generate a styled slide image from rough notes"
+main_pipe   = "generate_slide"
+
+[concept.SlideContent]
+description = "Structured content for a single presentation slide"
+
+[concept.SlideContent.structure]
+title             = { type = "text", description = "The slide title", required = true }
+key_points        = { type = "list", item_type = "text", description = "The main bullet points for the slide", required = true }
+supporting_detail = "Optional additional context or explanation"
+
+[pipe.generate_slide]
+type = "PipeSequence"
+description = "Generate a styled slide image from rough notes"
+inputs = { notes = "Text" }
+output = "Image"
+steps = [
+  { pipe = "organize_notes", result = "slide_content" },
+  { pipe = "craft_slide_prompt", result = "slide_prompt" },
+  { pipe = "render_slide_image", result = "slide_image" },
+]
+
+[pipe.organize_notes]
+type = "PipeLLM"
+description = "Organize rough notes into structured slide content"
+inputs = { notes = "Text" }
+output = "SlideContent"
+model = "$engineering-structured"
+prompt = """
+You are a presentation designer. Analyze these rough notes and organize them into a clear, concise slide structure.
+
+Extract:
+- A concise, impactful title (max 8 words)
+- 3-5 key bullet points — keep each one short (max 10 words) and scannable
+- An optional supporting detail only if absolutely necessary (one sentence max)
+
+Be ruthless about brevity. A slide is a visual aid, not a document. Cut every word that does not earn its place.
+
+Rough notes:
+
+@notes
+"""
+
+[pipe.craft_slide_prompt]
+type = "PipeLLM"
+description = "Craft an image generation prompt for the slide"
+inputs = { slide_content = "SlideContent" }
+output = "ImgGenPrompt"
+model = "$img-gen-prompting"
+prompt = """
+You are an expert at crafting image generation prompts for presentation slides.
+
+Create a detailed prompt that will generate a beautiful, professional presentation slide image. The image should be a photorealistic render of a digital slide with:
+
+- The title "$slide_content.title" displayed prominently at the top
+- The key bullet points clearly readable on the slide, kept concise
+- Clean, modern corporate design with a light background
+- Professional sans-serif typography
+- Illustrations, icons, or graphic effects that visually convey the core idea of the slide — not just decoration, but meaningful visuals that help the audience grasp the concept at a glance
+- Subtle design accents (thin accent lines, soft gradients) to complement the illustrations
+- 16:9 landscape aspect ratio, like a real presentation slide
+
+Here is the full slide content to include:
+
+@slide_content
+
+Write the prompt as a single detailed paragraph. Include all the text content that should appear on the slide verbatim. Emphasize the illustrative elements that reinforce the slide's message.
+"""
+
+[pipe.render_slide_image]
+type         = "PipeImgGen"
+description  = "Render the slide as an image using Nano Banana Pro"
+inputs       = { slide_prompt = "ImgGenPrompt" }
+output       = "Image"
+prompt       = "$slide_prompt"
+model        = { model = "nano-banana-pro" }
+aspect_ratio = "landscape_16_9"

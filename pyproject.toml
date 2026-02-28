@@ -18,9 +18,10 @@ classifiers = [
 
 dependencies = ["pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]"]
 
-[tool.uv.sources]
+# [tool.uv.sources]
 # pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "feature/Chicago" }
-pipelex = { git = "https://github.com/Pipelex/pipelex.git", rev = "a5160a5fb9fc4b6e02c7093ca645deaab21f3038" }
+# pipelex = { git = "https://github.com/Pipelex/pipelex.git", rev = "804edd2b44b87e484f412ad895411ce1c2723121" }
+# pipelex = { path = "../pipelex", editable = true }
 
 
 [tool.setuptools]

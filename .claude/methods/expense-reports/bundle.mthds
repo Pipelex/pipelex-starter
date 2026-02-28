@@ -1,0 +1,105 @@
+domain = "expense_reports"
+description = "Extract data from receipt PDFs and compile a structured expense report"
+main_pipe = "build_expense_report"
+
+[concept.ReceiptData]
+description = "Structured data extracted from a single receipt"
+
+[concept.ReceiptData.structure]
+vendor_name = {type = "text", description = "Name of the vendor or merchant", required = true}
+transaction_date = {type = "date", description = "Date of the transaction in ISO format", required = true}
+total_amount = {type = "number", description = "Total amount paid", required = true}
+currency = {type = "text", description = "Three-letter currency code (e.g. USD, EUR, GBP)", required = true}
+category = {type = "text", description = "Expense category", required = true, choices = ["meals", "transport", "lodging", "office_supplies", "entertainment", "subscriptions", "other"]}
+item_description = "Brief description of what was purchased"
+payment_method = "Payment method used (e.g. credit card, cash, debit)"
+
+[concept.ExpenseReport]
+description = "A compiled expense report summarizing all processed receipts"
+
+[concept.ExpenseReport.structure]
+report_title = {type = "text", description = "Title of the expense report including date range", required = true}
+report_date = {type = "date", description = "Date the report was generated", required = true}
+total_expenses = {type = "number", description = "Sum of all receipt amounts", required = true}
+currency = {type = "text", description = "Primary currency across receipts", required = true}
+number_of_receipts = {type = "integer", description = "Total number of receipts processed", required = true}
+line_items = {type = "list", item_type = "concept", item_concept_ref = "expense_reports.ReceiptData", description = "Individual receipt entries", required = true}
+category_breakdown = {type = "text", description = "Expenses grouped by category with subtotals", required = true}
+notes = "Additional observations such as mixed currencies or flagged items"
+
+# Main pipe — orchestrates the full flow
+[pipe.build_expense_report]
+type = "PipeSequence"
+description = "Extract data from each receipt PDF and compile into an expense report"
+inputs = {receipts = "Document[]"}
+output = "ExpenseReport"
+steps = [
+    {pipe = "process_receipt", result = "receipt_data_list", batch_over = "receipts", batch_as = "receipt"},
+    {pipe = "compile_report", result = "expense_report"},
+]
+
+# Batch branch — process a single receipt document (extract pages then analyze)
+[pipe.process_receipt]
+type = "PipeSequence"
+description = "Extract pages from a receipt PDF and analyze them"
+inputs = {receipt = "Document"}
+output = "ReceiptData"
+steps = [
+    {pipe = "extract_pages", result = "pages"},
+    {pipe = "analyze_receipt", result = "receipt_data"},
+]
+
+# Step 1a — Extract pages from a PDF receipt
+[pipe.extract_pages]
+type = "PipeExtract"
+description = "Extract pages from a receipt PDF document"
+inputs = {receipt = "Document"}
+output = "Page[]"
+model = "@default-extract-document"
+
+# Step 1b — Analyze extracted pages to get structured receipt data
+[pipe.analyze_receipt]
+type = "PipeLLM"
+description = "Extract structured receipt data from extracted pages"
+inputs = {pages = "Page[]"}
+output = "ReceiptData"
+model = "$vision"
+prompt = """
+Analyze this receipt and extract structured data.
+
+@pages
+
+Extract the following:
+- Vendor/merchant name
+- Transaction date (ISO format YYYY-MM-DD)
+- Total amount paid (numeric value)
+- Currency (3-letter code, e.g. USD, EUR, GBP)
+- Expense category: classify as one of: meals, transport, lodging, office_supplies, entertainment, subscriptions, other
+- Brief description of what was purchased
+- Payment method if visible (e.g. credit card, cash, debit)
+
+If any field is unclear, use your best judgment based on context clues.
+"""
+
+# Step 2 — Compile all receipt data into a final expense report
+[pipe.compile_report]
+type = "PipeLLM"
+description = "Compile all extracted receipt data into a comprehensive expense report"
+inputs = {receipt_data_list = "ReceiptData[]"}
+output = "ExpenseReport"
+model = "$writing-factual"
+prompt = """
+You are an accounting assistant. Compile the following extracted receipt data into a comprehensive expense report.
+
+@receipt_data_list
+
+Instructions:
+- Set report_title as "Expense Report" followed by the date range of the receipts
+- Set report_date to today's date
+- Calculate total_expenses by summing all receipt amounts
+- Determine the primary currency (most frequently used)
+- Count the number of receipts
+- Include all receipts as line_items preserving all extracted data
+- Create a category_breakdown grouping expenses by category with subtotals
+- Add notes for anything notable (mixed currencies, missing info, large expenses)
+"""

@@ -62,10 +62,14 @@ Take a CV and Job offer, analyze if they match and generate 5 questions for the 
 
 Analyze a Job offer to build a scorecard, then batch process CVs to score them, if a CV fits, generate 5 questions for the interview, otherwise draft a rejection email
 
-### Directive
-
 Analyze a Job offer to build a scorecard, then batch process CVs to score them, if a CV fits, generate 5 questions for the interview, otherwise draft a rejection email. Test with the files in the examples/hr directory.
 
 ### Guided
 
 Help me design a method to match a bunch of CVs with a job offer
+
+## Illustrate
+
+A method which takes your notes, transforms them into a description for an illustration, and then generate a prompt for that and generate images using nano banana pro and GPT image 1.5.
+
+Generate a slide from rough notes

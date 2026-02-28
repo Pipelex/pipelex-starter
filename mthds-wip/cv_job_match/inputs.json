@@ -1,0 +1,16 @@
+{
+  "cv_pdf": {
+    "concept": "native.Document",
+    "content": {
+      "url": "mthds-wip/cv_job_match/inputs/cv.pdf",
+      "mime_type": "application/pdf"
+    }
+  },
+  "job_offer_pdf": {
+    "concept": "native.Document",
+    "content": {
+      "url": "mthds-wip/cv_job_match/inputs/job_offer.pdf",
+      "mime_type": "application/pdf"
+    }
+  }
+}

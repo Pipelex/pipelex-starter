@@ -1320,16 +1320,20 @@ wheels = [
 
 [[package]]
 name = "mthds"
-version = "0.0.2"
+version = "0.0.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "backports-strenum", marker = "python_full_version < '3.11'" },
     { name = "httpx" },
     { name = "pydantic" },
+    { name = "semantic-version" },
+    { name = "tomli", marker = "python_full_version < '3.11'" },
+    { name = "tomlkit" },
+    { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b4/1c/207fed4b05c8dbcfe6f6c0802b0c59cdc683466f02f95625475248e1ff20/mthds-0.0.2.tar.gz", hash = "sha256:273aaec6e8332f462f772c1bd58cf5baaea4a69224de2fa024b08ebe7ed005f1", size = 60229, upload-time = "2026-02-19T13:38:28.094Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6f/ad/4effa77d1b8b49a2b8b761f401336d0d145277d7cdc796fab67212993ea6/mthds-0.0.6.tar.gz", hash = "sha256:82e425e3b9dd6c0af1faf016cd95c26e54cf0c01129b48c9fb8da27cccd39043", size = 110295, upload-time = "2026-02-25T18:08:59.83Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6c/52/c831b1c6bb0a2b7ecaf21de099132eb4c1a1277569ad7ae214da86dd5583/mthds-0.0.2-py3-none-any.whl", hash = "sha256:168210f289f67cc1fd831ddc4bb46f2d65de6c48b5932406bc31459be94f312e", size = 11818, upload-time = "2026-02-19T13:38:26.447Z" },
+    { url = "https://files.pythonhosted.org/packages/3d/c7/3bac46a06a59eb0aba9625ebef1142a1e796265c1fb9deb29e01a2255004/mthds-0.0.6-py3-none-any.whl", hash = "sha256:7083633765269e3ab8f62ae5c489fe70d4d6de526e19e86bc9ebfa8d6d76e22d", size = 48141, upload-time = "2026-02-25T18:08:58.604Z" },
 ]
 
 [[package]]
@@ -1499,7 +1503,7 @@ dev = [
 requires-dist = [
     { name = "boto3-stubs", marker = "extra == 'dev'", specifier = ">=1.35.24" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11.2" },
-    { name = "pipelex", extras = ["mistralai", "anthropic", "google", "google-genai", "bedrock", "fal"], git = "https://github.com/Pipelex/pipelex.git?rev=a5160a5fb9fc4b6e02c7093ca645deaab21f3038" },
+    { name = "pipelex", extras = ["mistralai", "anthropic", "google", "google-genai", "bedrock", "fal"] },
     { name = "pyright", marker = "extra == 'dev'", specifier = ">=1.1.405" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.1" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
@@ -1979,8 +1983,8 @@ wheels = [
 
 [[package]]
 name = "pipelex"
-version = "0.18.0b3"
-source = { git = "https://github.com/Pipelex/pipelex.git?rev=a5160a5fb9fc4b6e02c7093ca645deaab21f3038#a5160a5fb9fc4b6e02c7093ca645deaab21f3038" }
+version = "0.18.1"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiofiles" },
     { name = "backports-strenum", marker = "python_full_version < '3.11'" },
@@ -2008,6 +2012,7 @@ dependencies = [
     { name = "pypdfium2" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
+    { name = "reportlab" },
     { name = "rich" },
     { name = "semantic-version" },
     { name = "shortuuid" },
@@ -2015,6 +2020,10 @@ dependencies = [
     { name = "tomlkit" },
     { name = "typer" },
     { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/75/48/e310446b4ab74cf7d96ee3b6bf4ef90345c35ab1bd42c45cf678ff907063/pipelex-0.18.1.tar.gz", hash = "sha256:8dc6e41d94051c027dde1dc0988db1e242e6bfa4a172752b5c31b24f6271caee", size = 691444, upload-time = "2026-02-25T23:39:03.738Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bd/66/cbac416125efe082151ff0f6cd8598dfdb489a03b11299553310857341a2/pipelex-0.18.1-py3-none-any.whl", hash = "sha256:c474eb422c3348e21ad618304228d49204da1081bf7b4751073b0be7bd79985f", size = 1015063, upload-time = "2026-02-25T23:39:01.452Z" },
 ]
 
 [package.optional-dependencies]
@@ -2592,6 +2601,19 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/da/92/1446574745d74df0c92e6aa4a7b0b3130706a4142b2d1a5869f2eaa423c6/pyyaml-6.0.3-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:16249ee61e95f858e83976573de0f5b2893b3677ba71c9dd36b9cf8be9ac6d65", size = 829923, upload-time = "2025-09-25T21:32:54.537Z" },
     { url = "https://files.pythonhosted.org/packages/f0/7a/1c7270340330e575b92f397352af856a8c06f230aa3e76f86b39d01b416a/pyyaml-6.0.3-cp314-cp314t-win_amd64.whl", hash = "sha256:4ad1906908f2f5ae4e5a8ddfce73c320c2a1429ec52eafd27138b7f1cbe341c9", size = 174062, upload-time = "2025-09-25T21:32:55.767Z" },
     { url = "https://files.pythonhosted.org/packages/f1/12/de94a39c2ef588c7e6455cfbe7343d3b2dc9d6b6b2f40c4c6565744c873d/pyyaml-6.0.3-cp314-cp314t-win_arm64.whl", hash = "sha256:ebc55a14a21cb14062aa4162f906cd962b28e2e9ea38f9b4391244cd8de4ae0b", size = 149341, upload-time = "2025-09-25T21:32:56.828Z" },
+]
+
+[[package]]
+name = "reportlab"
+version = "4.4.10"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "charset-normalizer" },
+    { name = "pillow" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/48/57/28bfbf0a775b618b6e4d854ef8dd3f5c8988e5d614d8898703502a35f61c/reportlab-4.4.10.tar.gz", hash = "sha256:5cbbb34ac3546039d0086deb2938cdec06b12da3cdb836e813258eb33cd28487", size = 3714962, upload-time = "2026-02-12T10:45:21.325Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8a/2e/e1798b8b248e1517e74c6cdf10dd6edd485044e7edf46b5f11ffcc5a0add/reportlab-4.4.10-py3-none-any.whl", hash = "sha256:5abc815746ae2bc44e7ff25db96814f921349ca814c992c7eac3c26029bf7c24", size = 1955400, upload-time = "2026-02-12T10:45:18.828Z" },
 ]
 
 [[package]]

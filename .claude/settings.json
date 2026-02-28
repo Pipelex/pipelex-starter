@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pipelex-agent:*)",
+      "Bash(.venv/bin/pipelex-agent:*)",
+      "Bash(plxt:*)",
+      "Bash(.venv/bin/plxt:*)"
+    ]
+  }
+}

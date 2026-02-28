@@ -1,0 +1,12 @@
+[package]
+name = "expense-reports"
+address = "github.com/RobinPipelex/expense-reports"
+display_name = "Expense Reports"
+version = "1.0.0"
+description = "Extract data from receipt PDFs and compile a structured expense report"
+mthds_version = ">=1.0.0"
+license = "MIT"
+main_pipe = "build_expense_report"
+
+[exports.expense_reports]
+pipes = ["build_expense_report", "process_receipt", "extract_pages", "analyze_receipt", "compile_report"]
