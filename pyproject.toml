@@ -1,6 +1,6 @@
 [project]
 name = "my-project"
-version = "0.6.7"
+version = "0.7.0"
 description = "Replace this with your project description"
 # authors = [{ name = "Your Name", email = "your.email@example.com" }]
 license = "MIT"
@@ -16,11 +16,9 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 
-dependencies = ["pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]"]
-
-[tool.uv.sources]
-pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "feature/Chicago" }
-
+dependencies = [
+  "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]>=0.18.1"
+]
 
 [tool.setuptools]
 packages = ["my_project"]
