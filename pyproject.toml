@@ -16,12 +16,9 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 
-dependencies = ["pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]"]
-
-# [tool.uv.sources]
-# pipelex = { git = "https://github.com/Pipelex/pipelex.git", branch = "feature/Chicago" }
-# pipelex = { git = "https://github.com/Pipelex/pipelex.git", rev = "804edd2b44b87e484f412ad895411ce1c2723121" }
-# pipelex = { path = "../pipelex", editable = true }
+dependencies = [
+  "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]>=0.18.1",
+]
 
 
 [tool.setuptools]
