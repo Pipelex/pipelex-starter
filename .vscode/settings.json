@@ -1,18 +1,4 @@
 {
-    "workbench.colorCustomizations": {
-        "titleBar.activeBackground": "#1a0a0a",
-        "titleBar.activeForeground": "#e8b4b4",
-        "activityBar.background": "#150808",
-        "activityBar.foreground": "#c95a5a",
-        "sideBar.background": "#1a0a0a",
-        "sideBar.foreground": "#d4a0a0",
-        "statusBar.background": "#2d1515",
-        "statusBar.foreground": "#e8b4b4",
-        "editor.background": "#120606",
-        "editorGroupHeader.tabsBackground": "#1e0f0f",
-        "tab.activeBackground": "#2d1515",
-        "tab.inactiveBackground": "#1a0a0a"
-    },
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff"
     },
@@ -36,13 +22,5 @@
     "djlint.showInstallError": false,
     "files.associations": {
         "*.mthds": "mthds"
-    },
-    "[toml]": {
-        "editor.defaultFormatter": "Pipelex.pipelex",
-        "editor.formatOnSave": true
-    },
-    "[mthds]": {
-        "editor.defaultFormatter": "Pipelex.pipelex",
-        "editor.formatOnSave": true
     }
 }
