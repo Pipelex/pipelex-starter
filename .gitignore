@@ -27,7 +27,8 @@ dist/
 # Results
 results/
 
-# temps
 temp/
 pipelex_super.toml
-base_llm_deck.toml
+pipelex_override.toml
+telemetry_override.toml
+.pipelex/storage
