@@ -1,0 +1,31 @@
+.gitignore
+  h_39660369d4ad8c 35
+CHANGELOG.md
+  s_f69bf9b41cf6d7::t_1e2b1686666f85 1-7
+tests/integration/conftest.py
+  s_f69bf9b41cf6d7::t_4207becbe21b04 5
+  s_f69bf9b41cf6d7::t_48d5e6e5639280 25
+pyproject.toml
+  h_39660369d4ad8c 3,20,31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "b7b331fc339d6f9ca1aef28e2333a8c836179b93",
+  "prompts": {},
+  "humans": {
+    "h_39660369d4ad8c": {
+      "author": "Louis Choquel <lchoquel@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_f69bf9b41cf6d7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3482f476-c348-4cc1-b53b-dafc64b50afc",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Louis Choquel <lchoquel@users.noreply.github.com>"
+    }
+  }
+}
