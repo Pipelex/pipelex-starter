@@ -1,6 +1,6 @@
 [project]
 name = "my-project"
-version = "0.7.0"
+version = "0.8.0"
 description = "Replace this with your project description"
 # authors = [{ name = "Your Name", email = "your.email@example.com" }]
 license = "MIT"
@@ -17,7 +17,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]>=0.18.1"
+  "pipelex[mistralai,anthropic,google,google-genai,bedrock,fal]>=0.26.4",
 ]
 
 [tool.setuptools]
@@ -28,6 +28,7 @@ include-package-data = true
 dev = [
   "boto3-stubs>=1.35.24",
   "mypy>=1.11.2",
+  "pipelex-tools>=0.3.2",
   "pyright>=1.1.405",
   "pytest>=9.0.1",
   "pytest-sugar>=1.0.0",
