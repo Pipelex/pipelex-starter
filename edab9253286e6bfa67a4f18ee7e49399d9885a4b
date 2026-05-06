@@ -1,0 +1,346 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "edab9253286e6bfa67a4f18ee7e49399d9885a4b",
+  "prompts": {
+    "13f5108831d9e34c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b13bf54a-33c3-44d4-ad10-6c693a030d15",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 102,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "1b4b25444910b6ad": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a8368785-e06c-41fe-aedc-917df604d804",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 117,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "1e1ed554d140d8d4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bf88e14c-2284-47fb-aeb2-4cbfe5095b03",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 49,
+      "total_deletions": 63,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "1f20f9dc4e905d58": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7f570cf1-379d-475e-bfdc-ed55b106faa1",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 192,
+      "total_deletions": 116,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "433a11bfcc583924": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4a4afc60-1119-4751-b8e7-9b7d5030d185",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 64,
+      "total_deletions": 68,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "43b8fb9651e5d539": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d163cdcf-21fc-4ef6-94e2-ea9008a32730",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 127,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "51840c559b826ddc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "07e71b2e-d55d-4f0e-bda8-6872ab3f205e",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 43,
+      "total_deletions": 33,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "58f3281ee7d8aa55": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a7bac032-8c3b-4fa7-ac77-813450b67bc4",
+        "model": "<synthetic>"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 311,
+      "total_deletions": 20,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "5b7ba8548bf914cd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eab0cf15-41de-448e-bfc9-b7dce755debe",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 49,
+      "total_deletions": 63,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "696e5f7a598a3719": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "810c1453-8874-4db2-b2c8-94231dcc69fe",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 67,
+      "total_deletions": 49,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "6a511f30f7c36016": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "024dce44-f549-4c6b-b0c9-7412a89b11fe",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 121,
+      "total_deletions": 8,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "71d39b13d61e70be": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7e84884d-d08e-4349-9460-e534a816b131",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 144,
+      "total_deletions": 4,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "71ee74ebc9ff83b4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9db37bbf-fd00-4886-b23b-8a365a929c0c",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 223,
+      "total_deletions": 67,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "85f1eb09992a7879": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1903bb46-4a40-4165-b546-a74b8dca59da",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 60,
+      "total_deletions": 71,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "8cd72092ca375608": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0e593319-f6c4-4001-b04b-dc30b6f71f40",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 127,
+      "total_deletions": 191,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "94049f8ee15a1782": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "03d7d778-52de-4cc9-b6b6-bdecf420aff1",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 71,
+      "total_deletions": 64,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "a038947f37d693bc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bbefb51f-9d23-448e-9ddf-a119ac095d6c",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 104,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "a2507b9b1d3424f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0c297937-cfc3-4880-9b3a-7b7efb73e55b",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 57,
+      "total_deletions": 76,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "aa01e1d1496cffc6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f0425613-222a-4373-a779-0fa67b6ecea1",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 64,
+      "total_deletions": 57,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "cc380ab2fd55a516": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "05142e6c-0c9c-48bc-a45f-3aeeab39e92e",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 78,
+      "total_deletions": 65,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "d0caa77d1a464b27": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f5738717-9d25-4bdf-9593-fad823c3c05f",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 102,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "e5bcdde3c85f21dd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a976e1d9-0586-4e73-b8e3-9f0ca6d6a727",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 104,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "e96f9177102121d6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "145c1e99-cb22-4c28-86e9-d96c83937c27",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 64,
+      "total_deletions": 58,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "ee25872b0ed48a35": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9f61d302-0318-4011-8f36-f4f3bcf6f3a1",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 90,
+      "total_deletions": 64,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "f0dc07b2868db176": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9d8865f0-1753-4486-933e-d1db8a89d32f",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 162,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "fe2bf812f581c250": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9d626025-1693-4e6f-877d-658ab2523938",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Louis Choquel",
+      "messages": [],
+      "total_additions": 44,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    }
+  }
+}
